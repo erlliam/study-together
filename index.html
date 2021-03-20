@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="style.css" rel="stylesheet">
+
+    <title>Study Together</title>
+  </head>
+  <body>
+    <article hidden>
+      <h1>Study Together</h1>
+      <button>Study alone</button>
+      <button>Study together</button>
+    </article>
+
+    <article id="study-alone">
+      <h2>Study Alone</h2>
+      <div class="timer">
+        <div class="timer-controls">
+          <button class="active">Pomodoro</button>
+          <button>Short break</button>
+          <button>Long break</button>
+        </div>
+        <div class="timer-display">00:00</div>
+        <button class="timer-start-stop">Start</button>
+      </div>
+    </article>
+
+    <article hidden id="study-together">
+      <h2>Study Together</h2>
+    </article>
+  </body>
+
+  <script>
+    console.log(document.body);
+  </script>
+</html>
