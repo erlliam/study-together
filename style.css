@@ -12,7 +12,7 @@
 body {
   margin: 0 auto;
   padding: 0 1rem;
-  max-width: 50rem;
+  max-width: 30rem;
   font-weight: 400;
   font-family: var(--font-sans-serif);
   background-color: #ffffff;
@@ -30,8 +30,9 @@ button {
   padding: 0 1rem;
   height: 36px;
   min-width: 64px;
-  border-radius: 8px;
+  border-radius: 4px;
   white-space: nowrap;
+  color: inherit;
 }
 
 article {
@@ -49,7 +50,8 @@ article h2 {
 .timer {
   padding: 1rem 0rem;
   border-radius: 8px;
-  background-color: pink;
+  background-color: #d52121;
+  color: #ffffff;
 }
 
 .timer-controls {
@@ -77,6 +79,7 @@ article h2 {
 .timer-display {
   text-align: center;
   font-size: 5rem;
+  font-weight: bold;
 }
 
 .timer-start-stop {
