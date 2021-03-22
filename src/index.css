@@ -23,8 +23,24 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5rem;
 }
 
-.starting-page {
-  margin: 1rem 0;
+h1 {
   text-align: center;
 }
 
+.starting-page {
+  margin: 1rem 0;
+}
+
+.starting-page nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.create-room {
+  margin: 1rem 0;
+}
+
+.join-room {
+  margin: 1rem 0;
+}
