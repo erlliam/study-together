@@ -56,12 +56,34 @@ function CreateRoom() {
 }
 
 function JoinRoom() {
+  let rooms = [
+    {
+      location: '123',
+      name: 'User 1231\'s room',
+      passwordProtected: false,
+      usersConnected: 1,
+      userCapacity: 16,
+    },
+    {
+      location: 'sh1',
+      name: 'Join for fast studies',
+      passwordProtected: true,
+      usersConnected: 12,
+      userCapacity: 16,
+    },
+  ];
+  let roomElements = rooms.map((room) =>
+    <Link to={'/room/' + room.location} key={room.location}>
+      <span>{room.passwordProtected ? 'private' : 'public'}</span>
+      <span>{room.name}</span>
+      <span>{room.usersConnected}/{room.userCapacity}</span>
+    </Link>
+  );
   return (
     <div className="join-room">
       <h1>Join a Room</h1>
       <nav>
-        <Link to="/room/123">User 1231's room 01/16</Link>
-        <Link to="/room/sh1">Join for fast studies 16/16</Link>
+        {roomElements}
       </nav>
     </div>
   );
@@ -69,7 +91,6 @@ function JoinRoom() {
 
 function Room() {
   let params = useParams();
-  console.log(params);
   return (
     <div className="room">
       <h1>Room {params.id}</h1>
