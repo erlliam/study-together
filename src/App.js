@@ -1,10 +1,23 @@
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from 'react-router-dom';
+
 function App() {
   return (
-    <div className="starting-page">
-      <h1>Study Together</h1>
-      <button>Create a room</button>
-      <button>Join a room</button>
-    </div>
+    <Router>
+      <Switch>
+        <Route path="/">
+          <div className="starting-page">
+            <h1>Study Together</h1>
+            <Link to="/create-room">Create a room</Link>
+            <Link to="/join-room">Join a room</Link>
+          </div>
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
