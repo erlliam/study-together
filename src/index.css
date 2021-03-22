@@ -44,3 +44,8 @@ h1 {
 .join-room {
   margin: 1rem 0;
 }
+
+.join-room nav {
+  display: flex;
+  flex-direction: column;
+}
