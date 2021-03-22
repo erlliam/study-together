@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="chat.css" rel="stylesheet">
+
+    <title>Chat</title>
+  </head>
+  <body>
+    <div id="chat-display">
+      <div class="chat-message">
+        <span class="username">User123</span
+        ><span>:</span>
+        <span class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+      </div>
+    </div>
+
+    <form id="chat-form" autocomplete="off">
+      <input name="text" required>
+      <button>Send</button>
+    </form>
+
+    <script>
+      let chatDisplay = document.getElementById('chat-display');
+      let chatForm = document.getElementById('chat-form');
+      let username = 'User61893';
+
+      chatForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        let textElement = chatForm.querySelector('[name="text"]');
+        let chatMessage = document.createElement('div');
+        chatMessage.innerHTML = `
+          <div class="chat-message">
+            <span class="username">${username}</span
+            ><span>:</span>
+            <span class="text">${textElement.value}</span>
+          </div>
+        `;
+
+        chatDisplay.append(chatMessage);
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+        chatForm.reset();
+      });
+    </script>
+
+  </body>
+</html>
