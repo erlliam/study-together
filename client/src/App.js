@@ -66,11 +66,10 @@ function JoinRoom() {
       userCapacity: 16,
     },
   ];
-  rooms = [];
   let roomElements = rooms.map((room) =>
     <Link to={'/room/' + room.location} key={room.location}>
-      <span>{room.passwordProtected ? 'private' : 'public'}</span>
-      <span>{room.name}</span>
+      <span>{room.passwordProtected ? 'private' : 'public'}&nbsp;</span>
+      <span>{room.name}&nbsp;</span>
       <span>{room.usersConnected}/{room.userCapacity}</span>
     </Link>
   );
