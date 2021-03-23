@@ -1,6 +1,7 @@
 import {
   useState
 } from 'react';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -36,19 +37,29 @@ function StartingPage() {
 }
 
 function CreateRoom() {
-  let [name, setName] = useState('');
+  let [name, setName] = useState('todo: Make this string empty');
   let [password, setPassword] = useState('');
   let [capacity, setCapacity] = useState('6');
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    // todo: POST form data to server
-    console.log(`
-      name: ${name}
-      password: ${password}
-      capacity: ${capacity}
-    `);
+    let response = await fetch('http://localhost:5000/api/create-room', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name,
+        password: password,
+        capacity: capacity
+      }),
+    });
+
+    let json = await response.json();
+    // todo: Start thinking about notifying the user about
+    // incorrect fields or errors that have occurred
+    console.log(json);
   }
 
   return (
