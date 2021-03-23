@@ -23,7 +23,7 @@ function App() {
 function StartingPage() {
   return (
     <div className="starting-page">
-      <h1>Study Together</h1>
+      <h1>study-together</h1>
       <nav>
         <Link to="/create-room">Create a room</Link>
         <Link to="/join-room">Join a room</Link>
@@ -37,18 +37,12 @@ function CreateRoom() {
     <div className="create-room">
       <h1>Create a Room</h1>
       <form>
-        <div>
-          <label>Room name</label>
-          <input />
-        </div>
-        <div>
-          <label>Password (optional)</label>
-          <input />
-        </div>
-        <div>
-          <label>Room size</label>
-          <input />
-        </div>
+        <label for="create-room-name">Room name</label>
+        <input id="create-room-name" />
+        <label for="create-room-password">Password (optional)</label>
+        <input id="create-room-password" />
+        <label for="create-room-size">Room size (16 max)</label>
+        <input id="create-room-size" />
         <button>Create room</button>
       </form>
     </div>
@@ -72,6 +66,7 @@ function JoinRoom() {
       userCapacity: 16,
     },
   ];
+  rooms = [];
   let roomElements = rooms.map((room) =>
     <Link to={'/room/' + room.location} key={room.location}>
       <span>{room.passwordProtected ? 'private' : 'public'}</span>
