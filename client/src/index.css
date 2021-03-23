@@ -43,7 +43,7 @@ h1 {
 
 .create-room label {
   display: block;
-  margin-bottom: 0.25rem;
+  padding-bottom: 0.25rem;
   font-weight: 900;
 }
 
