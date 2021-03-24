@@ -55,11 +55,10 @@ function CreateRoom() {
         capacity: capacity
       }),
     });
-
-    let json = await response.json();
     // todo: Start thinking about notifying the user about
     // incorrect fields or errors that have occurred
-    console.log(json);
+    // everything is fine: 201
+    // bad input: 400
   }
 
   return (
