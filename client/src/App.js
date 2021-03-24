@@ -106,17 +106,18 @@ function JoinRoom() {
   let [rooms, setRooms] = useState();
 
   useEffect(() => {
+    let isMounted = true;
     async function fetchRooms() {
       let response = await fetch('http://localhost:5000/api/room-list');
       let json = await response.json();
-      setRooms(json);
+      if (isMounted) {
+        setRooms(json);
+      }
     }
     fetchRooms();
-    // there should be an easy "isMounted" function or some shit
-    // todo: Can't perform a React state update on an unmounted component
-    // return cleanup function to useEffect that sets a variable.
-    // if that variable is true, do not set data...
-    // https://stackoverflow.com/questions/53949393/cant-perform-a-react-state-update-on-an-unmounted-component
+    return (() => {
+      isMounted = false;
+    });
   }, []);
 
   return (
