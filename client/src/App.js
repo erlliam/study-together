@@ -40,15 +40,14 @@ function StartingPage() {
 
 function CreateRoom() {
   let history = useHistory();
-
-  let [name, setName] = useState('todo: Make this string empty');
+  let [name, setName] = useState('');
   let [password, setPassword] = useState('');
   let [capacity, setCapacity] = useState('6');
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    let response = await fetch('http://localhost:5000/api/create-room', {
+    /*let response = */await fetch('http://localhost:5000/api/create-room', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -123,21 +122,21 @@ function JoinRoom() {
   return (
     <div className="join-room">
       <h1>Join a Room</h1>
-      {rooms ? (
-        <nav>
-          {rooms.map(room => (
-            <Link to ={'/room/' + room.location} key={room.location}>
+      <nav>
+        {rooms ? (
+          rooms.map(room => (
+            <Link to={'/room/' + room.id} key={room.id}>
               <span>{room.passwordProtected ? 'private' : 'public'}</span>
               {' '}
               <span>{room.name}</span>
               {' '}
               <span>{room.usersConnected}/{room.userCapacity}</span>
             </Link>
-          ))}
-        </nav>
-      ) : (
-        <div>Loading...</div>
-      )}
+          ))
+        ) : (
+          <div>Loading...</div>
+        )}
+      </nav>
     </div>
   );
 }

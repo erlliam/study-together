@@ -1,12 +1,28 @@
 let express = require('express');
+let sqlite3 = require('sqlite3').verbose();
 
 let port = 5000;
 let app = express();
 let router = express.Router();
+let db = new sqlite3.Database(':memory:');
 
-// todo: Use an actual database
-let roomIndex = 0;
-let rooms = [];
+
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE room (
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      password TEXT,
+      usersConnected INTEGER DEFAULT 0,
+      userCapacity INTEGER NOT NULL
+    );
+  `);
+
+  db.run(`
+    INSERT INTO room (name, password, userCapacity)
+    VALUES (?, ?, ?);
+  `, 'The first room always', null, 6);
+});
 
 app.listen(port);
 app.use('/api', router);
@@ -36,23 +52,27 @@ function validCreateRoomObject(room) {
 }
 
 function createRoom(room) {
-  // todo: Think about location
-  // Are we fine with a number?? Perhaps we do fancy paste bin URLs or something
-  // todo: Think about password storage in database!
   // todo: Think about room owner
-  roomIndex++;
-  return {
-    location: roomIndex.toString(),
-    name: room.name,
-    passwordProtected: room.password.length > 0,
-    usersConnected: 0,
-    userCapacity: parseInt(room.capacity, 10)
-  }
+  return new Promise((resolve, reject) => {
+    // todo: Hash the password
+    let passwordValue = room.password.length > 0 ? room.password : null
+    db.run(`
+      INSERT INTO room (name, password, userCapacity)
+      VALUES (?, ?, ?);
+    `, room.name, passwordValue, parseInt(room.capacity, 10), function(error) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(this.lastID);
+      }
+    });
+  });
 }
 
 router.post('/create-room', (req, res) => {
   if (validCreateRoomObject(req.body)) {
-    rooms.push(createRoom(req.body));
+    // todo: Respond with room id
+    createRoom(req.body).then(id => console.log(id));
     res.sendStatus(201);
   } else {
     res.sendStatus(400);
@@ -60,5 +80,11 @@ router.post('/create-room', (req, res) => {
 });
 
 router.get('/room-list', (req, res) => {
-  res.send(rooms);
+  db.all(`
+    SELECT * FROM room;
+  `, (error, reply) => {
+    // todo: determine what to do on error
+    // todo: don't send password to users...
+    res.send(reply);
+  });
 });
