@@ -16,8 +16,29 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+function validCreateRoomObject(room) {
+  let {name, password, capacity} = room;
+  if (typeof name !== 'string' ||
+      typeof password !== 'string' ||
+      typeof capacity !== 'string') {
+    return false;
+  }
+  let capacityAsInt = parseInt(capacity, 10);
+  if (isNaN(capacityAsInt) ||
+      1 > capacityAsInt || capacityAsInt > 16) {
+    return false
+  }
+  return true;
+}
+
+let rooms = [];
+
 router.post('/create-room', (req, res) => {
-  // todo: Validate incoming data
-  // todo: Set up data base
-  res.send(req.body);
+  if (validCreateRoomObject(req.body)) {
+    // todo: Set up data base
+    rooms.push(req.body);
+    res.sendStatus(201);
+  } else {
+    res.sendStatus(400);
+  }
 });
