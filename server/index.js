@@ -6,7 +6,6 @@ let app = express();
 let router = express.Router();
 let db = new sqlite3.Database(':memory:');
 
-
 db.serialize(() => {
   db.run(`
     CREATE TABLE room (
@@ -21,7 +20,7 @@ db.serialize(() => {
   db.run(`
     INSERT INTO room (name, password, userCapacity)
     VALUES (?, ?, ?);
-  `, 'The first room always', null, 6);
+  `, 'User 1241\'s room', null, 6);
 });
 
 app.listen(port);
@@ -43,10 +42,13 @@ function validCreateRoomObject(room) {
       typeof capacity !== 'string') {
     return false;
   }
+  if (name.trim().length === 0) {
+    return false;
+  }
   let capacityAsInt = parseInt(capacity, 10);
   if (isNaN(capacityAsInt) ||
       1 > capacityAsInt || capacityAsInt > 16) {
-    return false
+    return false;
   }
   return true;
 }
