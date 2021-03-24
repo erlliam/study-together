@@ -73,9 +73,8 @@ function createRoom(room) {
 
 router.post('/create-room', (req, res) => {
   if (validCreateRoomObject(req.body)) {
-    // todo: Respond with room id
-    createRoom(req.body).then(id => console.log(id));
-    res.sendStatus(201);
+    // todo: use pretty API responses, JSON maybe?
+    createRoom(req.body).then(id => res.status(201).send(id.toString()));
   } else {
     res.sendStatus(400);
   }

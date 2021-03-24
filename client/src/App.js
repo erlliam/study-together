@@ -43,11 +43,12 @@ function CreateRoom() {
   let [name, setName] = useState('');
   let [password, setPassword] = useState('');
   let [capacity, setCapacity] = useState('6');
+  let [error, setError] = useState();
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    /*let response = */await fetch('http://localhost:5000/api/create-room', {
+    let response = await fetch('http://localhost:5000/api/create-room', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -58,19 +59,26 @@ function CreateRoom() {
         capacity: capacity
       }),
     });
-
-    // todo: Redirect to the newly created room
-    history.replace('/');
-
-    // todo: Start thinking about notifying the user about
-    // incorrect fields or errors that have occurred
-    // everything is fine: 201
-    // bad input: 400
+    if (response.ok) {
+      let roomId = await response.text();
+      history.replace('/room/' + roomId);
+    } else {
+      // todo: Start thinking about notifying the user about
+      // incorrect fields or errors that have occurred
+      // todo: Have two states for invalid user input
+      // and server error
+      setError('Invalid input');
+    }
   }
 
   return (
     <div className="create-room">
       <h1>Create a Room</h1>
+      {/*
+        todo: Style the error
+        todo: Don't allow user to submit name with only spaces
+      */}
+      {error && <div>{error}</div>}
       <form autoComplete="off" onSubmit={handleSubmit}>
         <label htmlFor="create-room-name">Room name</label>
         <input
