@@ -9,6 +9,7 @@ import {
   Route,
   Link,
   useParams,
+  useHistory,
 } from 'react-router-dom';
 
 function App() {
@@ -38,6 +39,8 @@ function StartingPage() {
 }
 
 function CreateRoom() {
+  let history = useHistory();
+
   let [name, setName] = useState('todo: Make this string empty');
   let [password, setPassword] = useState('');
   let [capacity, setCapacity] = useState('6');
@@ -56,6 +59,10 @@ function CreateRoom() {
         capacity: capacity
       }),
     });
+
+    // todo: Redirect to the newly created room
+    history.replace('/');
+
     // todo: Start thinking about notifying the user about
     // incorrect fields or errors that have occurred
     // everything is fine: 201
