@@ -4,6 +4,10 @@ let port = 5000;
 let app = express();
 let router = express.Router();
 
+// todo: Use an actual database
+let roomIndex = 0;
+let rooms = [];
+
 app.listen(port);
 app.use('/api', router);
 
@@ -31,14 +35,30 @@ function validCreateRoomObject(room) {
   return true;
 }
 
-let rooms = [];
+function createRoom(room) {
+  // todo: Think about location
+  // Are we fine with a number?? Perhaps we do fancy paste bin URLs or something
+  // todo: Think about password storage in database!
+  // todo: Think about room owner
+  roomIndex++;
+  return {
+    location: roomIndex.toString(),
+    name: room.name,
+    passwordProtected: room.password.length > 0,
+    usersConnected: 0,
+    userCapacity: parseInt(room.capacity, 10)
+  }
+}
 
 router.post('/create-room', (req, res) => {
   if (validCreateRoomObject(req.body)) {
-    // todo: Set up data base
-    rooms.push(req.body);
+    rooms.push(createRoom(req.body));
     res.sendStatus(201);
   } else {
     res.sendStatus(400);
   }
+});
+
+router.get('/room-list', (req, res) => {
+  res.send(rooms);
 });

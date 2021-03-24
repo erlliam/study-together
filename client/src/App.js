@@ -1,5 +1,6 @@
 import {
-  useState
+  useState,
+  useEffect,
 } from 'react';
 
 import {
@@ -95,37 +96,40 @@ function CreateRoom() {
 }
 
 function JoinRoom() {
-  let rooms = [
-    {
-      location: '123',
-      name: 'User 1231\'s room',
-      passwordProtected: false,
-      usersConnected: 1,
-      userCapacity: 16,
-    },
-    {
-      location: 'sh1',
-      name: 'Join for fast studies',
-      passwordProtected: true,
-      usersConnected: 12,
-      userCapacity: 16,
-    },
-  ];
-  let roomElements = rooms.map((room) =>
-    <Link to={'/room/' + room.location} key={room.location}>
-      <span>{room.passwordProtected ? 'private' : 'public'}</span>
-      {' '}
-      <span>{room.name}</span>
-      {' '}
-      <span>{room.usersConnected}/{room.userCapacity}</span>
-    </Link>
-  );
+  let [rooms, setRooms] = useState();
+
+  useEffect(() => {
+    async function fetchRooms() {
+      let response = await fetch('http://localhost:5000/api/room-list');
+      let json = await response.json();
+      setRooms(json);
+    }
+    fetchRooms();
+    // there should be an easy "isMounted" function or some shit
+    // todo: Can't perform a React state update on an unmounted component
+    // return cleanup function to useEffect that sets a variable.
+    // if that variable is true, do not set data...
+    // https://stackoverflow.com/questions/53949393/cant-perform-a-react-state-update-on-an-unmounted-component
+  }, []);
+
   return (
     <div className="join-room">
       <h1>Join a Room</h1>
-      <nav>
-        {roomElements}
-      </nav>
+      {rooms ? (
+        <nav>
+          {rooms.map(room => (
+            <Link to ={'/room/' + room.location} key={room.location}>
+              <span>{room.passwordProtected ? 'private' : 'public'}</span>
+              {' '}
+              <span>{room.name}</span>
+              {' '}
+              <span>{room.usersConnected}/{room.userCapacity}</span>
+            </Link>
+          ))}
+        </nav>
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 }
