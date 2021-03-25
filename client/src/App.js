@@ -12,13 +12,15 @@ import {
   useHistory,
 } from 'react-router-dom';
 
+let apiUrl = 'http://localhost:5000/api'
+
 function App() {
   return (
     <Router>
       <Switch>
         <Route exact path="/"><StartingPage /></Route>
         <Route path="/create-room"><CreateRoom /></Route>
-        <Route path="/join-room"><JoinRoom /></Route>
+        <Route path="/rooms"><JoinRoom /></Route>
         <Route path="/room/:id"><Room /></Route>
         <Route path="*"><h1>404</h1></Route>
       </Switch>
@@ -32,7 +34,7 @@ function StartingPage() {
       <h1>study-together</h1>
       <nav>
         <Link to="/create-room">Create a room</Link>
-        <Link to="/join-room">Join a room</Link>
+        <Link to="/rooms">Join a room</Link>
       </nav>
     </div>
   );
@@ -54,7 +56,7 @@ function CreateRoom() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    let response = await fetch('http://localhost:5000/api/create-room', {
+    let response = await fetch(apiUrl + '/create-room', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -113,7 +115,7 @@ function JoinRoom() {
   useEffect(() => {
     let isMounted = true;
     async function fetchRooms() {
-      let response = await fetch('http://localhost:5000/api/room-list');
+      let response = await fetch(apiUrl + '/rooms');
       let json = await response.json();
       if (isMounted) {
         setRooms(json);
