@@ -1,6 +1,8 @@
 let express = require('express');
 let sqlite3 = require('sqlite3').verbose();
+let bcrypt = require('bcrypt');
 
+let saltRounds = 12;
 let port = 5000;
 let app = express();
 let router = express.Router();
@@ -54,10 +56,13 @@ function validCreateRoomObject(room) {
 }
 
 function createRoom(room) {
-  // todo: Think about room owner
   return new Promise((resolve, reject) => {
-    // todo: Hash the password
-    let passwordValue = room.password.length > 0 ? room.password : null
+    // todo: Deal with bcrypt's upper character limit
+    // todo: Think about room owner
+    let passwordValue = null;
+    if (room.password.length > 0) {
+      passwordValue = bcrypt.hashSync(room.password, saltRounds);
+    }
     db.run(`
       INSERT INTO room (name, password, userCapacity)
       VALUES (?, ?, ?);
@@ -83,9 +88,15 @@ router.post('/create-room', (req, res) => {
 router.get('/room-list', (req, res) => {
   db.all(`
     SELECT * FROM room;
-  `, (error, reply) => {
+  `, (error, rooms) => {
     // todo: determine what to do on error
-    // todo: don't send password to users...
-    res.send(reply);
+    rooms = rooms.map((room) => {
+      if (room.password !== null) {
+        return {...room, password: true};
+      } else {
+        return {...room, password: false};
+      }
+    })
+    res.send(rooms);
   });
 });

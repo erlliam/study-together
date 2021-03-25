@@ -134,7 +134,7 @@ function JoinRoom() {
         {rooms ? (
           rooms.map(room => (
             <Link to={'/room/' + room.id} key={room.id}>
-              <span>{room.passwordProtected ? 'private' : 'public'}</span>
+              <span>{room.password ? 'private' : 'public'}</span>
               {' '}
               <span>{room.name}</span>
               {' '}
