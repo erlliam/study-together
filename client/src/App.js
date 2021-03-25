@@ -39,10 +39,16 @@ function StartingPage() {
 }
 
 function CreateRoom() {
+  // todo: Don't allow names that only contain spaces
+  /* todo: UX
+      remove error message when you start typing
+      display some state that confirms your request is being processed
+      display something in the case of a server error
+  */
   let history = useHistory();
   let [name, setName] = useState('');
   let [password, setPassword] = useState('');
-  let [capacity, setCapacity] = useState('6');
+  let [capacity, setCapacity] = useState('4');
   let [error, setError] = useState();
 
   async function handleSubmit(event) {
@@ -63,10 +69,6 @@ function CreateRoom() {
       let json = await response.json();
       history.replace('/room/' + json.id);
     } else {
-      // todo: Start thinking about notifying the user about
-      // incorrect fields or errors that have occurred
-      // todo: Have two states for invalid user input
-      // and server error
       setError('Invalid input');
     }
   }
@@ -74,11 +76,7 @@ function CreateRoom() {
   return (
     <div className="create-room">
       <h1>Create a Room</h1>
-      {/*
-        todo: Style the error
-        todo: Don't allow user to submit name with only spaces
-      */}
-      {error && <div>{error}</div>}
+      {error && <div className="error">{error}</div>}
       <form autoComplete="off" onSubmit={handleSubmit}>
         <label htmlFor="create-room-name">Room name</label>
         <input
@@ -132,13 +130,13 @@ function JoinRoom() {
       <h1>Join a Room</h1>
       <nav>
         {rooms ? (
-          rooms.map(room => (
-            <Link to={'/room/' + room.id} key={room.id}>
-              <span>{room.password ? 'private' : 'public'}</span>
+          rooms.map(({id, password, name, usersConnected, userCapacity}) => (
+            <Link to={'/room/' + id} key={id}>
+              <span>{password ? 'private' : 'public'}</span>
               {' '}
-              <span>{room.name}</span>
+              <span>{name}</span>
               {' '}
-              <span>{room.usersConnected}/{room.userCapacity}</span>
+              <span>{usersConnected}/{userCapacity}</span>
             </Link>
           ))
         ) : (

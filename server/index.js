@@ -86,6 +86,7 @@ router.post('/create-room', async (req, res) => {
 });
 
 router.get('/room-list', (req, res) => {
+  // todo: Perhaps change this URL to /rooms
   db.all(`
     SELECT * FROM room;
   `, (error, rooms) => {

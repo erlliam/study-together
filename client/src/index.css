@@ -27,6 +27,10 @@ h1 {
   text-align: center;
 }
 
+.error {
+  color: red;
+}
+
 .starting-page {
   margin-top: 25vh;
 }
@@ -65,3 +69,4 @@ h1 {
 .room {
   margin: 1rem 0;
 }
+
