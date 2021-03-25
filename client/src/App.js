@@ -60,8 +60,8 @@ function CreateRoom() {
       }),
     });
     if (response.ok) {
-      let roomId = await response.text();
-      history.replace('/room/' + roomId);
+      let json = await response.json();
+      history.replace('/room/' + json.id);
     } else {
       // todo: Start thinking about notifying the user about
       // incorrect fields or errors that have occurred

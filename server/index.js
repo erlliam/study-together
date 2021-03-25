@@ -6,24 +6,20 @@ let saltRounds = 12;
 let port = 5000;
 let app = express();
 let router = express.Router();
-let db = new sqlite3.Database(':memory:');
+let db = new sqlite3.Database('study-together.db');
 
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE room (
-      id INTEGER PRIMARY KEY,
-      name TEXT NOT NULL,
-      password TEXT,
-      usersConnected INTEGER DEFAULT 0,
-      userCapacity INTEGER NOT NULL
-    );
-  `);
+// todo: Think about room owner
+// todo: Uniquely identify users, no sign up required
 
-  db.run(`
-    INSERT INTO room (name, password, userCapacity)
-    VALUES (?, ?, ?);
-  `, 'User 1241\'s room', null, 6);
-});
+db.run(`
+  CREATE TABLE IF NOT EXISTS room (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    password TEXT,
+    usersConnected INTEGER DEFAULT 0,
+    userCapacity INTEGER NOT NULL
+  );
+`);
 
 app.listen(port);
 app.use('/api', router);
@@ -37,7 +33,7 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-function validCreateRoomObject(room) {
+function validRoomUserInput(room) {
   let {name, password, capacity} = room;
   if (typeof name !== 'string' ||
       typeof password !== 'string' ||
@@ -55,10 +51,9 @@ function validCreateRoomObject(room) {
   return true;
 }
 
-function createRoom(room) {
+function addRoomToDatabase(room) {
+  // todo: Deal with bcrypt's upper character limit
   return new Promise((resolve, reject) => {
-    // todo: Deal with bcrypt's upper character limit
-    // todo: Think about room owner
     let passwordValue = null;
     if (room.password.length > 0) {
       passwordValue = bcrypt.hashSync(room.password, saltRounds);
@@ -76,10 +71,12 @@ function createRoom(room) {
   });
 }
 
-router.post('/create-room', (req, res) => {
-  if (validCreateRoomObject(req.body)) {
+router.post('/create-room', async (req, res) => {
+  let room = req.body;
+  if (validRoomUserInput(room)) {
     // todo: use pretty API responses, JSON maybe?
-    createRoom(req.body).then(id => res.status(201).send(id.toString()));
+    let id = await addRoomToDatabase(room);
+    res.status(201).send({id: id});
   } else {
     res.sendStatus(400);
   }
