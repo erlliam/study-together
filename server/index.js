@@ -8,6 +8,7 @@ let app = express();
 let router = express.Router();
 let db = new sqlite3.Database('study-together.db');
 
+// todo: Remove database init from this file
 // todo: Think about room owner
 // todo: Uniquely identify users, no sign up required
 
@@ -34,6 +35,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 function validRoomUserInput(room) {
+  // todo: Throw exceptions, pass it to client (so they know which field is wrong)
+  // todo: Deal with bcrypt's upper character limit "72", probably restrict passwords?
   let {name, password, capacity} = room;
   if (typeof name !== 'string' ||
       typeof password !== 'string' ||
@@ -52,16 +55,17 @@ function validRoomUserInput(room) {
 }
 
 function addRoomToDatabase(room) {
-  // todo: Deal with bcrypt's upper character limit
   return new Promise((resolve, reject) => {
-    let passwordValue = null;
-    if (room.password.length > 0) {
-      passwordValue = bcrypt.hashSync(room.password, saltRounds);
+    let {name, password, capacity} = room;
+    if (password === '') {
+      password = null;
+    } else {
+      password = bcrypt.hashSync(password, saltRounds);
     }
     db.run(`
       INSERT INTO room (name, password, userCapacity)
       VALUES (?, ?, ?);
-    `, room.name, passwordValue, parseInt(room.capacity, 10), function(error) {
+    `, name, password, parseInt(capacity, 10), function(error) {
       if (error) {
         reject(error);
       } else {
@@ -74,7 +78,6 @@ function addRoomToDatabase(room) {
 router.post('/create-room', async (req, res) => {
   let room = req.body;
   if (validRoomUserInput(room)) {
-    // todo: use pretty API responses, JSON maybe?
     let id = await addRoomToDatabase(room);
     res.status(201).send({id: id});
   } else {
@@ -86,14 +89,17 @@ router.get('/room-list', (req, res) => {
   db.all(`
     SELECT * FROM room;
   `, (error, rooms) => {
-    // todo: determine what to do on error
-    rooms = rooms.map((room) => {
-      if (room.password !== null) {
-        return {...room, password: true};
-      } else {
-        return {...room, password: false};
-      }
-    })
-    res.send(rooms);
+    if (error) {
+      res.sendStatus(500);
+    } else {
+      rooms = rooms.map((room) => {
+        if (room.password !== null) {
+          return {...room, password: true};
+        } else {
+          return {...room, password: false};
+        }
+      })
+      res.send(rooms);
+    }
   });
 });
