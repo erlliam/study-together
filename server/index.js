@@ -85,6 +85,10 @@ router.post('/create-room', async (req, res) => {
   }
 });
 
+function roomWithPasswordAsBool(room) {
+  return {...room, password: room.password !== null};
+}
+
 router.get('/rooms', (req, res) => {
   db.all(`
     SELECT * FROM room;
@@ -92,14 +96,20 @@ router.get('/rooms', (req, res) => {
     if (error) {
       res.sendStatus(500);
     } else {
-      rooms = rooms.map((room) => {
-        if (room.password !== null) {
-          return {...room, password: true};
-        } else {
-          return {...room, password: false};
-        }
-      })
+      rooms = rooms.map(r => roomWithPasswordAsBool(r));
       res.send(rooms);
+    }
+  });
+});
+
+
+router.get('/room/:id', (req, res) => {
+  let {id} = req.params;
+  db.get(`SELECT * FROM room WHERE id = ?`, id, (error, room) => {
+    if (error) {
+      res.sendStatus(500);
+    } else {
+      res.send(roomWithPasswordAsBool(room));
     }
   });
 });
