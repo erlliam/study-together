@@ -111,14 +111,18 @@ function CreateRoom() {
 
 function JoinRoom() {
   let [rooms, setRooms] = useState();
+  let [error, setError] = useState();
 
   useEffect(() => {
     let isMounted = true;
     async function fetchRooms() {
       let response = await fetch(apiUrl + '/rooms');
-      let json = await response.json();
       if (isMounted) {
-        setRooms(json);
+        if (response.ok) {
+          setRooms(await response.json());
+        } else {
+          setError(await response.text());
+        }
       }
     }
     fetchRooms();
@@ -131,6 +135,9 @@ function JoinRoom() {
     <div className="join-room">
       <h1>Join a Room</h1>
       <nav>
+        {error && (
+          <div className="error">{error}</div>
+        )}
         {rooms ? (
           rooms.map(({id, password, name, usersConnected, userCapacity}) => (
             <Link to={'/room/' + id} key={id}>
