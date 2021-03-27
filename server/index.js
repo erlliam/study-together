@@ -116,3 +116,45 @@ router.get('/room/:id', (req, res) => {
     }
   });
 });
+
+function addUserToRoom(room) {
+  if (room.usersConnected < room.userCapacity) {
+    // todo: Send status after database updates
+    db.run(`UPDATE room SET usersConnected = ? WHERE id = ?`,
+        room.usersConnected + 1, room.id);
+    return true;
+  } else {
+    // todo: Determine better status code for "room full"
+    return false;
+  }
+}
+
+router.post('/join-room', (req, res) => {
+  // make sure id and password exist
+  let {id, password} = req.body;
+
+  function handleAddUserToRoom(room) {
+    let success = addUserToRoom(room);
+    if (success) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(400);
+    }
+  }
+
+  db.get(`SELECT * FROM room WHERE id = ?`, id, (error, room) => {
+    if (error) {
+      throw error;
+    } else {
+      if (room.password === null) {
+        handleAddUserToRoom(room);
+      } else {
+        if (bcrypt.compareSync(password, room.password)) {
+          handleAddUserToRoom(room);
+        } else {
+          res.sendStatus(401);
+        }
+      }
+    }
+  });
+});

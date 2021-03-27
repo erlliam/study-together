@@ -161,11 +161,78 @@ function JoinRoom() {
 }
 
 function Room() {
-  let params = useParams();
+  /*
+    todo:
+      Show room full
+      Show password required
+      Show wrong password
+      Show room joined
+  */
+  /*
+    steps:
+      Fetch room from id in URL
+      If room doesn't exist, tell user
+      Check if room has a password
+      If room doesn't have a password and it's not full, connect to room
+      If room has a password, let user input password, proceed as above
+  */
+  let {id} = useParams();
+  let [room, setRoom] = useState();
+  let [error, setError] = useState();
+
+  useEffect(() => {
+    let isMounted = true;
+    async function init() {
+      let roomResponse = await fetch(apiUrl + '/room/' + id);
+      if (roomResponse.ok) {
+        let room = await roomResponse.json();
+        if (room.password) {
+          // Display password entry thing
+        } else {
+          let joinRoomResponse = await fetch(apiUrl + '/join-room', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: id
+            }),
+          });
+          if (joinRoomResponse.ok) {
+            if (isMounted) {
+              setRoom(room);
+            }
+          } else {
+            // Something went wrong when joining the room
+          }
+        }
+      } else {
+        // Error with fetching room, perhaps not found or something else
+        let text = await roomResponse.text();
+        if (isMounted) {
+          setError(text);
+        }
+      }
+    }
+    init();
+    return (() => {
+      isMounted = false;
+    });
+  }, []);
+
   return (
-    <div className="room">
-      <h1>Room {params.id}</h1>
-    </div>
+    <>
+      {error && (
+        <div className="error">{error}</div>
+      )}
+      {room ? (
+        <div className="room">
+          <h1>{room.name}</h1>
+        </div>
+      ) : (
+        <div>Loading...</div>
+      )}
+    </>
   );
 }
 
