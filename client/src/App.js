@@ -110,8 +110,9 @@ function CreateRoom() {
 }
 
 function JoinRoom() {
+  let [loading, setLoading] = useState(true);
   let [rooms, setRooms] = useState();
-  let [error, setError] = useState();
+  let [error, setError] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -121,11 +122,13 @@ function JoinRoom() {
         let json = await response.json();
         if (isMounted) {
           setRooms(json);
+          setLoading(false);
         }
       } else {
         let text = await response.text();
         if (isMounted) {
           setError(text);
+          setLoading(false);
         }
       }
     }
@@ -142,7 +145,10 @@ function JoinRoom() {
         {error && (
           <div className="error">{error}</div>
         )}
-        {rooms ? (
+        {loading && (
+          <div>Loading...</div>
+        )}
+        {rooms && (
           rooms.map(({id, password, name, usersConnected, userCapacity}) => (
             <Link to={'/room/' + id} key={id}>
               <span>{password ? 'private' : 'public'}</span>
@@ -152,8 +158,6 @@ function JoinRoom() {
               <span>{usersConnected}/{userCapacity}</span>
             </Link>
           ))
-        ) : (
-          <div>Loading...</div>
         )}
       </nav>
     </div>
