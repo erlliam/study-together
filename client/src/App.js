@@ -179,6 +179,7 @@ function Room() {
   let {id} = useParams();
   let [room, setRoom] = useState();
   let [error, setError] = useState();
+  let [passwordRequired, setPasswordRequired] = useState();
 
   useEffect(() => {
     let isMounted = true;
@@ -187,24 +188,26 @@ function Room() {
       if (roomResponse.ok) {
         let room = await roomResponse.json();
         if (room.password) {
-          // Display password entry thing
-        } else {
-          let joinRoomResponse = await fetch(apiUrl + '/join-room', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              id: id
-            }),
-          });
-          if (joinRoomResponse.ok) {
-            if (isMounted) {
-              setRoom(room);
-            }
-          } else {
-            // Something went wrong when joining the room
+          if (isMounted) {
+            setPasswordRequired(true);
           }
+        } else {
+          // let joinRoomResponse = await fetch(apiUrl + '/join-room', {
+          //   method: 'POST',
+          //   headers: {
+          //     'Content-Type': 'application/json'
+          //   },
+          //   body: JSON.stringify({
+          //     id: id
+          //   }),
+          // });
+          // if (joinRoomResponse.ok) {
+          //   if (isMounted) {
+          //     setRoom(room);
+          //   }
+          // } else {
+          //   // Something went wrong when joining the room
+          // }
         }
       } else {
         // Error with fetching room, perhaps not found or something else
@@ -224,6 +227,11 @@ function Room() {
     <>
       {error && (
         <div className="error">{error}</div>
+      )}
+      {passwordRequired && (
+        <form>
+          <input />
+        </form>
       )}
       {room ? (
         <div className="room">
