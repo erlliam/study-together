@@ -102,14 +102,17 @@ router.get('/rooms', (req, res) => {
   });
 });
 
-
 router.get('/room/:id', (req, res) => {
   let {id} = req.params;
-  db.get(`SELECT * FROM room WHERE id = ?`, id, (error, room) => {
+  db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
     if (error) {
       res.sendStatus(500);
     } else {
-      res.send(roomWithPasswordAsBool(room));
+      if (room !== undefined) {
+        res.send(roomWithPasswordAsBool(room));
+      } else {
+        res.sendStatus(404);
+      }
     }
   });
 });
