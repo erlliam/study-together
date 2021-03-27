@@ -117,11 +117,15 @@ function JoinRoom() {
     let isMounted = true;
     async function fetchRooms() {
       let response = await fetch(apiUrl + '/rooms');
-      if (isMounted) {
-        if (response.ok) {
-          setRooms(await response.json());
-        } else {
-          setError(await response.text());
+      if (response.ok) {
+        let json = await response.json();
+        if (isMounted) {
+          setRooms(json);
+        }
+      } else {
+        let text = await response.text();
+        if (isMounted) {
+          setError(text);
         }
       }
     }
