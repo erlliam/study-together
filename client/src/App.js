@@ -201,6 +201,7 @@ function Room() {
   let [loading, setLoading] = useState(true);
   let [room, setRoom] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
+  let [password, setPassword] = useState('');
 
   useEffect(() => {
     return (() => {
@@ -275,9 +276,10 @@ function Room() {
       }
     }
     init();
-  }, []);
+  }, [id]);
 
-  async function handleSubmit() {
+  async function handleSubmit(event) {
+    event.preventDefault();
   }
 
   return (
@@ -290,7 +292,14 @@ function Room() {
       )}
       {passwordRequired && (
         <form autoComplete="off" onSubmit={handleSubmit}>
-          <input />
+          <label htmlFor="join-room-password">Enter password</label>
+          <input
+            id="join-room-password"
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+          <button>Join room</button>
         </form>
       )}
       {room && (
