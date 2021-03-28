@@ -195,6 +195,7 @@ function Room() {
       If room doesn't have a password and it's not full, connect to room
       If room has a password, let user input password, proceed as above
   */
+  let isMounted = useRef(true);
   let {id} = useParams();
   let [error, setError] = useState(false);
   let [loading, setLoading] = useState(true);
@@ -202,13 +203,18 @@ function Room() {
   let [passwordRequired, setPasswordRequired] = useState();
 
   useEffect(() => {
-    let isMounted = true;
+    return (() => {
+      isMounted.current = false;
+    });
+  }, []);
+
+  useEffect(() => {
     async function init() {
       let roomResponse = await fetch(apiUrl + '/room/' + id);
       if (roomResponse.ok) {
         let room = await roomResponse.json();
         if (room.password) {
-          if (isMounted) {
+          if (isMounted.current) {
             setPasswordRequired(true);
             setLoading(false);
           }
@@ -223,7 +229,7 @@ function Room() {
             }),
           });
           if (joinRoomResponse.ok) {
-            if (isMounted) {
+            if (isMounted.current) {
               setRoom(room);
               setLoading(false);
             }
@@ -233,16 +239,13 @@ function Room() {
         }
       } else {
         let text = await roomResponse.text();
-        if (isMounted) {
+        if (isMounted.current) {
           setError(text);
           setLoading(false);
         }
       }
     }
     init();
-    return (() => {
-      isMounted = false;
-    });
   }, []);
 
   async function handleSubmit() {
