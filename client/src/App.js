@@ -1,6 +1,7 @@
 import {
   useState,
   useEffect,
+  useRef,
 } from 'react';
 
 import {
@@ -230,6 +231,9 @@ function Room() {
     });
   }, []);
 
+  async function handleSubmit() {
+  }
+
   return (
     <>
       {error && (
@@ -239,7 +243,7 @@ function Room() {
         <div>Loading...</div>
       )}
       {passwordRequired && (
-        <form>
+        <form autoComplete="off" onSubmit={handleSubmit}>
           <input />
         </form>
       )}
