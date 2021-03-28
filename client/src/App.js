@@ -167,10 +167,10 @@ function JoinRoom() {
 function Room() {
   /*
     todo:
-      Show room full
-      Show password required
-      Show wrong password
-      Show room joined
+      Show room full status     code: 400
+      Show wrong password       code: 401
+      Show room not found       code: 404
+      Show room joined          code: 200
   */
   /*
     steps:
