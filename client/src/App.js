@@ -228,20 +228,49 @@ function Room() {
               id: id
             }),
           });
-          if (joinRoomResponse.ok) {
-            if (isMounted.current) {
+          if (isMounted.current) {
+            if (joinRoomResponse.ok) {
               setRoom(room);
               setLoading(false);
+            } else {
+              switch (joinRoomResponse.status) {
+                case 400:
+                  setError('The room is full.');
+                  setLoading(false);
+                  break;
+                case 401:
+                  // todo: Delete this code, should never run
+                  // It will never run. If a password is required,
+                  // we set up the password form...
+                  setError('Wrong credentials');
+                  setLoading(false);
+                  break;
+                case 404:
+                  // This only happens if the room is deleted
+                  // from the time we check if the room exists
+                  // to when we attempt to join it.
+                  // Not sure if we delete this.
+                  setError('The room does not exist.');
+                  setLoading(false);
+                  break;
+                default:
+                  setError('Something went wrong.');
+                  setLoading(false);
+              }
             }
-          } else {
-            // Something went wrong when joining the room
           }
         }
       } else {
-        let text = await roomResponse.text();
         if (isMounted.current) {
-          setError(text);
-          setLoading(false);
+          switch (roomResponse.status) {
+            case 404:
+              setError('The room does not exist.');
+              setLoading(false);
+              break;
+            default:
+              setError('Something went wrong.');
+              setLoading(false);
+          }
         }
       }
     }
