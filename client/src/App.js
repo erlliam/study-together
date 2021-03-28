@@ -110,9 +110,9 @@ function CreateRoom() {
 }
 
 function JoinRoom() {
+  let [error, setError] = useState(false);
   let [loading, setLoading] = useState(true);
   let [rooms, setRooms] = useState();
-  let [error, setError] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -181,8 +181,9 @@ function Room() {
       If room has a password, let user input password, proceed as above
   */
   let {id} = useParams();
+  let [error, setError] = useState(false);
+  let [loading, setLoading] = useState(true);
   let [room, setRoom] = useState();
-  let [error, setError] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
 
   useEffect(() => {
@@ -194,30 +195,32 @@ function Room() {
         if (room.password) {
           if (isMounted) {
             setPasswordRequired(true);
+            setLoading(false);
           }
         } else {
-          // let joinRoomResponse = await fetch(apiUrl + '/join-room', {
-          //   method: 'POST',
-          //   headers: {
-          //     'Content-Type': 'application/json'
-          //   },
-          //   body: JSON.stringify({
-          //     id: id
-          //   }),
-          // });
-          // if (joinRoomResponse.ok) {
-          //   if (isMounted) {
-          //     setRoom(room);
-          //   }
-          // } else {
-          //   // Something went wrong when joining the room
-          // }
+          let joinRoomResponse = await fetch(apiUrl + '/join-room', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: id
+            }),
+          });
+          if (joinRoomResponse.ok) {
+            if (isMounted) {
+              setRoom(room);
+              setLoading(false);
+            }
+          } else {
+            // Something went wrong when joining the room
+          }
         }
       } else {
-        // Error with fetching room, perhaps not found or something else
         let text = await roomResponse.text();
         if (isMounted) {
           setError(text);
+          setLoading(false);
         }
       }
     }
@@ -232,17 +235,18 @@ function Room() {
       {error && (
         <div className="error">{error}</div>
       )}
+      {loading && (
+        <div>Loading...</div>
+      )}
       {passwordRequired && (
         <form>
           <input />
         </form>
       )}
-      {room ? (
+      {room && (
         <div className="room">
           <h1>{room.name}</h1>
         </div>
-      ) : (
-        <div>Loading...</div>
       )}
     </>
   );
