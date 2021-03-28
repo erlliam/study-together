@@ -130,8 +130,7 @@ function addUserToRoom(room) {
 }
 
 router.post('/join-room', (req, res) => {
-  // make sure id and password exist
-  let {id, password} = req.body;
+  let {id = '', password = ''} = req.body;
 
   function handleAddUserToRoom(room) {
     let success = addUserToRoom(room);
@@ -146,13 +145,17 @@ router.post('/join-room', (req, res) => {
     if (error) {
       throw error;
     } else {
-      if (room.password === null) {
-        handleAddUserToRoom(room);
+      if (room === undefined) {
+        res.sendStatus(404);
       } else {
-        if (bcrypt.compareSync(password, room.password)) {
+        if (room.password === null) {
           handleAddUserToRoom(room);
         } else {
-          res.sendStatus(401);
+          if (bcrypt.compareSync(password, room.password)) {
+            handleAddUserToRoom(room);
+          } else {
+            res.sendStatus(401);
+          }
         }
       }
     }
