@@ -180,22 +180,8 @@ function JoinRoom() {
 }
 
 function Room() {
-  /*
-    todo:
-      Show room full status     code: 400
-      Show wrong password       code: 401
-      Show room not found       code: 404
-      Show room joined          code: 200
-  */
-  /*
-    steps:
-      Fetch room from id in URL
-      If room doesn't exist, tell user
-      Check if room has a password
-      If room doesn't have a password and it's not full, connect to room
-      If room has a password, let user input password, proceed as above
-  */
   let isMounted = useRef(true);
+  let roomData = useRef();
   let {id} = useParams();
   let [error, setError] = useState(false);
   let [loading, setLoading] = useState(true);
@@ -209,77 +195,86 @@ function Room() {
     });
   }, []);
 
-  useEffect(() => {
-    async function init() {
-      let roomResponse = await fetch(apiUrl + '/room/' + id);
-      if (roomResponse.ok) {
-        let room = await roomResponse.json();
-        if (room.password) {
-          if (isMounted.current) {
-            setPasswordRequired(true);
-            setLoading(false);
-          }
-        } else {
-          let joinRoomResponse = await fetch(apiUrl + '/join-room', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              id: id
-            }),
-          });
-          if (isMounted.current) {
-            if (joinRoomResponse.ok) {
-              setRoom(room);
-              setLoading(false);
-            } else {
-              switch (joinRoomResponse.status) {
-                case 400:
-                  setError('The room is full.');
-                  setLoading(false);
-                  break;
-                case 401:
-                  // todo: Delete this code, should never run
-                  // It will never run. If a password is required,
-                  // we set up the password form...
-                  setError('Wrong credentials');
-                  setLoading(false);
-                  break;
-                case 404:
-                  // This only happens if the room is deleted
-                  // from the time we check if the room exists
-                  // to when we attempt to join it.
-                  // Not sure if we delete this.
-                  setError('The room does not exist.');
-                  setLoading(false);
-                  break;
-                default:
-                  setError('Something went wrong.');
-                  setLoading(false);
-              }
-            }
-          }
-        }
+  async function joinRoom(password) {
+    let response = await fetch(apiUrl + '/join-room', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id,
+        password: password
+      }),
+    });
+    if (isMounted.current) {
+      if (response.ok) {
+        setRoom(roomData.current);
+        setLoading(false);
       } else {
-        if (isMounted.current) {
-          switch (roomResponse.status) {
-            case 404:
-              setError('The room does not exist.');
-              setLoading(false);
-              break;
-            default:
-              setError('Something went wrong.');
-              setLoading(false);
-          }
+        switch (response.status) {
+          case 400:
+            setError('The room is full.');
+            setLoading(false);
+            break;
+          case 401:
+            setError('Wrong credentials');
+            setLoading(false);
+            break;
+          case 404:
+            setError('The room does not exist.');
+            setLoading(false);
+            break;
+          default:
+            setError('Something went wrong.');
+            setLoading(false);
         }
       }
     }
+  }
+
+  async function fetchRoom() {
+    let response = await fetch(apiUrl + '/room/' + id);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      if (isMounted.current) {
+        switch (response.status) {
+          case 404:
+            setError('The room does not exist.');
+            setLoading(false);
+            break;
+          default:
+            setError('Something went wrong.');
+            setLoading(false);
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    async function init() {
+      let json = await fetchRoom();
+      if (json === undefined) {
+        return;
+      }
+      roomData.current = json;
+      if (roomData.current.password) {
+        if (isMounted.current) {
+          setPasswordRequired(true);
+          setLoading(false);
+        }
+      } else {
+        joinRoom();
+      }
+    }
     init();
-  }, [id]);
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    joinRoom(password);
+    setPasswordRequired(false);
   }
 
   return (
