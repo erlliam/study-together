@@ -122,32 +122,35 @@ function CreateRoom() {
 }
 
 function JoinRoom() {
+  let isMounted = useRef(true);
   let [error, setError] = useState(false);
   let [loading, setLoading] = useState(true);
   let [rooms, setRooms] = useState();
 
   useEffect(() => {
-    let isMounted = true;
+    return (() => {
+      isMounted.current = false;
+    });
+  }, []);
+
+  useEffect(() => {
     async function fetchRooms() {
       let response = await fetch(apiUrl + '/rooms');
       if (response.ok) {
         let json = await response.json();
-        if (isMounted) {
+        if (isMounted.current) {
           setRooms(json);
           setLoading(false);
         }
       } else {
         let text = await response.text();
-        if (isMounted) {
+        if (isMounted.current) {
           setError(text);
           setLoading(false);
         }
       }
     }
     fetchRooms();
-    return (() => {
-      isMounted = false;
-    });
   }, []);
 
   return (
