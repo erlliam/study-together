@@ -94,6 +94,7 @@ router.get('/rooms', (req, res) => {
     SELECT * FROM room;
   `, (error, rooms) => {
     if (error) {
+      console.error(error);
       res.sendStatus(500);
     } else {
       rooms = rooms.map(r => roomWithPasswordAsBool(r));
@@ -106,6 +107,7 @@ router.get('/room/:id', (req, res) => {
   let {id} = req.params;
   db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
     if (error) {
+      console.error(error);
       res.sendStatus(500);
     } else {
       if (room !== undefined) {
@@ -124,6 +126,7 @@ router.post('/join-room', (req, res) => {
     db.run(`UPDATE room SET usersConnected = ? WHERE id = ?`,
         room.usersConnected + 1, room.id, (error) => {
       if (error) {
+        console.error(error);
         res.sendStatus(500);
       } else {
         res.sendStatus(200);
@@ -133,6 +136,7 @@ router.post('/join-room', (req, res) => {
 
   db.get(`SELECT * FROM room WHERE id = ?`, id, (error, room) => {
     if (error) {
+      console.error(error);
       res.sendStatus(500);
     } else {
       if (room === undefined) {
