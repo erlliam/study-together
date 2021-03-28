@@ -48,11 +48,18 @@ function CreateRoom() {
       display some state that confirms your request is being processed
       display something in the case of a server error
   */
+  let isMounted = useRef(true);
   let history = useHistory();
   let [name, setName] = useState('');
   let [password, setPassword] = useState('');
   let [capacity, setCapacity] = useState('4');
   let [error, setError] = useState();
+
+  useEffect(() => {
+    return (() => {
+      isMounted.current = false;
+    });
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -68,11 +75,15 @@ function CreateRoom() {
         capacity: capacity
       }),
     });
-    if (response.ok) {
-      let json = await response.json();
-      history.replace('/room/' + json.id);
-    } else {
-      setError('Invalid input');
+    if (isMounted.current) {
+      if (response.ok) {
+        // todo: There will be a ghost room now...
+        // that's probably the server's job to clean it up
+        let json = await response.json();
+        history.replace('/room/' + json.id);
+      } else {
+        setError('Invalid input');
+      }
     }
   }
 
