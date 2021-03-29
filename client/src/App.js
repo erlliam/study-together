@@ -183,7 +183,7 @@ function Room() {
   let isMounted = useRef(true);
   let roomData = useRef();
   let {id} = useParams();
-  let [error, setError] = useState(false);
+  let [error, setError] = useState('');
   let [loading, setLoading] = useState(true);
   let [room, setRoom] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
@@ -195,7 +195,29 @@ function Room() {
     });
   }, []);
 
+  async function fetchRoom() {
+    let response = await fetch(apiUrl + '/room/' + id);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      if (isMounted.current) {
+        switch (response.status) {
+          case 404:
+            setError('The room does not exist.');
+            setLoading(false);
+            break;
+          default:
+            setError('Something went wrong.');
+            setLoading(false);
+        }
+      }
+    }
+  }
+
   async function joinRoom(password) {
+    if (roomData.current === undefined) {
+      return;
+    }
     let response = await fetch(apiUrl + '/join-room', {
       method: 'POST',
       headers: {
@@ -209,7 +231,9 @@ function Room() {
     if (isMounted.current) {
       if (response.ok) {
         setRoom(roomData.current);
+        setError('');
         setLoading(false);
+        return true;
       } else {
         switch (response.status) {
           case 400:
@@ -228,26 +252,16 @@ function Room() {
             setError('Something went wrong.');
             setLoading(false);
         }
+        return false;
       }
     }
   }
 
-  async function fetchRoom() {
-    let response = await fetch(apiUrl + '/room/' + id);
-    if (response.ok) {
-      return await response.json();
-    } else {
-      if (isMounted.current) {
-        switch (response.status) {
-          case 404:
-            setError('The room does not exist.');
-            setLoading(false);
-            break;
-          default:
-            setError('Something went wrong.');
-            setLoading(false);
-        }
-      }
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    if (await joinRoom(password)) {
+      setPasswordRequired(false);
     }
   }
 
@@ -269,13 +283,6 @@ function Room() {
     }
     init();
   }, []);
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    joinRoom(password);
-    setPasswordRequired(false);
-  }
 
   return (
     <>
