@@ -12,15 +12,38 @@ let db = new sqlite3.Database('study-together.db');
 // todo: Think about room owner
 // todo: Uniquely identify users, no sign up required
 
-db.run(`
-  CREATE TABLE IF NOT EXISTS room (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    password TEXT,
-    usersConnected INTEGER DEFAULT 0,
-    userCapacity INTEGER NOT NULL
-  );
-`);
+
+db.serialize(() => {
+  db.run(`PRAGMA foreign_keys = ON;`);
+
+  db.run('DROP TABLE IF EXISTS user;');
+  db.run(`
+    CREATE TABLE user (
+      id INTEGER PRIMARY KEY,
+      token TEXT NOT NULL
+    );
+  `);
+
+  db.run('DROP TABLE IF EXISTS room;');
+  db.run(`
+    CREATE TABLE room (
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      password TEXT,
+      usersConnected INTEGER DEFAULT 0,
+      userCapacity INTEGER NOT NULL
+    );
+  `);
+
+  db.run('DROP TABLE IF EXISTS roomUser;');
+  db.run(`
+    CREATE TABLE roomUser (
+      id INTEGER PRIMARY KEY,
+      userId INTEGER NOT NULL,
+      roomId INTEGER NOT NULL
+    );
+  `);
+});
 
 app.listen(port);
 app.use('/api', router);
