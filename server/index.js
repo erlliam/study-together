@@ -1,6 +1,7 @@
 let express = require('express');
 let sqlite3 = require('sqlite3').verbose();
 let bcrypt = require('bcrypt');
+let crypto = require('crypto');
 
 let saltRounds = 12;
 let port = 5000;
@@ -57,6 +58,38 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+function addUserToDatabase(token) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      INSERT INTO user (token)
+      VALUES (?);
+    `, token, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+router.post('/create-user', (req, res) => {
+  crypto.randomBytes(16, async (error, bytes) => {
+    if (error) {
+      res.sendStatus(500);
+    } else {
+      let token = bytes.toString('hex');
+      try {
+        await addUserToDatabase(token);
+        res.status(201).send(token);
+      } catch {
+        res.sendStatus(500);
+      }
+    }
+  });
+});
+
+
 function validRoomUserInput(room) {
   // todo: Throw exceptions, pass it to client (so they know which field is wrong)
   // todo: Deal with bcrypt's upper character limit "72", probably restrict passwords?
@@ -101,6 +134,7 @@ function addRoomToDatabase(room) {
 router.post('/create-room', async (req, res) => {
   let room = req.body;
   if (validRoomUserInput(room)) {
+    // todo: Make sure addRoomToDatabase doesn't reject
     let id = await addRoomToDatabase(room);
     res.status(201).send({id: id});
   } else {
