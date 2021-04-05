@@ -15,19 +15,19 @@ let db = new sqlite3.Database('study-together.db');
 // todo: Uniquely identify users, no sign up required
 
 db.serialize(() => {
-  db.run(`PRAGMA foreign_keys = ON;`);
-
   db.run('DROP TABLE IF EXISTS user;');
+  db.run('DROP TABLE IF EXISTS room;');
+  db.run('DROP TABLE IF EXISTS roomUser;');
+
   db.run(`
-    CREATE TABLE user (
+    CREATE TABLE IF NOT EXISTS user (
       id INTEGER PRIMARY KEY,
       token TEXT NOT NULL
     );
   `);
 
-  db.run('DROP TABLE IF EXISTS room;');
   db.run(`
-    CREATE TABLE room (
+    CREATE TABLE IF NOT EXISTS room (
       id INTEGER PRIMARY KEY,
       ownerId INTEGER NOT NULL,
       name TEXT NOT NULL,
@@ -38,9 +38,8 @@ db.serialize(() => {
     );
   `);
 
-  db.run('DROP TABLE IF EXISTS roomUser;');
   db.run(`
-    CREATE TABLE roomUser (
+    CREATE TABLE IF NOT EXISTS roomUser (
       id INTEGER PRIMARY KEY,
       userId INTEGER NOT NULL,
       roomId INTEGER NOT NULL,
@@ -48,6 +47,9 @@ db.serialize(() => {
       FOREIGN KEY(roomId) REFERENCES room(id)
     );
   `);
+
+  // Activate foreign_keys after all data is wiped.
+  db.run(`PRAGMA foreign_keys = ON;`);
 });
 
 app.listen(port);
