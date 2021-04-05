@@ -106,6 +106,7 @@ function CreateRoom() {
         password: password,
         capacity: capacity
       }),
+      credentials: 'include'
     });
     if (isMounted.current) {
       if (response.ok) {

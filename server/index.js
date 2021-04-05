@@ -84,7 +84,7 @@ router.get('/', async (req, res) => {
     } else {
       res.sendStatus(200);
     }
-  } catch {
+  } catch(error) {
     console.error(error);
     res.sendStatus(500);
   }
@@ -115,7 +115,8 @@ router.post('/create-user', (req, res) => {
         await addUserToDatabase(token);
         res.cookie('token', token);
         res.sendStatus(201);
-      } catch {
+      } catch(error) {
+        console.error(error);
         res.sendStatus(500);
       }
     }
@@ -142,7 +143,7 @@ function validRoomUserInput(room) {
   return true;
 }
 
-function addRoomToDatabase(room) {
+function addRoomToDatabase(ownerId, room) {
   return new Promise((resolve, reject) => {
     let {name, password, capacity} = room;
     if (password === '') {
@@ -151,9 +152,9 @@ function addRoomToDatabase(room) {
       password = bcrypt.hashSync(password, saltRounds);
     }
     db.run(`
-      INSERT INTO room (name, password, userCapacity)
-      VALUES (?, ?, ?);
-    `, name, password, parseInt(capacity, 10), function(error) {
+      INSERT INTO room (ownerId, name, password, userCapacity)
+      VALUES (?, ?, ?, ?);
+    `, ownerId, name, password, parseInt(capacity, 10), function(error) {
       if (error) {
         reject(error);
       } else {
@@ -164,13 +165,21 @@ function addRoomToDatabase(room) {
 }
 
 router.post('/create-room', async (req, res) => {
-  let room = req.body;
-  if (validRoomUserInput(room)) {
-    // todo: Make sure addRoomToDatabase doesn't reject
-    let id = await addRoomToDatabase(room);
-    res.status(201).send({id: id});
-  } else {
-    res.sendStatus(400);
+  try {
+    let room = req.body;
+    let validRoom = validRoomUserInput(room);
+    let {token} = req.cookies;
+    let user = await getUserFromToken(token);
+    // todo: respond with unauthorized if user is undefined...
+    if (user !== undefined && validRoom) {
+      let id = await addRoomToDatabase(user.id, room);
+      res.status(201).send({id: id});
+    } else {
+      res.sendStatus(400);
+    }
+  } catch(error) {
+    console.error(error);
+    res.sendStatus(500);
   }
 });
 
