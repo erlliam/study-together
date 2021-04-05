@@ -17,16 +17,35 @@ let apiUrl = 'http://localhost:5000/api'
 
 function App() {
   useEffect(() => {
+    async function checkIfUserExists() {
+      let response = await fetch(apiUrl + '/', {
+        credentials: 'include'
+      });
+      switch (response.status) {
+        case 200:
+          return true;
+        case 401:
+          return false;
+        default:
+          throw Error('Unhandled status code');
+      }
+    }
+
     async function createUser() {
       let response = await fetch(apiUrl + '/create-user', {
         method: 'POST',
         credentials: 'include'
       });
     }
-    let {token} = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
-    if (!token) {
+
+    async function init() {
+      let {token} = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
+      if (token && await checkIfUserExists()) {
+        return;
+      }
       createUser();
     }
+    init();
   }, []);
 
   return (

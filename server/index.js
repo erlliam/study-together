@@ -64,6 +64,22 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+router.get('/', (req, res) => {
+  let {token} = req.cookies;
+  db.get('SELECT * FROM user WHERE token = ?', token, (error, user) => {
+    if (error) {
+      console.error(error);
+      res.sendStatus(500);
+    } else {
+      if (user === undefined) {
+        res.sendStatus(401);
+      } else {
+        res.sendStatus(200);
+      }
+    }
+  });
+});
+
 function addUserToDatabase(token) {
   return new Promise((resolve, reject) => {
     db.run(`
@@ -88,14 +104,13 @@ router.post('/create-user', (req, res) => {
       try {
         await addUserToDatabase(token);
         res.cookie('token', token);
-        res.status(201).send(token);
+        res.sendStatus(201);
       } catch {
         res.sendStatus(500);
       }
     }
   });
 });
-
 
 function validRoomUserInput(room) {
   // todo: Throw exceptions, pass it to client (so they know which field is wrong)
