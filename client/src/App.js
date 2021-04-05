@@ -16,6 +16,19 @@ import {
 let apiUrl = 'http://localhost:5000/api'
 
 function App() {
+  useEffect(() => {
+    async function createUser() {
+      let response = await fetch(apiUrl + '/create-user', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    }
+    let {token} = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
+    if (!token) {
+      createUser();
+    }
+  }, []);
+
   return (
     <Router>
       <Switch>
