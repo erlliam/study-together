@@ -1,4 +1,5 @@
 let express = require('express');
+let cookieParser = require('cookie-parser');
 let sqlite3 = require('sqlite3').verbose();
 let bcrypt = require('bcrypt');
 let crypto = require('crypto');
@@ -12,7 +13,6 @@ let db = new sqlite3.Database('study-together.db');
 // todo: Remove database init from this file
 // todo: Think about room owner
 // todo: Uniquely identify users, no sign up required
-
 
 db.serialize(() => {
   db.run(`PRAGMA foreign_keys = ON;`);
@@ -51,6 +51,7 @@ db.serialize(() => {
 });
 
 app.listen(port);
+app.use(cookieParser());
 app.use('/api', router);
 
 router.use(express.json());
