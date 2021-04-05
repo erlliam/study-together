@@ -64,20 +64,30 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-router.get('/', (req, res) => {
-  let {token} = req.cookies;
-  db.get('SELECT * FROM user WHERE token = ?', token, (error, user) => {
-    if (error) {
-      console.error(error);
-      res.sendStatus(500);
-    } else {
-      if (user === undefined) {
-        res.sendStatus(401);
-      } else {
-        res.sendStatus(200);
+function getUserFromToken(token) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM user WHERE token = ?', token, (error, user) => {
+      if (error) {
+        reject(error);
       }
-    }
+      resolve(user);
+    });
   });
+}
+
+router.get('/', async (req, res) => {
+  let {token} = req.cookies;
+  try {
+    let user = await getUserFromToken(token);
+    if (user === undefined) {
+      res.sendStatus(401);
+    } else {
+      res.sendStatus(200);
+    }
+  } catch {
+    console.error(error);
+    res.sendStatus(500);
+  }
 });
 
 function addUserToDatabase(token) {
