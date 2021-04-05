@@ -29,10 +29,12 @@ db.serialize(() => {
   db.run(`
     CREATE TABLE room (
       id INTEGER PRIMARY KEY,
+      ownerId INTEGER NOT NULL,
       name TEXT NOT NULL,
       password TEXT,
       usersConnected INTEGER DEFAULT 0,
-      userCapacity INTEGER NOT NULL
+      userCapacity INTEGER NOT NULL,
+      FOREIGN KEY(ownerId) REFERENCES user(id)
     );
   `);
 
@@ -41,7 +43,9 @@ db.serialize(() => {
     CREATE TABLE roomUser (
       id INTEGER PRIMARY KEY,
       userId INTEGER NOT NULL,
-      roomId INTEGER NOT NULL
+      roomId INTEGER NOT NULL,
+      FOREIGN KEY(userId) REFERENCES user(id),
+      FOREIGN KEY(roomId) REFERENCES room(id)
     );
   `);
 });
