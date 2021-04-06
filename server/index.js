@@ -15,9 +15,9 @@ let db = new sqlite3.Database('study-together.db');
 // todo: Uniquely identify users, no sign up required
 
 db.serialize(() => {
-  db.run('DROP TABLE IF EXISTS user;');
-  db.run('DROP TABLE IF EXISTS room;');
-  db.run('DROP TABLE IF EXISTS roomUser;');
+  // db.run('DROP TABLE IF EXISTS user;');
+  // db.run('DROP TABLE IF EXISTS room;');
+  // db.run('DROP TABLE IF EXISTS roomUser;');
 
   db.run(`
     CREATE TABLE IF NOT EXISTS user (
@@ -198,6 +198,20 @@ router.post('/create-user', (req, res) => {
       }
     }
   });
+});
+
+router.delete('/room/:id', async (req, res) => {
+  // todo: start off here
+  let user = await getUserFromToken(req.cookies.token);
+  let room = await getRoomFromId(req.params.id);
+  if (user === undefined || room === undefined) {
+    console.log('user or room undefined');
+  } else if (room.ownerId === user.id) {
+    console.log('room shall be deleteed');
+  } else {
+    console.log('the user is not the owner, dont dlete room');
+  }
+  res.sendStatus(500);
 });
 
 router.get('/rooms', (req, res) => {
