@@ -77,20 +77,16 @@ function getUserFromToken(token) {
   });
 }
 
-router.get('/', async (req, res) => {
-  let {token} = req.cookies;
-  try {
-    let user = await getUserFromToken(token);
-    if (user === undefined) {
-      res.sendStatus(401);
-    } else {
-      res.sendStatus(200);
-    }
-  } catch(error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
+function getRoomFromId(id) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(room);
+    });
+  });
+}
 
 function addUserToDatabase(token) {
   return new Promise((resolve, reject) => {
@@ -106,24 +102,6 @@ function addUserToDatabase(token) {
     });
   });
 }
-
-router.post('/create-user', (req, res) => {
-  crypto.randomBytes(16, async (error, bytes) => {
-    if (error) {
-      res.sendStatus(500);
-    } else {
-      let token = bytes.toString('hex');
-      try {
-        await addUserToDatabase(token);
-        res.cookie('token', token);
-        res.sendStatus(201);
-      } catch(error) {
-        console.error(error);
-        res.sendStatus(500);
-      }
-    }
-  });
-});
 
 function validRoomUserInput(room) {
   // todo: Throw exceptions, pass it to client (so they know which field is wrong)
@@ -166,6 +144,25 @@ function addRoomToDatabase(ownerId, room) {
   });
 }
 
+function roomWithPasswordAsBool(room) {
+  return {...room, password: room.password !== null};
+}
+
+router.get('/', async (req, res) => {
+  let {token} = req.cookies;
+  try {
+    let user = await getUserFromToken(token);
+    if (user === undefined) {
+      res.sendStatus(401);
+    } else {
+      res.sendStatus(200);
+    }
+  } catch(error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 router.post('/create-room', async (req, res) => {
   try {
     let room = req.body;
@@ -185,20 +182,23 @@ router.post('/create-room', async (req, res) => {
   }
 });
 
-function getRoomFromId(id) {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
-      if (error) {
-        reject(error);
+router.post('/create-user', (req, res) => {
+  crypto.randomBytes(16, async (error, bytes) => {
+    if (error) {
+      res.sendStatus(500);
+    } else {
+      let token = bytes.toString('hex');
+      try {
+        await addUserToDatabase(token);
+        res.cookie('token', token);
+        res.sendStatus(201);
+      } catch(error) {
+        console.error(error);
+        res.sendStatus(500);
       }
-      resolve(room);
-    });
+    }
   });
-}
-
-function roomWithPasswordAsBool(room) {
-  return {...room, password: room.password !== null};
-}
+});
 
 router.get('/rooms', (req, res) => {
   db.all(`
