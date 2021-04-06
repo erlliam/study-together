@@ -185,6 +185,17 @@ router.post('/create-room', async (req, res) => {
   }
 });
 
+function getRoomFromId(id) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(room);
+    });
+  });
+}
+
 function roomWithPasswordAsBool(room) {
   return {...room, password: room.password !== null};
 }
