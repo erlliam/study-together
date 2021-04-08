@@ -10,10 +10,6 @@ let app = express();
 let router = express.Router();
 let db = new sqlite3.Database('study-together.db');
 
-// todo: Remove database init from this file
-// todo: Think about room owner
-// todo: Uniquely identify users, no sign up required
-
 db.serialize(() => {
   // db.run('DROP TABLE IF EXISTS user;');
   // db.run('DROP TABLE IF EXISTS room;');
