@@ -14,6 +14,8 @@ db.serialize(() => {
   // db.run('DROP TABLE IF EXISTS user;');
   // db.run('DROP TABLE IF EXISTS room;');
   // db.run('DROP TABLE IF EXISTS roomUser;');
+  // Activate foreign_keys after all data is wiped.
+  db.run(`PRAGMA foreign_keys = ON;`);
 
   db.run(`
     CREATE TABLE IF NOT EXISTS user (
@@ -43,9 +45,6 @@ db.serialize(() => {
       FOREIGN KEY(roomId) REFERENCES room(id)
     );
   `);
-
-  // Activate foreign_keys after all data is wiped.
-  db.run(`PRAGMA foreign_keys = ON;`);
 });
 
 app.listen(port);
