@@ -18,7 +18,7 @@ let apiUrl = 'http://localhost:5000/api'
 function App() {
   useEffect(() => {
     async function checkIfUserExists() {
-      let response = await fetch(apiUrl + '/', {
+      let response = await fetch(apiUrl + '/user', {
         credentials: 'include'
       });
       switch (response.status) {
@@ -32,8 +32,8 @@ function App() {
     }
 
     async function createUser() {
-      let response = await fetch(apiUrl + '/create-user', {
-        method: 'POST',
+      let response = await fetch(apiUrl + '/user/create', {
+        method: 'PUT',
         credentials: 'include'
       });
     }

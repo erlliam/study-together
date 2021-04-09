@@ -58,20 +58,17 @@ db.serialize(() => {
   `);
 });
 
-router.get('/', async (req, res) => {
-  let {token} = req.cookies;
-  try {
-    let user = await getUserFromToken(token);
-    if (user === undefined) {
-      res.sendStatus(401);
-    } else {
-      res.sendStatus(200);
-    }
-  } catch(error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
+function generateToken() {
+  return new Promise((resolve, reject) => {
+    crypto.randomBytes(16, (error, bytes) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(bytes.toString('hex'));
+      }
+    });
+  });
+}
 
 function getUserFromToken(token) {
   return new Promise((resolve, reject) => {
@@ -84,8 +81,9 @@ function getUserFromToken(token) {
   });
 }
 
-function addUserToDatabase(token) {
-  return new Promise((resolve, reject) => {
+function addUserToDatabase() {
+  return new Promise(async (resolve, reject) => {
+    let token = await generateToken();
     db.run(`
       INSERT INTO user (token)
       VALUES (?);
@@ -93,28 +91,33 @@ function addUserToDatabase(token) {
       if (error) {
         reject(error);
       } else {
-        resolve();
+        resolve(token);
       }
     });
   });
 }
 
-router.post('/create-user', (req, res) => {
-  crypto.randomBytes(16, async (error, bytes) => {
-    if (error) {
-      res.sendStatus(500);
+router.get('/user', async (req, res, next) => {
+  try {
+    let user = await getUserFromToken(req.cookies.token);
+    if (user === undefined) {
+      res.sendStatus(401);
     } else {
-      let token = bytes.toString('hex');
-      try {
-        await addUserToDatabase(token);
-        res.cookie('token', token);
-        res.sendStatus(201);
-      } catch(error) {
-        console.error(error);
-        res.sendStatus(500);
-      }
+      res.sendStatus(200);
     }
-  });
+  } catch(error) {
+    next(error);
+  }
+});
+
+router.put('/user/create', async (req, res, next) => {
+  try {
+    let token = await addUserToDatabase();
+    res.cookie('token', token);
+    res.sendStatus(201);
+  } catch(error) {
+    next(error);
+  }
 });
 
 function getRoom(id) {
