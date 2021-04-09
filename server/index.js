@@ -6,24 +6,35 @@ let crypto = require('crypto');
 
 let saltRounds = 12;
 let port = 5000;
+
 let app = express();
 let router = express.Router();
-let db = new sqlite3.Database('study-together.db');
+app.listen(port);
+app.use(cookieParser());
+app.use('/api', router);
+router.use(express.json());
+if (process.env.NODE_ENV !== 'production') {
+  router.use((req, res, next) => {
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+  });
+}
 
+let db = new sqlite3.Database('study-together.db');
 db.serialize(() => {
   // db.run('DROP TABLE IF EXISTS user;');
   // db.run('DROP TABLE IF EXISTS room;');
   // db.run('DROP TABLE IF EXISTS roomUser;');
   // Activate foreign_keys after all data is wiped.
   db.run(`PRAGMA foreign_keys = ON;`);
-
   db.run(`
     CREATE TABLE IF NOT EXISTS user (
       id INTEGER PRIMARY KEY,
       token TEXT NOT NULL
     );
   `);
-
   db.run(`
     CREATE TABLE IF NOT EXISTS room (
       id INTEGER PRIMARY KEY,
@@ -35,7 +46,6 @@ db.serialize(() => {
       FOREIGN KEY(ownerId) REFERENCES user(id)
     );
   `);
-
   db.run(`
     CREATE TABLE IF NOT EXISTS roomUser (
       id INTEGER PRIMARY KEY,
@@ -46,20 +56,6 @@ db.serialize(() => {
     );
   `);
 });
-
-app.listen(port);
-app.use(cookieParser());
-app.use('/api', router);
-
-router.use(express.json());
-if (process.env.NODE_ENV !== 'production') {
-  router.use((req, res, next) => {
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    next();
-  });
-}
 
 function getUserFromToken(token) {
   return new Promise((resolve, reject) => {
