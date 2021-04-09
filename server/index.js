@@ -239,17 +239,16 @@ router.post('/join-room', (req, res) => {
   });
 });
 
-router.get('/room/all', async (req, res) => {
+router.get('/room/all', async (req, res, next) => {
   try {
     let rooms = await getRooms();
     res.send(rooms.map(roomWithPasswordAsBool));
   } catch(error) {
-    console.error(error);
-    res.sendStatus(500);
+    next(error);
   }
 });
 
-router.put('/room/create', async (req, res) => {
+router.put('/room/create', async (req, res, next) => {
   try {
     let room = req.body;
     let validRoom = isValidRoom(room);
@@ -263,8 +262,7 @@ router.put('/room/create', async (req, res) => {
       res.sendStatus(400);
     }
   } catch(error) {
-    console.error(error);
-    res.sendStatus(500);
+    next(error)
   }
 });
 
@@ -272,7 +270,7 @@ router.put('/room/create', async (req, res) => {
 router.put('/room/:id', (req, res) => {
 });
 
-router.get('/room/:id', async (req, res) => {
+router.get('/room/:id', async (req, res, next) => {
   try {
     let room = await getRoom(req.params.id);
     if (room === undefined) {
@@ -281,12 +279,11 @@ router.get('/room/:id', async (req, res) => {
       res.send(roomWithPasswordAsBool(room));
     }
   } catch(error) {
-    console.error(error);
-    res.sendStatus(500);
+    next(error)
   }
 });
 
-router.delete('/room/:id', async (req, res) => {
+router.delete('/room/:id', async (req, res, next) => {
   try {
     let id = req.params.id;
     let user = await getUserFromToken(req.cookies.token);
@@ -300,7 +297,6 @@ router.delete('/room/:id', async (req, res) => {
       res.sendStatus(200);
     }
   } catch(error) {
-    console.error(error);
-    res.sendStatus(500);
+    next(error);
   }
 });
