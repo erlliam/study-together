@@ -18,6 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'DELETE');
     next();
   });
 }
@@ -121,8 +122,21 @@ function getRoomFromId(id) {
     db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
       if (error) {
         reject(error);
+      } else {
+        resolve(room);
       }
-      resolve(room);
+    });
+  });
+}
+
+function deleteRoom(id) {
+  return new Promise((resolve, reject) => {
+    db.run('DELETE FROM room WHERE id = ?', id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
     });
   });
 }
@@ -191,20 +205,6 @@ router.post('/create-room', async (req, res) => {
   }
 });
 
-router.delete('/room/:id', async (req, res) => {
-  // todo: start off here
-  let user = await getUserFromToken(req.cookies.token);
-  let room = await getRoomFromId(req.params.id);
-  if (user === undefined || room === undefined) {
-    console.log('user or room undefined');
-  } else if (room.ownerId === user.id) {
-    console.log('room shall be deleteed');
-  } else {
-    console.log('the user is not the owner, dont dlete room');
-  }
-  res.sendStatus(500);
-});
-
 router.get('/rooms', (req, res) => {
   db.all(`
     SELECT * FROM room;
@@ -260,11 +260,14 @@ router.post('/join-room', (req, res) => {
   });
 });
 
+// Create and update
+router.put('/room/:id', (req, res) => {
+});
+
 // Read
 router.get('/room/:id', async (req, res) => {
   try {
-    let id = req.params.id;
-    let room = await getRoomFromId(id);
+    let room = await getRoomFromId(req.params.id);
     if (room === undefined) {
       res.sendStatus(404);
     } else {
@@ -274,5 +277,26 @@ router.get('/room/:id', async (req, res) => {
     console.error(error);
     res.sendStatus(500);
   }
+});
 
+// Delete
+router.delete('/room/:id', async (req, res) => {
+  try {
+    let id = req.params.id;
+    let user = await getUserFromToken(req.cookies.token);
+    let room = await getRoomFromId(id);
+
+    if (user === undefined || user.id !== room.ownerId) {
+      res.sendStatus(401);
+    } else if (room === undefined){
+      res.sendStatus(404);
+    } else {
+      await deleteRoom(id);
+      console.log('Room deleted.');
+      res.sendStatus(200);
+    }
+  } catch(error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 });
