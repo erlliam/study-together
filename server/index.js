@@ -241,7 +241,6 @@ router.post('/join-room', (req, res) => {
   });
 });
 
-// Create
 router.put('/room/create', async (req, res) => {
   try {
     let room = req.body;
@@ -290,7 +289,6 @@ router.delete('/room/:id', async (req, res) => {
       res.sendStatus(404);
     } else {
       await deleteRoom(id);
-      console.log('Room deleted.');
       res.sendStatus(200);
     }
   } catch(error) {
