@@ -117,13 +117,25 @@ router.post('/create-user', (req, res) => {
   });
 });
 
-function getRoomFromId(id) {
+function getRoom(id) {
   return new Promise((resolve, reject) => {
     db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
       if (error) {
         reject(error);
       } else {
         resolve(room);
+      }
+    });
+  });
+}
+
+function getRooms() {
+  return new Promise((resolve, reject) => {
+    db.all('SELECT * FROM room;', (error, rooms) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(rooms);
       }
     });
   });
@@ -186,20 +198,6 @@ function roomWithPasswordAsBool(room) {
   return {...room, password: room.password !== null};
 }
 
-router.get('/rooms', (req, res) => {
-  db.all(`
-    SELECT * FROM room;
-  `, (error, rooms) => {
-    if (error) {
-      console.error(error);
-      res.sendStatus(500);
-    } else {
-      rooms = rooms.map(r => roomWithPasswordAsBool(r));
-      res.send(rooms);
-    }
-  });
-});
-
 router.post('/join-room', (req, res) => {
   let {id = '', password = ''} = req.body;
 
@@ -241,6 +239,16 @@ router.post('/join-room', (req, res) => {
   });
 });
 
+router.get('/room/all', async (req, res) => {
+  try {
+    let rooms = await getRooms();
+    res.send(rooms.map(roomWithPasswordAsBool));
+  } catch(error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 router.put('/room/create', async (req, res) => {
   try {
     let room = req.body;
@@ -266,7 +274,7 @@ router.put('/room/:id', (req, res) => {
 
 router.get('/room/:id', async (req, res) => {
   try {
-    let room = await getRoomFromId(req.params.id);
+    let room = await getRoom(req.params.id);
     if (room === undefined) {
       res.sendStatus(404);
     } else {
@@ -282,7 +290,7 @@ router.delete('/room/:id', async (req, res) => {
   try {
     let id = req.params.id;
     let user = await getUserFromToken(req.cookies.token);
-    let room = await getRoomFromId(id);
+    let room = await getRoom(id);
     if (user === undefined || user.id !== room.ownerId) {
       res.sendStatus(401);
     } else if (room === undefined){

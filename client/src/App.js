@@ -168,7 +168,7 @@ function JoinRoom() {
 
   useEffect(() => {
     async function fetchRooms() {
-      let response = await fetch(apiUrl + '/rooms');
+      let response = await fetch(apiUrl + '/room/all');
       if (response.ok) {
         let json = await response.json();
         if (isMounted.current) {
