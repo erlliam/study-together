@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'DELETE');
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, DELETE');
     next();
   });
 }
@@ -141,7 +141,7 @@ function deleteRoom(id) {
   });
 }
 
-function validRoom(room) {
+function isValidRoom(room) {
   // todo: Throw exceptions, pass it to client (so they know which field is wrong)
   // todo: Deal with bcrypt's upper character limit "72", probably restrict passwords?
   let {name, password, capacity} = room;
@@ -185,25 +185,6 @@ function addRoomToDatabase(ownerId, room) {
 function roomWithPasswordAsBool(room) {
   return {...room, password: room.password !== null};
 }
-
-router.post('/create-room', async (req, res) => {
-  try {
-    let room = req.body;
-    let isValidRoom = validRoom(room);
-    let {token} = req.cookies;
-    let user = await getUserFromToken(token);
-    // todo: respond with unauthorized if user is undefined...
-    if (user !== undefined && isValidRoom) {
-      let id = await addRoomToDatabase(user.id, room);
-      res.status(201).send({id: id});
-    } else {
-      res.sendStatus(400);
-    }
-  } catch(error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
 
 router.get('/rooms', (req, res) => {
   db.all(`
@@ -260,11 +241,30 @@ router.post('/join-room', (req, res) => {
   });
 });
 
-// Create and update
+// Create
+router.put('/room/create', async (req, res) => {
+  try {
+    let room = req.body;
+    let validRoom = isValidRoom(room);
+    let user = await getUserFromToken(req.cookies.token);
+    if (user === undefined) {
+      res.sendStatus(401);
+    } else if (validRoom) {
+      let id = await addRoomToDatabase(user.id, room);
+      res.status(201).send({id: id});
+    } else {
+      res.sendStatus(400);
+    }
+  } catch(error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+// Update
 router.put('/room/:id', (req, res) => {
 });
 
-// Read
 router.get('/room/:id', async (req, res) => {
   try {
     let room = await getRoomFromId(req.params.id);
@@ -279,13 +279,11 @@ router.get('/room/:id', async (req, res) => {
   }
 });
 
-// Delete
 router.delete('/room/:id', async (req, res) => {
   try {
     let id = req.params.id;
     let user = await getUserFromToken(req.cookies.token);
     let room = await getRoomFromId(id);
-
     if (user === undefined || user.id !== room.ownerId) {
       res.sendStatus(401);
     } else if (room === undefined){

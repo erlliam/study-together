@@ -96,8 +96,8 @@ function CreateRoom() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    let response = await fetch(apiUrl + '/create-room', {
-      method: 'POST',
+    let response = await fetch(apiUrl + '/room/create', {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
