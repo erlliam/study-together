@@ -57,6 +57,21 @@ db.serialize(() => {
   `);
 });
 
+router.get('/', async (req, res) => {
+  let {token} = req.cookies;
+  try {
+    let user = await getUserFromToken(token);
+    if (user === undefined) {
+      res.sendStatus(401);
+    } else {
+      res.sendStatus(200);
+    }
+  } catch(error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 function getUserFromToken(token) {
   return new Promise((resolve, reject) => {
     db.get('SELECT * FROM user WHERE token = ?', token, (error, user) => {
@@ -112,7 +127,7 @@ function getRoomFromId(id) {
   });
 }
 
-function validRoomUserInput(room) {
+function validRoom(room) {
   // todo: Throw exceptions, pass it to client (so they know which field is wrong)
   // todo: Deal with bcrypt's upper character limit "72", probably restrict passwords?
   let {name, password, capacity} = room;
@@ -157,29 +172,14 @@ function roomWithPasswordAsBool(room) {
   return {...room, password: room.password !== null};
 }
 
-router.get('/', async (req, res) => {
-  let {token} = req.cookies;
-  try {
-    let user = await getUserFromToken(token);
-    if (user === undefined) {
-      res.sendStatus(401);
-    } else {
-      res.sendStatus(200);
-    }
-  } catch(error) {
-    console.error(error);
-    res.sendStatus(500);
-  }
-});
-
 router.post('/create-room', async (req, res) => {
   try {
     let room = req.body;
-    let validRoom = validRoomUserInput(room);
+    let isValidRoom = validRoom(room);
     let {token} = req.cookies;
     let user = await getUserFromToken(token);
     // todo: respond with unauthorized if user is undefined...
-    if (user !== undefined && validRoom) {
+    if (user !== undefined && isValidRoom) {
       let id = await addRoomToDatabase(user.id, room);
       res.status(201).send({id: id});
     } else {
