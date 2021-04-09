@@ -219,22 +219,6 @@ router.get('/rooms', (req, res) => {
   });
 });
 
-router.get('/room/:id', (req, res) => {
-  let {id} = req.params;
-  db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
-    if (error) {
-      console.error(error);
-      res.sendStatus(500);
-    } else {
-      if (room !== undefined) {
-        res.send(roomWithPasswordAsBool(room));
-      } else {
-        res.sendStatus(404);
-      }
-    }
-  });
-});
-
 router.post('/join-room', (req, res) => {
   let {id = '', password = ''} = req.body;
 
@@ -274,4 +258,21 @@ router.post('/join-room', (req, res) => {
       }
     }
   });
+});
+
+// Read
+router.get('/room/:id', async (req, res) => {
+  try {
+    let id = req.params.id;
+    let room = await getRoomFromId(id);
+    if (room === undefined) {
+      res.sendStatus(404);
+    } else {
+      res.send(roomWithPasswordAsBool(room));
+    }
+  } catch(error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+
 });
