@@ -17,6 +17,12 @@ let apiUrl = 'http://localhost:5000/api'
 
 function App() {
   useEffect(() => {
+    let webSocket = new WebSocket('ws://localhost:5000');
+    webSocket.addEventListener('message', (event) => {
+      console.log(JSON.parse(event.data));
+    });
+  }, []);
+  useEffect(() => {
     async function checkIfUserExists() {
       let response = await fetch(apiUrl + '/user', {
         credentials: 'include'

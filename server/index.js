@@ -3,13 +3,15 @@ let cookieParser = require('cookie-parser');
 let sqlite3 = require('sqlite3').verbose();
 let bcrypt = require('bcrypt');
 let crypto = require('crypto');
+let ws = require('ws');
 
 let saltRounds = 12;
 let port = 5000;
 
 let app = express();
 let router = express.Router();
-app.listen(port);
+let server = app.listen(port);
+let webSocket = new ws.Server({server: server});
 app.use(cookieParser());
 app.use('/api', router);
 router.use(express.json());
@@ -323,4 +325,13 @@ router.delete('/room/:id', async (req, res, next) => {
   } catch(error) {
     next(error);
   }
+});
+
+webSocket.on('connection', (ws) => {
+  // example
+  ws.send(JSON.stringify({
+    room: 1,
+    timerActive: false,
+    timeRemaining: null
+  }));
 });
