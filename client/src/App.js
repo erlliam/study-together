@@ -97,7 +97,7 @@ function CreateRoom() {
     event.preventDefault();
 
     let response = await fetch(apiUrl + '/room/create', {
-      method: 'PUT',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },

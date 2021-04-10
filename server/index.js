@@ -251,7 +251,7 @@ router.get('/room/all', async (req, res, next) => {
   }
 });
 
-router.put('/room/create', async (req, res, next) => {
+router.post('/room/create', async (req, res, next) => {
   try {
     let room = req.body;
     let validRoom = isValidRoom(room);
