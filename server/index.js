@@ -214,6 +214,10 @@ function incrementUserCount(room) {
   });
 }
 
+function roomFull(room) {
+  return room.usersConnected === room.userCapacity;
+}
+
 router.post('/room/join', async (req, res, next) => {
   try {
     let id = req.body.id ?? '';
@@ -221,7 +225,9 @@ router.post('/room/join', async (req, res, next) => {
     let room = await getRoom(id);
     if (room === undefined) {
       res.sendStatus(404);
-    } else if (room.usersConnected < room.userCapacity) {
+    } else if (roomFull(room)) {
+      res.sendStatus(400);
+    } else {
       if (room.password === null) {
         await incrementUserCount(room);
       } else {
@@ -232,8 +238,6 @@ router.post('/room/join', async (req, res, next) => {
           res.sendStatus(401);
         }
       }
-    } else {
-      res.sendStatus(400);
     }
   } catch(error) {
     next(error);
