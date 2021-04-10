@@ -327,11 +327,11 @@ router.delete('/room/:id', async (req, res, next) => {
   }
 });
 
-webSocket.on('connection', (ws) => {
-  // example
-  ws.send(JSON.stringify({
-    room: 1,
-    timerActive: false,
-    timeRemaining: null
-  }));
-});
+// webSocket.on('connection', (ws) => {
+//   // example
+//   ws.send(JSON.stringify({
+//     room: 1,
+//     timerActive: false,
+//     timeRemaining: null
+//   }));
+// });
