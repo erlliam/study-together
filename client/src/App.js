@@ -230,10 +230,27 @@ function Room() {
     });
   }, []);
 
-  async function fetchRoom() {
+  useEffect(() => {
+    async function init() {
+      await setRoomData();
+
+      if (isMounted.current && roomData.current !== undefined) {
+        if (roomData.current.password) {
+          setPasswordRequired(true);
+          setLoading(false);
+        } else {
+          joinRoom();
+        }
+      }
+    }
+    init();
+  }, []);
+
+
+  async function setRoomData() {
     let response = await fetch(apiUrl + '/room/' + id);
     if (response.ok) {
-      return await response.json();
+      roomData.current = await response.json();
     } else {
       if (isMounted.current) {
         switch (response.status) {
@@ -300,25 +317,6 @@ function Room() {
       setPasswordRequired(false);
     }
   }
-
-  useEffect(() => {
-    async function init() {
-      let json = await fetchRoom();
-      if (json === undefined) {
-        return;
-      }
-      roomData.current = json;
-      if (roomData.current.password) {
-        if (isMounted.current) {
-          setPasswordRequired(true);
-          setLoading(false);
-        }
-      } else {
-        joinRoom();
-      }
-    }
-    init();
-  }, []);
 
   return (
     <>
