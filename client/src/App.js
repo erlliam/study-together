@@ -23,7 +23,13 @@ let apiUrl = 'http://localhost:5000/api'
   // }, []);
 function App() {
   useEffect(() => {
-    async function checkIfUserExists() {
+    async function init() {
+      if (!(await userExists())) {
+        createUser();
+      }
+    }
+
+    async function userExists() {
       let response = await fetch(apiUrl + '/user', {
         credentials: 'include'
       });
@@ -42,15 +48,11 @@ function App() {
         method: 'POST',
         credentials: 'include'
       });
+      if (response.status !== 201) {
+        throw Error('Fatal error, failed to create user');
+      }
     }
 
-    async function init() {
-      let {token} = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
-      if (token && await checkIfUserExists()) {
-        return;
-      }
-      createUser();
-    }
     init();
   }, []);
 
