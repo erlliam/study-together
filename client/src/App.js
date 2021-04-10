@@ -267,9 +267,6 @@ function Room() {
   }
 
   async function joinRoom(password) {
-    if (roomData.current === undefined) {
-      return;
-    }
     let response = await fetch(apiUrl + '/room/join', {
       method: 'POST',
       headers: {

@@ -251,6 +251,7 @@ router.post('/room/join', async (req, res, next) => {
       if (room.password === null) {
         await addUserToRoom(user, room);
         await incrementUserCount(room);
+        res.sendStatus(200);
       } else {
         if (bcrypt.compareSync(password, room.password)) {
           await addUserToRoom(user, room);
