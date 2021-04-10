@@ -260,6 +260,7 @@ function Room() {
         id: id,
         password: password
       }),
+      credentials: 'include'
     });
     if (isMounted.current) {
       if (response.ok) {

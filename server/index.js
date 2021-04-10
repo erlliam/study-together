@@ -223,8 +223,11 @@ router.post('/room/join', async (req, res, next) => {
     let id = req.body.id ?? '';
     let password = req.body.password ?? '';
     let room = await getRoom(id);
+    let user = await getUserFromToken(req.cookies.token);
     if (room === undefined) {
       res.sendStatus(404);
+    } else if (user === undefined) {
+      res.sendStatus(401);
     } else if (roomFull(room)) {
       res.sendStatus(400);
     } else {
