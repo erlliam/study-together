@@ -33,7 +33,7 @@ function App() {
 
     async function createUser() {
       let response = await fetch(apiUrl + '/user/create', {
-        method: 'PUT',
+        method: 'POST',
         credentials: 'include'
       });
     }

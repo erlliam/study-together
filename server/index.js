@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'PUT, GET, DELETE');
+    res.header('Access-Control-Allow-Methods', 'POST, PUT, GET, DELETE');
     next();
   });
 }
@@ -110,7 +110,7 @@ router.get('/user', async (req, res, next) => {
   }
 });
 
-router.put('/user/create', async (req, res, next) => {
+router.post('/user/create', async (req, res, next) => {
   try {
     let token = await addUserToDatabase();
     res.cookie('token', token);
