@@ -214,6 +214,21 @@ function incrementUserCount(room) {
   });
 }
 
+function addUserToRoom(user, room) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      INSERT INTO roomUser (userId, roomId)
+      VALUES (?, ?);
+    `, user.id, room.id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 function roomFull(room) {
   return room.usersConnected === room.userCapacity;
 }
@@ -232,9 +247,11 @@ router.post('/room/join', async (req, res, next) => {
       res.sendStatus(400);
     } else {
       if (room.password === null) {
+        await addUserToRoom(user, room);
         await incrementUserCount(room);
       } else {
         if (bcrypt.compareSync(password, room.password)) {
+          await addUserToRoom(user, room);
           await incrementUserCount(room);
           res.sendStatus(200);
         } else {
