@@ -156,7 +156,7 @@ function deleteRoom(id) {
   });
 }
 
-function isValidRoom(room) {
+function validRoom(room) {
   // todo: Throw exceptions, pass it to client (so they know which field is wrong)
   // todo: Deal with bcrypt's upper character limit "72", probably restrict passwords?
   let {name, password, capacity} = room;
@@ -256,11 +256,10 @@ router.get('/room/all', async (req, res, next) => {
 router.post('/room/create', async (req, res, next) => {
   try {
     let room = req.body;
-    let validRoom = isValidRoom(room);
     let user = await getUserFromToken(req.cookies.token);
     if (user === undefined) {
       res.sendStatus(401);
-    } else if (validRoom) {
+    } else if (validRoom(room)) {
       let id = await addRoomToDatabase(user.id, room);
       res.status(201).send({id: id});
     } else {
