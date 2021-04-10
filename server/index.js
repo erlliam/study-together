@@ -201,45 +201,43 @@ function roomWithPasswordAsBool(room) {
   return {...room, password: room.password !== null};
 }
 
-router.post('/join-room', (req, res) => {
-  let {id = '', password = ''} = req.body;
-
-  function incrementUserCount(room) {
-    db.run(`UPDATE room SET usersConnected = ? WHERE id = ?`,
+function incrementUserCount(room) {
+  return new Promise((resolve, reject) => {
+    db.run('UPDATE room SET usersConnected = ? WHERE id = ?',
         room.usersConnected + 1, room.id, (error) => {
       if (error) {
-        console.error(error);
-        res.sendStatus(500);
+        reject(error)
       } else {
-        res.sendStatus(200);
+        resolve();
       }
     });
-  }
+  });
+}
 
-  db.get(`SELECT * FROM room WHERE id = ?`, id, (error, room) => {
-    if (error) {
-      console.error(error);
-      res.sendStatus(500);
-    } else {
-      if (room === undefined) {
-        res.sendStatus(404);
+router.post('/room/join', async (req, res, next) => {
+  try {
+    let id = req.body.id ?? '';
+    let password = req.body.password ?? '';
+    let room = await getRoom(id);
+    if (room === undefined) {
+      res.sendStatus(404);
+    } else if (room.usersConnected < room.userCapacity) {
+      if (room.password === null) {
+        await incrementUserCount(room);
       } else {
-        if (room.usersConnected < room.userCapacity) {
-          if (room.password === null) {
-            incrementUserCount(room);
-          } else {
-            if (bcrypt.compareSync(password, room.password)) {
-              incrementUserCount(room);
-            } else {
-              res.sendStatus(401);
-            }
-          }
+        if (bcrypt.compareSync(password, room.password)) {
+          await incrementUserCount(room);
+          res.sendStatus(200);
         } else {
-          res.sendStatus(400);
+          res.sendStatus(401);
         }
       }
+    } else {
+      res.sendStatus(400);
     }
-  });
+  } catch(error) {
+    next(error);
+  }
 });
 
 router.get('/room/all', async (req, res, next) => {

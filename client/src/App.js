@@ -251,7 +251,7 @@ function Room() {
     if (roomData.current === undefined) {
       return;
     }
-    let response = await fetch(apiUrl + '/join-room', {
+    let response = await fetch(apiUrl + '/room/join', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
