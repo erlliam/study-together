@@ -61,7 +61,7 @@ function App() {
       <Switch>
         <Route exact path="/"><StartingPage /></Route>
         <Route path="/create-room"><CreateRoom /></Route>
-        <Route path="/rooms"><JoinRoom /></Route>
+        <Route path="/rooms"><ListOfRooms /></Route>
         <Route path="/room/:id"><Room /></Route>
         <Route path="*"><h1>404</h1></Route>
       </Switch>
@@ -88,6 +88,7 @@ function CreateRoom() {
       display some state that confirms your request is being processed
       display something in the case of a server error
   */
+
   let isMounted = useRef(true);
   let history = useHistory();
   let [name, setName] = useState('');
@@ -118,8 +119,6 @@ function CreateRoom() {
     });
     if (isMounted.current) {
       if (response.ok) {
-        // todo: There will be a ghost room now...
-        // that's probably the server's job to clean it up
         let json = await response.json();
         history.replace('/room/' + json.id);
       } else {
@@ -162,7 +161,7 @@ function CreateRoom() {
   );
 }
 
-function JoinRoom() {
+function ListOfRooms() {
   let isMounted = useRef(true);
   let [error, setError] = useState(false);
   let [loading, setLoading] = useState(true);
@@ -175,23 +174,18 @@ function JoinRoom() {
   }, []);
 
   useEffect(() => {
-    async function fetchRooms() {
+    async function init() {
       let response = await fetch(apiUrl + '/room/all');
-      if (response.ok) {
-        let json = await response.json();
-        if (isMounted.current) {
-          setRooms(json);
-          setLoading(false);
+      if (isMounted.current) {
+        if (response.ok) {
+          setRooms(await response.json());
+        } else {
+          setError(await response.text());
         }
-      } else {
-        let text = await response.text();
-        if (isMounted.current) {
-          setError(text);
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
-    fetchRooms();
+    init();
   }, []);
 
   return (
