@@ -266,7 +266,7 @@ function Room() {
     }
   }
 
-  async function joinRoom(password) {
+  async function joinRoom() {
     let response = await fetch(apiUrl + '/room/join', {
       method: 'POST',
       headers: {
@@ -279,38 +279,33 @@ function Room() {
       credentials: 'include'
     });
     if (isMounted.current) {
-      if (response.ok) {
-        setRoom(roomData.current);
-        setError('');
-        setLoading(false);
-        return true;
-      } else {
-        switch (response.status) {
-          case 400:
-            setError('The room is full.');
-            setLoading(false);
-            break;
-          case 401:
-            setError('Wrong credentials');
-            setLoading(false);
-            break;
-          case 404:
-            setError('The room does not exist.');
-            setLoading(false);
-            break;
-          default:
-            setError('Something went wrong.');
-            setLoading(false);
-        }
-        return false;
+      switch (response.status) {
+        case 200:
+          setRoom(roomData.current);
+          setError('');
+          break;
+        case 400:
+          setError('The room is full.');
+          break;
+        case 401:
+          setError('Wrong credentials');
+          break;
+        case 404:
+          setError('The room does not exist.');
+          break;
+        default:
+          setError('Something went wrong.');
       }
+
+      setLoading(false);
+      return (response.status === 200);
     }
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (await joinRoom(password)) {
+    if (await joinRoom()) {
       setPasswordRequired(false);
     }
   }
