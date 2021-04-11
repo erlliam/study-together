@@ -216,11 +216,39 @@ function incrementUserCount(room) {
   });
 }
 
+function decrementUserCount(room) {
+  return new Promise((resolve, reject) => {
+    db.run('UPDATE room SET usersConnected = ? WHERE id = ?',
+        room.usersConnected - 1, room.id, (error) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 function addUserToRoom(user, room) {
   return new Promise((resolve, reject) => {
     db.run(`
       INSERT INTO roomUser (userId, roomId)
       VALUES (?, ?);
+    `, user.id, room.id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function removeUserFromRoom(user, room) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      DELETE FROM roomUser
+      WHERE userId = ? AND roomId = ?;
     `, user.id, room.id, (error) => {
       if (error) {
         reject(error);
@@ -300,17 +328,15 @@ webSocket.on('connection', (ws) => {
   async function connectUser(user, room) {
     await addUserToRoom(user, room);
     await incrementUserCount(room);
-    ws.on('close', () => {
-      // removeUserFromRoom(user, room);
-      // decrementUserCount(room);
+    ws.on('close', async () => {
+      await removeUserFromRoom(user, room);
+      await decrementUserCount(room);
     });
     ws.send(200);
   }
 
-  ws.on('close', () => {
-    console.log('Client disconnected.');
-  });
   ws.on('message', async (message) => {
+    // todo: wrap json in try catch...
     let json = JSON.parse(message);
     if (json.operation === 'joinRoom') {
       try {
