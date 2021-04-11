@@ -281,9 +281,7 @@ function Room() {
     if (isMounted.current) {
       switch (response.status) {
         case 200:
-          setPasswordRequired(false);
-          setRoom(roomData.current);
-          setError('');
+          handleRoomJoined();
           break;
         case 400:
           setError('The room is full.');
@@ -300,6 +298,12 @@ function Room() {
 
       setLoading(false);
     }
+  }
+
+  function handleRoomJoined() {
+    setPasswordRequired(false);
+    setRoom(roomData.current);
+    setError('');
   }
 
   return (
