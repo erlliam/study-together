@@ -222,7 +222,6 @@ function Room() {
   let [loading, setLoading] = useState(true);
   let [room, setRoom] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
-  let [password, setPassword] = useState('');
 
   useEffect(() => {
     return (() => {
@@ -266,7 +265,7 @@ function Room() {
     }
   }
 
-  async function joinRoom() {
+  async function joinRoom(password) {
     let response = await fetch(apiUrl + '/room/join', {
       method: 'POST',
       headers: {
@@ -281,6 +280,7 @@ function Room() {
     if (isMounted.current) {
       switch (response.status) {
         case 200:
+          setPasswordRequired(false);
           setRoom(roomData.current);
           setError('');
           break;
@@ -302,14 +302,6 @@ function Room() {
     }
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    if (await joinRoom()) {
-      setPasswordRequired(false);
-    }
-  }
-
   return (
     <>
       {error && (
@@ -319,16 +311,7 @@ function Room() {
         <div>Loading...</div>
       )}
       {passwordRequired && (
-        <form autoComplete="off" onSubmit={handleSubmit}>
-          <label htmlFor="join-room-password">Enter password</label>
-          <input
-            id="join-room-password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
-          <button>Join room</button>
-        </form>
+        <PasswordScreen joinRoom={joinRoom} />
       )}
       {room && (
         <div className="room">
@@ -336,6 +319,31 @@ function Room() {
         </div>
       )}
     </>
+  );
+}
+
+function PasswordScreen(props) {
+  let [password, setPassword] = useState('');
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    props.joinRoom(password);
+  }
+
+  return (
+    <div className="password-room">
+      <h1>Password required</h1>
+      <form autoComplete="off" onSubmit={handleSubmit}>
+        <label htmlFor="join-room-password">Enter password</label>
+        <input
+          id="join-room-password"
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+        <button>Join room</button>
+      </form>
+    </div>
   );
 }
 
