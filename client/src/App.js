@@ -299,7 +299,6 @@ function Room() {
       }
 
       setLoading(false);
-      return (response.status === 200);
     }
   }
 

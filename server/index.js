@@ -236,6 +236,12 @@ function roomFull(room) {
 }
 
 router.post('/room/join', async (req, res, next) => {
+  async function connectUser(user, room) {
+    await addUserToRoom(user, room);
+    await incrementUserCount(room);
+    res.sendStatus(200);
+  }
+
   try {
     let id = req.body.id ?? '';
     let password = req.body.password ?? '';
@@ -249,14 +255,10 @@ router.post('/room/join', async (req, res, next) => {
       res.sendStatus(400);
     } else {
       if (room.password === null) {
-        await addUserToRoom(user, room);
-        await incrementUserCount(room);
-        res.sendStatus(200);
+        await connectUser(user, room);
       } else {
         if (bcrypt.compareSync(password, room.password)) {
-          await addUserToRoom(user, room);
-          await incrementUserCount(room);
-          res.sendStatus(200);
+          await connectUser(user, room);
         } else {
           res.sendStatus(401);
         }
