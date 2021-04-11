@@ -235,40 +235,6 @@ function roomFull(room) {
   return room.usersConnected === room.userCapacity;
 }
 
-router.post('/room/join', async (req, res, next) => {
-  async function connectUser(user, room) {
-    await addUserToRoom(user, room);
-    await incrementUserCount(room);
-    res.sendStatus(200);
-  }
-
-  try {
-    let id = req.body.id ?? '';
-    let password = req.body.password ?? '';
-    let room = await getRoom(id);
-    let user = await getUserFromToken(req.cookies.token);
-    if (room === undefined) {
-      res.sendStatus(404);
-    } else if (user === undefined) {
-      res.sendStatus(401);
-    } else if (roomFull(room)) {
-      res.sendStatus(400);
-    } else {
-      if (room.password === null) {
-        await connectUser(user, room);
-      } else {
-        if (bcrypt.compareSync(password, room.password)) {
-          await connectUser(user, room);
-        } else {
-          res.sendStatus(401);
-        }
-      }
-    }
-  } catch(error) {
-    next(error);
-  }
-});
-
 router.get('/room/all', async (req, res, next) => {
   try {
     let rooms = await getRooms();
@@ -330,11 +296,49 @@ router.delete('/room/:id', async (req, res, next) => {
   }
 });
 
-// webSocket.on('connection', (ws) => {
-//   // example
-//   ws.send(JSON.stringify({
-//     room: 1,
-//     timerActive: false,
-//     timeRemaining: null
-//   }));
-// });
+webSocket.on('connection', (ws) => {
+  async function connectUser(user, room) {
+    await addUserToRoom(user, room);
+    await incrementUserCount(room);
+    ws.on('close', () => {
+      // removeUserFromRoom(user, room);
+      // decrementUserCount(room);
+    });
+    ws.send(200);
+  }
+
+  ws.on('close', () => {
+    console.log('Client disconnected.');
+  });
+  ws.on('message', async (message) => {
+    let json = JSON.parse(message);
+    if (json.operation === 'joinRoom') {
+      try {
+        let id = json.id;
+        let password = json.password;
+        let room = await getRoom(id);
+        let user = await getUserFromToken(json.token);
+        if (room === undefined) {
+          ws.send(404);
+        } else if (user === undefined) {
+          ws.send(401);
+        } else if (roomFull(room)) {
+          ws.send(400);
+        } else {
+          if (room.password === null) {
+            await connectUser(user, room);
+          } else {
+            if (bcrypt.compareSync(password, room.password)) {
+              await connectUser(user, room);
+            } else {
+              ws.send(401);
+            }
+          }
+        }
+      } catch(error) {
+        console.error(error);
+        ws.send(500);
+      }
+    }
+  });
+});

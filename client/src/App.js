@@ -15,12 +15,6 @@ import {
 
 let apiUrl = 'http://localhost:5000/api'
 
-  // useEffect(() => {
-  //   let webSocket = new WebSocket('ws://localhost:5000');
-  //   webSocket.addEventListener('message', (event) => {
-  //     console.log(JSON.parse(event.data));
-  //   });
-  // }, []);
 function App() {
   useEffect(() => {
     async function init() {
@@ -217,6 +211,7 @@ function ListOfRooms() {
 function Room() {
   let isMounted = useRef(true);
   let roomData = useRef();
+  let webSocket = useRef();
   let {id} = useParams();
   let [error, setError] = useState('');
   let [loading, setLoading] = useState(true);
@@ -224,15 +219,14 @@ function Room() {
   let [passwordRequired, setPasswordRequired] = useState();
 
   useEffect(() => {
-    return (() => {
-      isMounted.current = false;
+    let ws = new WebSocket('ws://localhost:5000');
+    ws.addEventListener('open', (event) => {
+      webSocket.current = ws;
+      init();
     });
-  }, []);
 
-  useEffect(() => {
     async function init() {
       await setRoomData();
-
       if (isMounted.current && roomData.current !== undefined) {
         if (roomData.current.password) {
           setPasswordRequired(true);
@@ -242,10 +236,12 @@ function Room() {
         }
       }
     }
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
+    return (() => {
+      isMounted.current = false;
+      ws.close();
+    });
+  }, [webSocket]);
 
   async function setRoomData() {
     let response = await fetch(apiUrl + '/room/' + id);
@@ -267,37 +263,35 @@ function Room() {
   }
 
   async function joinRoom(password) {
-    let response = await fetch(apiUrl + '/room/join', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: id,
-        password: password
-      }),
-      credentials: 'include'
-    });
-    if (isMounted.current) {
-      switch (response.status) {
-        case 200:
-          handleRoomJoined();
-          break;
-        case 400:
-          setError('The room is full.');
-          break;
-        case 401:
-          setError('Wrong credentials');
-          break;
-        case 404:
-          setError('The room does not exist.');
-          break;
-        default:
-          setError('Something went wrong.');
-      }
+    let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
+    webSocket.current.addEventListener('message', (event) => {
+      if (isMounted.current) {
+        switch (parseInt(event.data, 10)) {
+          case 200:
+            handleRoomJoined();
+            break;
+          case 400:
+            setError('The room is full.');
+            break;
+          case 401:
+            setError('Wrong credentials');
+            break;
+          case 404:
+            setError('The room does not exist.');
+            break;
+          default:
+            setError('Something went wrong.');
+        }
 
-      setLoading(false);
-    }
+        setLoading(false);
+      }
+    });
+    webSocket.current.send(JSON.stringify({
+      operation: 'joinRoom',
+      id: id,
+      password: password,
+      token: cookies.token
+    }));
   }
 
   function handleRoomJoined() {
