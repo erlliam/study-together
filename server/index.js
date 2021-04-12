@@ -44,7 +44,6 @@ db.serialize(() => {
       ownerId INTEGER NOT NULL,
       name TEXT NOT NULL,
       password TEXT,
-      usersConnected INTEGER DEFAULT 0,
       userCapacity INTEGER NOT NULL,
       FOREIGN KEY(ownerId) REFERENCES user(id)
     );
@@ -203,32 +202,6 @@ function roomWithPasswordAsBool(room) {
   return {...room, password: room.password !== null};
 }
 
-function incrementUserCount(room) {
-  return new Promise((resolve, reject) => {
-    db.run('UPDATE room SET usersConnected = ? WHERE id = ?',
-        room.usersConnected + 1, room.id, (error) => {
-      if (error) {
-        reject(error)
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-
-function decrementUserCount(room) {
-  return new Promise((resolve, reject) => {
-    db.run('UPDATE room SET usersConnected = ? WHERE id = ?',
-        room.usersConnected - 1, room.id, (error) => {
-      if (error) {
-        reject(error)
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-
 function addUserToRoom(user, room) {
   return new Promise((resolve, reject) => {
     db.run(`
@@ -254,6 +227,21 @@ function removeUserFromRoom(user, room) {
         reject(error);
       } else {
         resolve();
+      }
+    });
+  });
+}
+
+// todo: Fetch all rooms using count of roomUser for userConnected
+function getUsersConnected(room) {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT COUNT(*) FROM roomUser WHERE roomId = ?
+    `, room.id, (error, count) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(count);
       }
     });
   });
@@ -327,10 +315,8 @@ router.delete('/room/:id', async (req, res, next) => {
 webSocket.on('connection', (ws) => {
   async function connectUser(user, room) {
     await addUserToRoom(user, room);
-    await incrementUserCount(room);
     ws.on('close', async () => {
       await removeUserFromRoom(user, room);
-      await decrementUserCount(room);
     });
     ws.send(200);
   }
