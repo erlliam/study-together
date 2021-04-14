@@ -312,13 +312,26 @@ router.delete('/room/:id', async (req, res, next) => {
   }
 });
 
+let connections = [];
+
 webSocket.on('connection', (ws) => {
+  // todo: Error check, possibly refactor
   async function connectUser(user, room) {
-    await addUserToRoom(user, room);
-    ws.on('close', async () => {
-      await removeUserFromRoom(user, room);
-    });
+    addUserToRoom(user, room);
+    connections.push(ws);
     ws.send(200);
+    ws.on('close', async () => {
+      removeUserFromRoom(user, room);
+      connections.splice(connections.indexOf(ws), 1);
+
+      for (let connection of connections) {
+        connection.send('User left');
+      }
+    });
+
+    for (let connection of connections) {
+      connection.send('User joined');
+    }
   }
 
   ws.on('message', async (message) => {

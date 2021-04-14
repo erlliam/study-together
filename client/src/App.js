@@ -285,7 +285,7 @@ function Room() {
 
         setLoading(false);
       }
-    });
+    }, {once: true});
     webSocket.current.send(JSON.stringify({
       operation: 'joinRoom',
       id: id,
