@@ -353,60 +353,61 @@ router.delete('/room/:id', async (req, res, next) => {
 
 let connections = [];
 
-webSocket.on('connection', (ws) => {
-  // todo: Error check, possibly refactor
-  async function connectUser(user, room) {
-    addUserToRoom(user, room);
-    connections.push(ws);
-    ws.send(200);
-    ws.on('close', async () => {
-      removeUserFromRoom(user, room);
-      connections.splice(connections.indexOf(ws), 1);
-
-      for (let connection of connections) {
-        connection.send('User left');
-      }
-    });
-
+async function connectUser(ws, user, room) {
+  addUserToRoom(user, room);
+  connections.push(ws);
+  ws.send(200);
+  ws.on('close', async () => {
+    removeUserFromRoom(user, room);
+    connections.splice(connections.indexOf(ws), 1);
     for (let connection of connections) {
-      connection.send('User joined');
+      connection.send('User left');
+    }
+  });
+  for (let connection of connections) {
+    connection.send('User joined');
+  }
+}
+
+async function joinRoomOperation(ws, json) {
+  let id = json.id;
+  let password = json.password;
+  let room = await getRoom(id);
+  let user = await getUserFromToken(json.token);
+  if (room === undefined) {
+    ws.send(404);
+  } else if (user === undefined) {
+    ws.send(401);
+  } else if (await roomFull(room)) {
+    ws.send(400);
+  } else if (await userInRoom(user, room)) {
+    // todo: Use another status code or something...
+    // Right now the user will see "The room is full"
+    ws.send(400);
+  } else {
+    if (room.password === null) {
+      await connectUser(ws, user, room);
+    } else {
+      if (bcrypt.compareSync(password, room.password)) {
+        await connectUser(ws, user, room);
+      } else {
+        ws.send(401);
+      }
     }
   }
+}
 
+webSocket.on('connection', (ws) => {
   ws.on('message', async (message) => {
-    // todo: wrap json in try catch...
-    let json = JSON.parse(message);
-    if (json.operation === 'joinRoom') {
-      try {
-        let id = json.id;
-        let password = json.password;
-        let room = await getRoom(id);
-        let user = await getUserFromToken(json.token);
-        if (room === undefined) {
-          ws.send(404);
-        } else if (user === undefined) {
-          ws.send(401);
-        } else if (await roomFull(room)) {
-          ws.send(400);
-        } else if (await userInRoom(user, room)) {
-          // todo: Use another status code or something...
-          // Right now the user will see "The room is full"
-          ws.send(400);
-        } else {
-          if (room.password === null) {
-            await connectUser(user, room);
-          } else {
-            if (bcrypt.compareSync(password, room.password)) {
-              await connectUser(user, room);
-            } else {
-              ws.send(401);
-            }
-          }
-        }
-      } catch(error) {
-        console.error(error);
-        ws.send(500);
+    try {
+      let json = JSON.parse(message);
+      switch (json.operation) {
+        case 'joinRoom':
+          joinRoomOperation(ws, json);
       }
+    } catch(error) {
+      console.error(error);
+      ws.send(500);
     }
   });
 });
