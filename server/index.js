@@ -250,6 +250,9 @@ function addUserToRoom(user, room) {
 }
 
 function removeUserFromRoom(user, room) {
+  // note: Should we only delete one entry?
+  // It should be impossible to have more than one roomUser
+  // per room/user pair
   return new Promise((resolve, reject) => {
     db.run(`
       DELETE FROM roomUser
