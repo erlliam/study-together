@@ -215,10 +215,6 @@ function addRoomToDatabase(ownerId, room) {
   });
 }
 
-function roomWithPasswordAsBool(room) {
-  return {...room, password: room.password !== null};
-}
-
 function addUserToRoom(user, room) {
   return new Promise((resolve, reject) => {
     db.run(`
@@ -249,6 +245,7 @@ function removeUserFromRoom(user, room) {
   });
 }
 
+// todo: Use usersConnected function
 function roomFull(room) {
   return room.usersConnected === room.userCapacity;
 }
@@ -260,6 +257,8 @@ router.get('/room/all', async (req, res, next) => {
     // and Promise.all
     for (let i = 0; i < rooms.length; i++) {
       let room = rooms[i];
+      // todo: Create a function for room with password as bool
+      // and usersConnected
       rooms[i] = {
         ...room,
         password: room.password !== null,
@@ -299,6 +298,8 @@ router.get('/room/:id', async (req, res, next) => {
     if (room === undefined) {
       res.sendStatus(404);
     } else {
+      // todo: Create a function for room with password as bool
+      // and usersConnected
       res.send({
         ...room,
         password: room.password !== null,
