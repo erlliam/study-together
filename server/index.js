@@ -84,6 +84,23 @@ function getUserFromToken(token) {
   });
 }
 
+function userInRoom(user, room) {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT
+        *
+      FROM roomUser
+      WHERE userId = ? AND roomId = ?
+      `, user.id, room.id, (error, roomUser) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(roomUser !== undefined);
+      }
+    });
+  });
+}
+
 function addUserToDatabase() {
   return new Promise(async (resolve, reject) => {
     let token = await generateToken();
@@ -367,6 +384,10 @@ webSocket.on('connection', (ws) => {
         } else if (user === undefined) {
           ws.send(401);
         } else if (await roomFull(room)) {
+          ws.send(400);
+        } else if (await userInRoom(user, room)) {
+          // todo: Use another status code or something...
+          // Right now the user will see "The room is full"
           ws.send(400);
         } else {
           if (room.password === null) {
