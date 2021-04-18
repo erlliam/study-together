@@ -256,7 +256,17 @@ function roomFull(room) {
 router.get('/room/all', async (req, res, next) => {
   try {
     let rooms = await getRooms();
-    res.send(rooms.map(roomWithPasswordAsBool));
+    // todo: Perhaps use map with an async function
+    // and Promise.all
+    for (let i = 0; i < rooms.length; i++) {
+      let room = rooms[i];
+      rooms[i] = {
+        ...room,
+        password: room.password !== null,
+        usersConnected: await getUsersConnected(room.id)
+      }
+    }
+    res.send(rooms);
   } catch(error) {
     next(error);
   }
