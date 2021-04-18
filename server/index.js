@@ -145,6 +145,23 @@ function getRooms() {
   });
 }
 
+function getUsersConnected(id) {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT
+        COUNT() AS usersConnected
+      FROM roomUser
+      WHERE roomId = ?;
+    `, id, (error, usersConnected) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(usersConnected.usersConnected);
+      }
+    });
+  });
+}
+
 function deleteRoom(id) {
   return new Promise((resolve, reject) => {
     db.run('DELETE FROM room WHERE id = ?', id, (error) => {
@@ -227,21 +244,6 @@ function removeUserFromRoom(user, room) {
         reject(error);
       } else {
         resolve();
-      }
-    });
-  });
-}
-
-// todo: Fetch all rooms using count of roomUser for userConnected
-function getUsersConnected(room) {
-  return new Promise((resolve, reject) => {
-    db.get(`
-      SELECT COUNT(*) FROM roomUser WHERE roomId = ?
-    `, room.id, (error, count) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(count);
       }
     });
   });
