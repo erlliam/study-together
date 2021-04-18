@@ -245,9 +245,9 @@ function removeUserFromRoom(user, room) {
   });
 }
 
-// todo: Use usersConnected function
-function roomFull(room) {
-  return room.usersConnected === room.userCapacity;
+async function roomFull(room) {
+  let usersConnected = await getUsersConnected(room.id);
+  return usersConnected === room.userCapacity;
 }
 
 router.get('/room/all', async (req, res, next) => {
@@ -364,7 +364,7 @@ webSocket.on('connection', (ws) => {
           ws.send(404);
         } else if (user === undefined) {
           ws.send(401);
-        } else if (roomFull(room)) {
+        } else if (await roomFull(room)) {
           ws.send(400);
         } else {
           if (room.password === null) {
