@@ -29,7 +29,9 @@ let db = new sqlite3.Database('study-together.db');
 db.serialize(() => {
   // db.run('DROP TABLE IF EXISTS user;');
   // db.run('DROP TABLE IF EXISTS room;');
-  // db.run('DROP TABLE IF EXISTS roomUser;');
+  // If the server is just starting up, no users are connected.
+  // todo: Find a better way to do this?
+  db.run('DROP TABLE IF EXISTS roomUser;');
   // Activate foreign_keys after all data is wiped.
   db.run(`PRAGMA foreign_keys = ON;`);
   db.run(`
