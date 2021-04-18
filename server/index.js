@@ -299,7 +299,11 @@ router.get('/room/:id', async (req, res, next) => {
     if (room === undefined) {
       res.sendStatus(404);
     } else {
-      res.send(roomWithPasswordAsBool(room));
+      res.send({
+        ...room,
+        password: room.password !== null,
+        usersConnected: await getUsersConnected(room.id)
+      });
     }
   } catch(error) {
     next(error)
