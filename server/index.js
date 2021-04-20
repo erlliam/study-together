@@ -366,6 +366,12 @@ function removeConnection(room, ws) {
   connections[room.id].splice(indexOfWs, 1);
 }
 
+function roomMessage(room, message) {
+  for (let connection of connections[room.id]) {
+    connection.send(message);
+  }
+}
+
 async function connectUser(ws, user, room) {
   addUserToRoom(user, room);
   storeConnection(room, ws);
@@ -373,7 +379,9 @@ async function connectUser(ws, user, room) {
   ws.on('close', async () => {
     removeUserFromRoom(user, room);
     removeConnection(room, ws);
+    roomMessage(room, user.id + ' left.');
   });
+  roomMessage(room, user.id + ' joined.');
 }
 
 async function joinRoomOperation(ws, json) {

@@ -301,6 +301,9 @@ function Room() {
     setPasswordRequired(false);
     setRoom(roomData.current);
     setError('');
+    webSocket.current.addEventListener('message', (event) => {
+      console.log(event.data);
+    });
   }
 
   return (
