@@ -351,22 +351,29 @@ router.delete('/room/:id', async (req, res, next) => {
   }
 });
 
-let connections = [];
+let connections = {};
+
+function storeConnection(room, ws) {
+  if (connections[room.id] === undefined) {
+    connections[room.id] = [ws];
+  } else {
+    connections[room.id].push(ws);
+  }
+}
+
+function removeConnection(room, ws) {
+  let indexOfWs = connections[room.id].indexOf(ws);
+  connections[room.id].splice(indexOfWs, 1);
+}
 
 async function connectUser(ws, user, room) {
   addUserToRoom(user, room);
-  connections.push(ws);
+  storeConnection(room, ws);
   ws.send(200);
   ws.on('close', async () => {
     removeUserFromRoom(user, room);
-    connections.splice(connections.indexOf(ws), 1);
-    for (let connection of connections) {
-      connection.send('User left');
-    }
+    removeConnection(room, ws);
   });
-  for (let connection of connections) {
-    connection.send('User joined');
-  }
 }
 
 async function joinRoomOperation(ws, json) {
