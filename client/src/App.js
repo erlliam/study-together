@@ -301,9 +301,6 @@ function Room() {
     setPasswordRequired(false);
     setRoom(roomData.current);
     setError('');
-    webSocket.current.addEventListener('message', (event) => {
-      console.log(event.data);
-    });
   }
 
   return (
@@ -320,9 +317,42 @@ function Room() {
       {room && (
         <div className="room">
           <h1>{room.name}</h1>
+          <WsMessages ws={webSocket.current}/>
         </div>
       )}
     </>
+  );
+}
+
+function WsMessages(props) {
+  let [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    function handleMessage(event) {
+      setMessages((prevMessages) => {
+        return [
+          {
+            data: event.data,
+            key: event.timeStamp + event.data
+          },
+          ...prevMessages
+        ]
+      });
+    }
+    props.ws.addEventListener('message', handleMessage);
+    return (() => {
+      props.ws.removeEventListener('message', handleMessage);
+    });
+  }, []);
+
+  return (
+    <div>
+      {messages &&
+        messages.map((message, index) => (
+          <p key={message.key}>{message.data}</p>
+        ))
+      }
+    </div>
   );
 }
 
