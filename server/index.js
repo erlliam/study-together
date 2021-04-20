@@ -381,9 +381,7 @@ async function joinRoomOperation(ws, json) {
   } else if (await roomFull(room)) {
     ws.send(400);
   } else if (await userInRoom(user, room)) {
-    // todo: Use another status code or something...
-    // Right now the user will see "The room is full"
-    ws.send(400);
+    ws.send(405);
   } else {
     if (room.password === null) {
       await connectUser(ws, user, room);

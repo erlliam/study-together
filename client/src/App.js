@@ -279,6 +279,9 @@ function Room() {
           case 404:
             setError('The room does not exist.');
             break;
+          case 405:
+            setError('You are already in this room.');
+            break;
           default:
             setError('Something went wrong.');
         }
