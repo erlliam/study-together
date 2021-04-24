@@ -291,9 +291,9 @@ function Room() {
     }, {once: true});
     webSocket.current.send(JSON.stringify({
       operation: 'joinRoom',
+      token: cookies.token,
       id: id,
       password: password,
-      token: cookies.token
     }));
   }
 
@@ -317,10 +317,29 @@ function Room() {
       {room && (
         <div className="room">
           <h1>{room.name}</h1>
-          <WsMessages ws={webSocket.current}/>
+          <Chat ws={webSocket.current} />
+          <WsMessages ws={webSocket.current} />
         </div>
       )}
     </>
+  );
+}
+
+function Chat(props) {
+  function handleSubmit(event) {
+    event.preventDefault();
+    let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
+    props.ws.send(JSON.stringify({
+      operation: 'userMessage',
+      token: cookies.token
+    }));
+  }
+
+  return (
+    <form autoComplete="off" onSubmit={handleSubmit}>
+      <label>Send a message</label>
+      <input />
+    </form>
   );
 }
 

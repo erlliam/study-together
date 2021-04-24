@@ -410,6 +410,11 @@ async function joinRoomOperation(ws, json) {
   }
 }
 
+async function userMessageOperation(ws, json) {
+  let user = await getUserFromToken(json.token);
+  ws.send('todo: Implement me');
+}
+
 webSocket.on('connection', (ws) => {
   ws.on('message', async (message) => {
     try {
@@ -417,10 +422,16 @@ webSocket.on('connection', (ws) => {
       switch (json.operation) {
         case 'joinRoom':
           joinRoomOperation(ws, json);
+          break;
+        case 'userMessage':
+          userMessageOperation(ws, json);
+          break;
+        default:
+          throw Error('Operation not found');
       }
     } catch(error) {
       console.error(error);
-      ws.send(500);
+      ws.send(400);
     }
   });
 });
