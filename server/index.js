@@ -415,6 +415,14 @@ async function userMessageOperation(ws, json) {
   ws.send('todo: Implement me');
 }
 
+function parseJson(json) {
+  try {
+    return JSON.parse(json);
+  } catch(error) {
+    return undefined;
+  }
+}
+
 webSocket.on('connection', (ws) => {
   ws.on('message', async (message) => {
     try {
