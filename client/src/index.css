@@ -65,3 +65,9 @@ input {
   margin-bottom: 0.5rem;
   display: block;
 }
+
+.messages-box {
+  max-height: 20rem;
+  max-width: 15rem;
+  overflow-y: auto;
+}

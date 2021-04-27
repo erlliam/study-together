@@ -418,6 +418,8 @@ async function userMessageOperation(ws, json) {
       roomMessage(room, user.id + ': ' + json.message);
     }
   }
+  // todo: Don't allow empty messages...
+  // todo: Have some basic restrictions on messages?
   // note: If the user's message doesn't go through, they won't know.
 }
 

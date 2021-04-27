@@ -358,6 +358,7 @@ function Chat(props) {
 
 function WsMessages(props) {
   let [messages, setMessages] = useState([]);
+  let divElement = useRef();
 
   useEffect(() => {
     function handleMessage(event) {
@@ -377,8 +378,13 @@ function WsMessages(props) {
     });
   }, []);
 
+  useEffect(() => {
+    let d = divElement.current;
+    d.scrollTop = d.scrollHeight - d.clientHeight;
+  }, [messages]);
+
   return (
-    <div>
+    <div ref={divElement} className="messages-box">
       {messages &&
         messages.map((message, index) => (
           <p key={message.key}>{message.data}</p>
