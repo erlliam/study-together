@@ -212,7 +212,8 @@ function Room() {
   let isMounted = useRef(true);
   let roomData = useRef();
   let webSocket = useRef();
-  let {id} = useParams();
+  let params = useParams();
+  let id = params.id;
   let [error, setError] = useState('');
   let [loading, setLoading] = useState(true);
   let [room, setRoom] = useState();
@@ -326,19 +327,31 @@ function Room() {
 }
 
 function Chat(props) {
+  let params = useParams();
+  let id = params.id;
+  let [message, setMessage] = useState('');
+
   function handleSubmit(event) {
     event.preventDefault();
+
     let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
     props.ws.send(JSON.stringify({
       operation: 'userMessage',
-      token: cookies.token
+      id: id,
+      token: cookies.token,
+      message: message
     }));
+    setMessage('');
   }
 
   return (
     <form autoComplete="off" onSubmit={handleSubmit}>
-      <label>Send a message</label>
-      <input />
+      <label htmlFor="chat-message">Send a message</label>
+      <input
+        id="chat-message"
+        value={message}
+        onChange={e => setMessage(e.target.value)}
+      />
     </form>
   );
 }
@@ -380,6 +393,7 @@ function PasswordScreen(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
+
     props.joinRoom(password);
   }
 

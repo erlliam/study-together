@@ -411,8 +411,14 @@ async function joinRoomOperation(ws, json) {
 }
 
 async function userMessageOperation(ws, json) {
+  let room = await getRoom(json.id);
   let user = await getUserFromToken(json.token);
-  ws.send('todo: Implement me');
+  if (room !== undefined && user !== undefined) {
+    if (userInRoom(user, room)) {
+      roomMessage(room, user.id + ': ' + json.message);
+    }
+  }
+  // note: If the user's message doesn't go through, they won't know.
 }
 
 function parseJson(json) {
