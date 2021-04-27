@@ -363,11 +363,11 @@ function WsMessages(props) {
     function handleMessage(event) {
       setMessages((prevMessages) => {
         return [
+          ...prevMessages,
           {
             data: event.data,
             key: event.timeStamp + event.data
-          },
-          ...prevMessages
+          }
         ]
       });
     }
