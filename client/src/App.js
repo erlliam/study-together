@@ -15,6 +15,11 @@ import {
 
 let apiUrl = 'http://localhost:5000/api'
 
+function getToken() {
+  let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
+  return cookies.token;
+}
+
 function App() {
   useEffect(() => {
     async function init() {
@@ -264,7 +269,6 @@ function Room() {
   }
 
   async function joinRoom(password) {
-    let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
     webSocket.current.addEventListener('message', (event) => {
       if (isMounted.current) {
         switch (parseInt(event.data, 10)) {
@@ -292,7 +296,7 @@ function Room() {
     }, {once: true});
     webSocket.current.send(JSON.stringify({
       operation: 'joinRoom',
-      token: cookies.token,
+      token: getToken(),
       id: id,
       password: password,
     }));
@@ -336,11 +340,10 @@ function Chat(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
     props.ws.send(JSON.stringify({
       operation: 'userMessage',
       id: id,
-      token: cookies.token,
+      token: getToken(),
       message: message
     }));
     setMessage('');
