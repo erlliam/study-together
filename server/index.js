@@ -352,12 +352,24 @@ router.delete('/room/:id', async (req, res, next) => {
 });
 
 let connections = {};
+let intervalIds = {};
 
 function storeConnection(room, ws) {
-  if (connections[room.id] === undefined) {
-    connections[room.id] = [ws];
+  let roomId = room.id;
+  if (connections[roomId] === undefined) {
+    connections[roomId] = [ws];
+    let intervalId = setInterval(() => {
+      roomMessage(room, JSON.stringify({
+        operation: 'timeStamp',
+        timeStamp: new Date().getTime()
+      }));
+    }, 1000);
+    intervalIds[roomId] = intervalId;
   } else {
-    connections[room.id].push(ws);
+    connections[roomId].push(ws);
+    if (connections[roomId].length === 0) {
+      clearInterval(intervalIds[room.id]);
+    }
   }
 }
 

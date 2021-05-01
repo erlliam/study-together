@@ -324,11 +324,33 @@ function Room() {
       {roomJoined && (
         <div className="room">
           <h1>{room.current.name}</h1>
+          <Timer ws={webSocket.current} />
           <SendMessage ws={webSocket.current} />
           <Messages ws={webSocket.current} />
         </div>
       )}
     </>
+  );
+}
+
+function Timer(props) {
+  let [timeStamp, setTimeStamp] = useState();
+
+  useEffect(() => {
+    function handleMessage(event) {
+      let json = JSON.parse(event.data);
+      if (json.operation === 'timeStamp') {
+        setTimeStamp(json.timeStamp);
+      }
+    }
+    props.ws.addEventListener('message', handleMessage);
+    return (() => {
+      props.ws.removeEventListener('message', handleMessage);
+    });
+  }, []);
+
+  return (
+    <p>{timeStamp}</p>
   );
 }
 
