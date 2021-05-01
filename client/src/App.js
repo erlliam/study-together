@@ -210,7 +210,7 @@ function ListOfRooms() {
 
 function Room() {
   let isMounted = useRef(true);
-  let roomData = useRef();
+  let room = useRef();
   let webSocket = useRef();
   let params = useParams();
   let id = params.id;
@@ -228,8 +228,8 @@ function Room() {
 
     async function init() {
       await setRoomData();
-      if (isMounted.current && roomData.current !== undefined) {
-        if (roomData.current.password) {
+      if (isMounted.current && room.current !== undefined) {
+        if (room.current.password) {
           setPasswordRequired(true);
           setLoading(false);
         } else {
@@ -247,7 +247,7 @@ function Room() {
   async function setRoomData() {
     let response = await fetch(apiUrl + '/room/' + id);
     if (response.ok) {
-      roomData.current = await response.json();
+      room.current = await response.json();
     } else {
       if (isMounted.current) {
         switch (response.status) {
@@ -314,13 +314,13 @@ function Room() {
       )}
       {passwordRequired && (
         <PasswordPage
-          roomName={roomData.current.name}
+          roomName={room.current.name}
           joinRoom={joinRoom}
         />
       )}
       {roomJoined && (
         <div className="room">
-          <h1>{roomData.current.name}</h1>
+          <h1>{room.current.name}</h1>
           <Chat ws={webSocket.current} />
           <WsMessages ws={webSocket.current} />
         </div>
