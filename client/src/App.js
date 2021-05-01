@@ -33,7 +33,7 @@ function App() {
         case 401:
           return false;
         default:
-          throw Error('Unhandled status code');
+          throw Error('Unknown status code.');
       }
     }
 
@@ -43,7 +43,7 @@ function App() {
         credentials: 'include'
       });
       if (response.status !== 201) {
-        throw Error('Fatal error, failed to create user');
+        throw Error('Failed to create user.');
       }
     }
 
