@@ -216,7 +216,7 @@ function Room() {
   let id = params.id;
   let [error, setError] = useState('');
   let [loading, setLoading] = useState(true);
-  let [room, setRoom] = useState();
+  let [roomJoined, setRoomJoined] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
 
   useEffect(() => {
@@ -300,7 +300,7 @@ function Room() {
 
   function handleRoomJoined() {
     setPasswordRequired(false);
-    setRoom(roomData.current);
+    setRoomJoined(true);
     setError('');
   }
 
@@ -318,9 +318,9 @@ function Room() {
           joinRoom={joinRoom}
         />
       )}
-      {room && (
+      {roomJoined && (
         <div className="room">
-          <h1>{room.name}</h1>
+          <h1>{roomData.current.name}</h1>
           <Chat ws={webSocket.current} />
           <WsMessages ws={webSocket.current} />
         </div>
