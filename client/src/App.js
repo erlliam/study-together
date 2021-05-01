@@ -313,7 +313,10 @@ function Room() {
         <div>Loading...</div>
       )}
       {passwordRequired && (
-        <PasswordScreen joinRoom={joinRoom} />
+        <PasswordPage
+          roomName={roomData.current.name}
+          joinRoom={joinRoom}
+        />
       )}
       {room && (
         <div className="room">
@@ -394,18 +397,17 @@ function WsMessages(props) {
   );
 }
 
-function PasswordScreen(props) {
+function PasswordPage(props) {
   let [password, setPassword] = useState('');
 
   function handleSubmit(event) {
     event.preventDefault();
-
     props.joinRoom(password);
   }
 
   return (
-    <div className="password-room">
-      <h1>Password required</h1>
+    <div className="password-page">
+      <h1>Password required - {props.roomName}</h1>
       <form autoComplete="off" onSubmit={handleSubmit}>
         <label htmlFor="join-room-password">Enter password</label>
         <input
