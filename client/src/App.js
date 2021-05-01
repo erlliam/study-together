@@ -322,7 +322,7 @@ function Room() {
         <div className="room">
           <h1>{room.current.name}</h1>
           <Chat ws={webSocket.current} />
-          <WsMessages ws={webSocket.current} />
+          <Messages ws={webSocket.current} />
         </div>
       )}
     </>
@@ -336,7 +336,6 @@ function Chat(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-
     let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
     props.ws.send(JSON.stringify({
       operation: 'userMessage',
@@ -359,7 +358,7 @@ function Chat(props) {
   );
 }
 
-function WsMessages(props) {
+function Messages(props) {
   let [messages, setMessages] = useState([]);
   let divElement = useRef();
 
@@ -387,12 +386,10 @@ function WsMessages(props) {
   }, [messages]);
 
   return (
-    <div ref={divElement} className="messages-box">
-      {messages &&
-        messages.map((message, index) => (
-          <p key={message.key}>{message.data}</p>
-        ))
-      }
+    <div ref={divElement} className="messages">
+      {messages.map((message) => (
+        <p key={message.key}>{message.data}</p>
+      ))}
     </div>
   );
 }

@@ -66,7 +66,7 @@ input {
   display: block;
 }
 
-.messages-box {
+.messages {
   max-height: 20rem;
   max-width: 15rem;
   overflow-y: auto;
