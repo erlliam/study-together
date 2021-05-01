@@ -290,7 +290,6 @@ function Room() {
           default:
             setError('Something went wrong.');
         }
-
         setLoading(false);
       }
     }, {once: true});
@@ -325,7 +324,7 @@ function Room() {
       {roomJoined && (
         <div className="room">
           <h1>{room.current.name}</h1>
-          <Chat ws={webSocket.current} />
+          <SendMessage ws={webSocket.current} />
           <Messages ws={webSocket.current} />
         </div>
       )}
@@ -333,7 +332,7 @@ function Room() {
   );
 }
 
-function Chat(props) {
+function SendMessage(props) {
   let params = useParams();
   let id = params.id;
   let [message, setMessage] = useState('');
