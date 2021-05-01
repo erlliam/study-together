@@ -379,9 +379,15 @@ async function connectUser(ws, user, room) {
   ws.on('close', async () => {
     removeUserFromRoom(user, room);
     removeConnection(room, ws);
-    roomMessage(room, user.id + ' left.');
+    roomMessage(room, JSON.stringify({
+      operation: 'message',
+      message: user.id + ' left.'
+    }))
   });
-  roomMessage(room, user.id + ' joined.');
+  roomMessage(room, JSON.stringify({
+    operation: 'message',
+    message: user.id + ' joined.'
+  }))
 }
 
 async function joinRoomOperation(ws, json) {
@@ -415,7 +421,10 @@ async function userMessageOperation(ws, json) {
   let user = await getUserFromToken(json.token);
   if (room !== undefined && user !== undefined) {
     if (userInRoom(user, room)) {
-      roomMessage(room, user.id + ': ' + json.message);
+      roomMessage(room, JSON.stringify({
+        operation: 'message',
+        message: user.id + ': ' + json.message
+      }))
     }
   }
   // todo: Don't allow empty messages...

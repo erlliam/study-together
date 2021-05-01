@@ -366,15 +366,18 @@ function Messages(props) {
 
   useEffect(() => {
     function handleMessage(event) {
-      setMessages((prevMessages) => {
-        return [
-          ...prevMessages,
-          {
-            data: event.data,
-            key: event.timeStamp + event.data
-          }
-        ]
-      });
+      let json = JSON.parse(event.data);
+      if (json.operation === 'message') {
+        setMessages((prevMessages) => {
+          return [
+            ...prevMessages,
+            {
+              data: json.message,
+              key: event.timeStamp + event.data
+            }
+          ]
+        });
+      }
     }
     props.ws.addEventListener('message', handleMessage);
     return (() => {
