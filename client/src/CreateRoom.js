@@ -16,6 +16,16 @@ let apiUrl = 'http://localhost:5000/api'
     display some state that confirms your request is being processed
     display something in the case of a server error
 */
+function apiFetch(url, options) {
+  return fetch(apiUrl + url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    ...options
+  });
+}
 
 function Error(props) {
   let innerHTML;
@@ -46,18 +56,14 @@ function CreateRoom() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    let response = await fetch(apiUrl + '/room/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+    let response = await apiFetch('/room/create', {
       body: JSON.stringify({
         name: name,
         password: password,
         capacity: capacity
-      }),
-      credentials: 'include'
+      })
     });
+
     if (isMounted.current) {
       if (response.ok) {
         let json = await response.json();
