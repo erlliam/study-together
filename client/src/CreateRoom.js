@@ -17,13 +17,25 @@ let apiUrl = 'http://localhost:5000/api'
     display something in the case of a server error
 */
 
+function Error(props) {
+  let innerHTML;
+  if (props.children === '') {
+    innerHTML = <>&nbsp;</>
+  } else {
+    innerHTML = props.children;
+  }
+  return (
+    <div className="error">{innerHTML}</div>
+  );
+}
+
 function CreateRoom() {
   let isMounted = useRef(true);
   let history = useHistory();
   let [name, setName] = useState('');
   let [password, setPassword] = useState('');
   let [capacity, setCapacity] = useState('4');
-  let [error, setError] = useState(' ');
+  let [error, setError] = useState('');
 
   useEffect(() => {
     return (() => {
@@ -59,7 +71,7 @@ function CreateRoom() {
   return (
     <div className="create-room">
       <h1>Create a Room</h1>
-      <div className="error">{error}</div>
+      <Error>{error}</Error>
       <form autoComplete="off" onSubmit={handleSubmit}>
         <label htmlFor="create-room-name">Room name</label>
         <input
