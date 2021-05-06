@@ -10,20 +10,20 @@ import {
 
 let apiUrl = 'http://localhost:5000/api'
 
-function CreateRoom() {
-  // todo: Don't allow names that only contain spaces
-  /* todo: UX
-      remove error message when you start typing
-      display some state that confirms your request is being processed
-      display something in the case of a server error
-  */
+// todo: Don't allow names that only contain spaces
+/* todo: UX
+    remove error message when you start typing
+    display some state that confirms your request is being processed
+    display something in the case of a server error
+*/
 
+function CreateRoom() {
   let isMounted = useRef(true);
   let history = useHistory();
   let [name, setName] = useState('');
   let [password, setPassword] = useState('');
   let [capacity, setCapacity] = useState('4');
-  let [error, setError] = useState();
+  let [error, setError] = useState(' ');
 
   useEffect(() => {
     return (() => {
@@ -59,7 +59,7 @@ function CreateRoom() {
   return (
     <div className="create-room">
       <h1>Create a Room</h1>
-      {error && <div className="error">{error}</div>}
+      <div className="error">{error}</div>
       <form autoComplete="off" onSubmit={handleSubmit}>
         <label htmlFor="create-room-name">Room name</label>
         <input
@@ -69,6 +69,7 @@ function CreateRoom() {
           autoFocus
           required
         />
+
         <label htmlFor="create-room-password">Password (optional)</label>
         <input
           id="create-room-password"
@@ -76,6 +77,7 @@ function CreateRoom() {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
+
         <label htmlFor="create-room-capacity">Room capacity (16 max)</label>
         <input
           id="create-room-capacity"
@@ -85,6 +87,7 @@ function CreateRoom() {
           onChange={e => setCapacity(e.target.value)}
           required
         />
+
         <button>Create room</button>
       </form>
     </div>
