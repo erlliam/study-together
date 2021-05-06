@@ -8,7 +8,10 @@ import {
   useHistory,
 } from 'react-router-dom';
 
-let apiUrl = 'http://localhost:5000/api'
+import {
+  apiFetch,
+  Error
+} from './utils';
 
 // todo: Don't allow names that only contain spaces
 /* todo: UX
@@ -16,28 +19,6 @@ let apiUrl = 'http://localhost:5000/api'
     display some state that confirms your request is being processed
     display something in the case of a server error
 */
-function apiFetch(url, options) {
-  return fetch(apiUrl + url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    ...options
-  });
-}
-
-function Error(props) {
-  let innerHTML;
-  if (props.children === '') {
-    innerHTML = <>&nbsp;</>
-  } else {
-    innerHTML = props.children;
-  }
-  return (
-    <div className="error">{innerHTML}</div>
-  );
-}
 
 function CreateRoom() {
   let isMounted = useRef(true);
