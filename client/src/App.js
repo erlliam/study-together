@@ -12,9 +12,13 @@ import {
   useParams
 } from 'react-router-dom';
 
-import CreateRoom from './CreateRoom';
+import {
+  apiGet,
+  apiPost,
+  Error
+} from './utils';
 
-let apiUrl = 'http://localhost:5000/api'
+import CreateRoom from './CreateRoom';
 
 function getToken() {
   let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
@@ -30,9 +34,7 @@ function App() {
     }
 
     async function userExists() {
-      let response = await fetch(apiUrl + '/user', {
-        credentials: 'include'
-      });
+      let response = await apiGet('/user');
       switch (response.status) {
         case 200:
           return true;
@@ -44,10 +46,7 @@ function App() {
     }
 
     async function createUser() {
-      let response = await fetch(apiUrl + '/user/create', {
-        method: 'POST',
-        credentials: 'include'
-      });
+      let response = await apiPost('/user/create');
       if (response.status !== 201) {
         throw Error('Failed to create user.');
       }
@@ -95,7 +94,7 @@ function ListOfRooms() {
 
   useEffect(() => {
     async function init() {
-      let response = await fetch(apiUrl + '/room/all');
+      let response = await apiGet('/room/all');
       if (isMounted.current) {
         if (response.ok) {
           setRooms(await response.json());
@@ -171,7 +170,7 @@ function Room() {
   }, [webSocket]);
 
   async function setRoomData() {
-    let response = await fetch(apiUrl + '/room/' + id);
+    let response = await apiGet('/room/' + id);
     if (response.ok) {
       room.current = await response.json();
     } else {
