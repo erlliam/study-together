@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 
 import {
-  apiFetch,
+  apiPost,
   Error
 } from './utils';
 
@@ -37,7 +37,7 @@ function CreateRoom() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    let response = await apiFetch('/room/create', {
+    let response = await apiPost('/room/create', {
       body: JSON.stringify({
         name: name,
         password: password,

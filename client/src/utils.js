@@ -1,11 +1,18 @@
 let apiUrl = 'http://localhost:5000/api'
 
-function apiFetch(url, options) {
+function apiPost(url, options) {
   return fetch(apiUrl + url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
+    credentials: 'include',
+    ...options
+  });
+}
+
+function apiGet(url, options) {
+  return fetch(apiUrl + url, {
     credentials: 'include',
     ...options
   });
@@ -23,4 +30,4 @@ function Error(props) {
   );
 }
 
-export {apiFetch, Error};
+export {apiPost, apiGet, Error};
