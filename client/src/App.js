@@ -136,6 +136,7 @@ function CreateRoom() {
           id="create-room-name"
           value={name}
           onChange={e => setName(e.target.value)}
+          autoFocus
           required
         />
         <label htmlFor="create-room-password">Password (optional)</label>
@@ -439,6 +440,8 @@ function PasswordPage(props) {
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
+          autoFocus
+          required
         />
         <button>Join room</button>
       </form>
