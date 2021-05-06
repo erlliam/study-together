@@ -69,9 +69,15 @@ function CreateRoom() {
         let json = await response.json();
         history.replace('/room/' + json.id);
       } else {
-        setError('Invalid input');
+        // todo: Don't just assume the name is invalid.
+        setError('Invalid name');
       }
     }
+  }
+
+  function handleNameChange(event) {
+    setName(event.target.value);
+    setError('');
   }
 
   return (
@@ -83,7 +89,7 @@ function CreateRoom() {
         <input
           id="create-room-name"
           value={name}
-          onChange={e => setName(e.target.value)}
+          onChange={handleNameChange}
           autoFocus
           required
         />
