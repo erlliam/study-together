@@ -416,7 +416,8 @@ async function joinRoomOperation(ws, json) {
   } else if (await userInRoom(user, room)) {
     ws.send(405);
   } else {
-    if (room.password === null) {
+    if (room.ownerId === user.id ||
+        room.password === null) {
       await connectUser(ws, user, room);
     } else {
       if (bcrypt.compareSync(password, room.password)) {

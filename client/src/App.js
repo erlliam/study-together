@@ -149,11 +149,13 @@ function Room() {
     async function init() {
       await setRoomData();
       if (isMounted.current && room.current !== undefined) {
-        if (room.current.password) {
+        let userId = localStorage.getItem('id');
+        if (room.current.ownerId == userId ||
+            !room.current.password) {
+          joinRoom();
+        } else {
           setPasswordRequired(true);
           setLoading(false);
-        } else {
-          joinRoom();
         }
       }
     }
