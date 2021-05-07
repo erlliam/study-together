@@ -61,7 +61,7 @@ function App() {
       <Switch>
         <Route exact path="/"><StartingPage /></Route>
         <Route path="/create-room"><CreateRoom /></Route>
-        <Route path="/rooms"><ListOfRooms /></Route>
+        <Route path="/rooms"><RoomList /></Route>
         <Route path="/room/:id"><Room /></Route>
         <Route path="*"><h1>404</h1></Route>
       </Switch>
@@ -81,7 +81,7 @@ function StartingPage() {
   );
 }
 
-function ListOfRooms() {
+function RoomList() {
   let isMounted = useRef(true);
   let [error, setError] = useState('');
   let [loading, setLoading] = useState(true);

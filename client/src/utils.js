@@ -24,14 +24,14 @@ function getToken() {
 }
 
 function Error(props) {
-  let innerHTML;
+  let innerHtml;
   if (props.children === '') {
-    innerHTML = <>&nbsp;</>
+    innerHtml = <>&nbsp;</>
   } else {
-    innerHTML = props.children;
+    innerHtml = props.children;
   }
   return (
-    <div className="error">{innerHTML}</div>
+    <div className="error">{innerHtml}</div>
   );
 }
 
