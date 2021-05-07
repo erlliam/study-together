@@ -160,7 +160,7 @@ function Room() {
     async function init() {
       await setRoomData();
       if (isMounted.current && room.current !== undefined) {
-        let userId = localStorage.getItem('id');
+        let userId = parseInt(localStorage.getItem('id'), 10);
         if (room.current.ownerId === userId ||
             !room.current.password) {
           joinRoom();
