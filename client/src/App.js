@@ -169,19 +169,18 @@ function Room() {
 
   async function setRoomData() {
     let response = await apiGet('/room/' + id);
-    if (response.ok) {
-      room.current = await response.json();
-    } else {
-      if (isMounted.current) {
-        switch (response.status) {
-          case 404:
-            setError('The room does not exist.');
-            setLoading(false);
-            break;
-          default:
-            setError('Something went wrong.');
-            setLoading(false);
-        }
+    if (isMounted.current) {
+      switch (response.status) {
+        case 200:
+          room.current = await response.json();
+          break;
+        case 404:
+          setError('The room does not exist.');
+          setLoading(false);
+          break;
+        default:
+          setError('Something went wrong.');
+          setLoading(false);
       }
     }
   }
