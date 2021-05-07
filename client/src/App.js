@@ -15,15 +15,11 @@ import {
 import {
   apiGet,
   apiPost,
+  getToken,
   Error
 } from './utils';
 
 import CreateRoom from './CreateRoom';
-
-function getToken() {
-  let cookies = Object.fromEntries(document.cookie.split('; ').map(x => x.split('=')));
-  return cookies.token;
-}
 
 function App() {
   useEffect(() => {
