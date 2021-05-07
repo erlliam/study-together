@@ -62,7 +62,7 @@ function App() {
         <Route exact path="/"><StartingPage /></Route>
         <Route path="/create-room"><CreateRoom /></Route>
         <Route path="/rooms"><RoomList /></Route>
-        <Route path="/room/:id"><Room /></Route>
+        <Route path="/room/:id"><RoomMiddleMan /></Route>
         <Route path="*"><h1>404</h1></Route>
       </Switch>
     </Router>
@@ -140,7 +140,7 @@ function RoomList() {
   );
 }
 
-function Room() {
+function RoomMiddleMan() {
   let isMounted = useRef(true);
   let room = useRef();
   let webSocket = useRef();
@@ -247,14 +247,23 @@ function Room() {
         />
       )}
       {roomJoined && (
-        <div className="room">
-          <h1>{room.current.name}</h1>
-          <Timer ws={webSocket.current} />
-          <SendMessage ws={webSocket.current} />
-          <Messages ws={webSocket.current} />
-        </div>
+        <Room room={room.current} ws={webSocket.current}/>
       )}
     </>
+  );
+}
+
+function Room(props) {
+  let [error, setError] = useState('');
+
+  return (
+    <div className="room">
+      <h1>{props.room.name}</h1>
+      <Error>{error}</Error>
+      <Timer ws={props.ws} />
+      <SendMessage ws={props.ws} />
+      <Messages ws={props.ws} />
+    </div>
   );
 }
 
