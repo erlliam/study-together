@@ -33,6 +33,8 @@ function App() {
       let response = await apiGet('/user');
       switch (response.status) {
         case 200:
+          let json = await response.json();
+          localStorage.setItem('id', json.id);
           return true;
         case 401:
           return false;
@@ -78,7 +80,7 @@ function StartingPage() {
 
 function ListOfRooms() {
   let isMounted = useRef(true);
-  let [error, setError] = useState(false);
+  let [error, setError] = useState('');
   let [loading, setLoading] = useState(true);
   let [rooms, setRooms] = useState();
 
@@ -144,7 +146,6 @@ function Room() {
       webSocket.current = ws;
       init();
     });
-
     async function init() {
       await setRoomData();
       if (isMounted.current && room.current !== undefined) {
@@ -161,7 +162,7 @@ function Room() {
       isMounted.current = false;
       ws.close();
     });
-  }, [webSocket]);
+  }, []);
 
   async function setRoomData() {
     let response = await apiGet('/room/' + id);

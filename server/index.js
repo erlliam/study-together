@@ -123,7 +123,7 @@ router.get('/user', async (req, res, next) => {
     if (user === undefined) {
       res.sendStatus(401);
     } else {
-      res.sendStatus(200);
+      res.send({id: user.id});
     }
   } catch(error) {
     next(error);
