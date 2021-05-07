@@ -153,7 +153,7 @@ function Room() {
       await setRoomData();
       if (isMounted.current && room.current !== undefined) {
         let userId = localStorage.getItem('id');
-        if (room.current.ownerId == userId ||
+        if (room.current.ownerId === userId ||
             !room.current.password) {
           joinRoom();
         } else {
@@ -264,7 +264,7 @@ function Timer(props) {
     return (() => {
       props.ws.removeEventListener('message', handleMessage);
     });
-  }, []);
+  }, [props.ws]);
 
   return (
     <p>{timeStamp}</p>
@@ -322,7 +322,7 @@ function Messages(props) {
     return (() => {
       props.ws.removeEventListener('message', handleMessage);
     });
-  }, []);
+  }, [props.ws]);
 
   useEffect(() => {
     let d = divElement.current;
