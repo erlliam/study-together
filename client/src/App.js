@@ -108,6 +108,24 @@ function RoomList() {
     init();
   }, []);
 
+  let roomsInnerHtml;
+  if (!loading && Array.isArray(rooms)) {
+    if (rooms.length === 0) {
+      // todo: Suggest the user to create a room.
+      roomsInnerHtml = 'No rooms found.'
+    } else {
+      roomsInnerHtml = rooms.map(({id, password, name, usersConnected, userCapacity}) => (
+        <Link to={'/room/' + id} key={id}>
+          <span>{password ? 'private' : 'public'}</span>
+          {' '}
+          <span>{name}</span>
+          {' '}
+          <span>{usersConnected}/{userCapacity}</span>
+        </Link>
+      ))
+    }
+  }
+
   return (
     <div className="join-room">
       <h1>Join a Room</h1>
@@ -116,17 +134,7 @@ function RoomList() {
         {loading && (
           <div>Loading...</div>
         )}
-        {rooms && (
-          rooms.map(({id, password, name, usersConnected, userCapacity}) => (
-            <Link to={'/room/' + id} key={id}>
-              <span>{password ? 'private' : 'public'}</span>
-              {' '}
-              <span>{name}</span>
-              {' '}
-              <span>{usersConnected}/{userCapacity}</span>
-            </Link>
-          ))
-        )}
+        {roomsInnerHtml}
       </nav>
     </div>
   );
