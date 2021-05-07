@@ -111,9 +111,7 @@ function ListOfRooms() {
     <div className="join-room">
       <h1>Join a Room</h1>
       <nav>
-        {error && (
-          <div className="error">{error}</div>
-        )}
+        <Error>{error}</Error>
         {loading && (
           <div>Loading...</div>
         )}
@@ -229,9 +227,7 @@ function Room() {
 
   return (
     <>
-      {error && (
-        <div className="error">{error}</div>
-      )}
+      <Error>{error}</Error>
       {loading && (
         <div>Loading...</div>
       )}
