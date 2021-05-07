@@ -133,7 +133,7 @@ router.get('/user', async (req, res, next) => {
 router.post('/user/create', async (req, res, next) => {
   try {
     let user = await addUserToDatabase();
-    res.cookie('token', user.token);
+    res.cookie('token', user.token, {maxAge: 1000 * 60 * 60 * 24 * 14});
     res.status(201).send({id: user.id});
   } catch(error) {
     next(error);
