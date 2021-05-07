@@ -45,7 +45,10 @@ function App() {
 
     async function createUser() {
       let response = await apiPost('/user/create');
-      if (response.status !== 201) {
+      if (response.status === 201) {
+        let json = await response.json();
+        localStorage.setItem('id', json.id);
+      } else {
         throw Error('Failed to create user.');
       }
     }

@@ -107,11 +107,11 @@ function addUserToDatabase() {
     db.run(`
       INSERT INTO user (token)
       VALUES (?);
-    `, token, (error) => {
+    `, token, function(error) {
       if (error) {
         reject(error);
       } else {
-        resolve(token);
+        resolve({id: this.lastID, token: token});
       }
     });
   });
@@ -132,9 +132,9 @@ router.get('/user', async (req, res, next) => {
 
 router.post('/user/create', async (req, res, next) => {
   try {
-    let token = await addUserToDatabase();
-    res.cookie('token', token);
-    res.sendStatus(201);
+    let user = await addUserToDatabase();
+    res.cookie('token', user.token);
+    res.status(201).send({id: user.id});
   } catch(error) {
     next(error);
   }
