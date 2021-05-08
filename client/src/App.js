@@ -113,8 +113,13 @@ function RoomList() {
   let roomsInnerHtml;
   if (!loading && Array.isArray(rooms)) {
     if (rooms.length === 0) {
-      // todo: Suggest the user to create a room.
-      roomsInnerHtml = 'No rooms found.'
+      // todo: Don't use default link styling for this link...
+      // (remove padding and display block)
+      roomsInnerHtml = <>
+        <p>No rooms found. <Link
+          to='/create-room'
+        >You should create one.</Link></p>
+      </>
     } else {
       roomsInnerHtml = rooms.map(({id, password, name, usersConnected, userCapacity}) => (
         <Link to={'/room/' + id} key={id}>
