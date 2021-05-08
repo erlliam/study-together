@@ -267,7 +267,6 @@ function Room(props) {
   let history = useHistory();
 
   async function handleDeleteClick(event) {
-    console.log(props.room);
     let response = await apiDelete('/room/' + props.room.id);
     if (response.ok) {
       history.replace('/rooms');
@@ -360,9 +359,24 @@ function Messages(props) {
         });
       }
     }
+    function handleClose(event) {
+      // todo: Normal close is error code 1000
+      // make this a switch statement
+      setMessages((prevMessages) => {
+        return [
+          ...prevMessages,
+          {
+            data: event.reason,
+            key: event.timeStamp + event.reason
+          }
+        ]
+      });
+    }
     props.ws.addEventListener('message', handleMessage);
+    props.ws.addEventListener('close', handleClose);
     return (() => {
       props.ws.removeEventListener('message', handleMessage);
+      props.ws.removeEventListener('close', handleClose);
     });
   }, [props.ws]);
 
