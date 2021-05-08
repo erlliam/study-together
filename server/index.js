@@ -61,6 +61,9 @@ db.serialize(() => {
   `);
 });
 
+let connections = {};
+let intervalIds = {};
+
 function generateToken() {
   return new Promise((resolve, reject) => {
     crypto.randomBytes(16, (error, bytes) => {
@@ -181,16 +184,18 @@ function getUsersConnected(id) {
   });
 }
 
-function deleteRoom(id) {
-  // todo: Clean up websockets and connections, etc
+function deleteRoom(room) {
   return new Promise((resolve, reject) => {
+    for (connection of connections[room.id]) {
+      connection.close(1000, 'Room has been deleted');
+    }
     db.serialize(() => {
-      db.run('DELETE FROM roomUser WHERE roomId = ?', id, (error) => {
+      db.run('DELETE FROM roomUser WHERE roomId = ?', room.id, (error) => {
         if (error) {
           reject(error);
         }
       });
-      db.run('DELETE FROM room WHERE id = ?', id, (error) => {
+      db.run('DELETE FROM room WHERE id = ?', room.id, (error) => {
         if (error) {
           reject(error);
         } else {
@@ -351,16 +356,13 @@ router.delete('/room/:id', async (req, res, next) => {
     } else if (room === undefined){
       res.sendStatus(404);
     } else {
-      await deleteRoom(id);
+      await deleteRoom(room);
       res.sendStatus(200);
     }
   } catch(error) {
     next(error);
   }
 });
-
-let connections = {};
-let intervalIds = {};
 
 function storeConnection(room, ws) {
   let roomId = room.id;
