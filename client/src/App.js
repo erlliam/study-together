@@ -9,11 +9,13 @@ import {
   Switch,
   Route,
   Link,
-  useParams
+  useParams,
+  useHistory
 } from 'react-router-dom';
 
 import {
   apiGet,
+  apiDelete,
   apiPost,
   getToken,
   Error
@@ -255,10 +257,24 @@ function RoomMiddleMan() {
 
 function Room(props) {
   let [error, setError] = useState('');
+  let history = useHistory();
+
+  async function handleDeleteClick(event) {
+    console.log(props.room);
+    let response = await apiDelete('/room/' + props.room.id);
+    if (response.ok) {
+      history.replace('/rooms');
+    } else {
+      setError('failed to delete room');
+    }
+  }
 
   return (
     <div className="room">
       <h1>{props.room.name}</h1>
+      <nav>
+        <button onClick={handleDeleteClick}>Delete room</button>
+      </nav>
       <Error>{error}</Error>
       <Timer ws={props.ws} />
       <SendMessage ws={props.ws} />

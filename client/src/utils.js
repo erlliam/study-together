@@ -7,6 +7,14 @@ function apiGet(url, options) {
   });
 }
 
+function apiDelete(url, options) {
+  return fetch(apiUrl + url, {
+    method: 'DELETE',
+    credentials: 'include',
+    ...options
+  });
+}
+
 function apiPost(url, options) {
   return fetch(apiUrl + url, {
     method: 'POST',
@@ -37,6 +45,7 @@ function Error(props) {
 
 export {
   apiGet,
+  apiDelete,
   apiPost,
   getToken,
   Error

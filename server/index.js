@@ -182,13 +182,21 @@ function getUsersConnected(id) {
 }
 
 function deleteRoom(id) {
+  // todo: Clean up websockets and connections, etc
   return new Promise((resolve, reject) => {
-    db.run('DELETE FROM room WHERE id = ?', id, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
+    db.serialize(() => {
+      db.run('DELETE FROM roomUser WHERE roomId = ?', id, (error) => {
+        if (error) {
+          reject(error);
+        }
+      });
+      db.run('DELETE FROM room WHERE id = ?', id, (error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
     });
   });
 }
