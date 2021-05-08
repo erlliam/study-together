@@ -162,9 +162,7 @@ function RoomMiddleMan() {
     async function init() {
       await setRoomData();
       if (isMounted.current && room.current !== undefined) {
-        let userId = parseInt(localStorage.getItem('id'), 10);
-        if (room.current.ownerId === userId ||
-            !room.current.password) {
+        if (isRoomOwner() || !room.current.password) {
           joinRoom();
         } else {
           setPasswordRequired(true);
@@ -178,6 +176,11 @@ function RoomMiddleMan() {
       ws.close();
     });
   }, []);
+
+  function isRoomOwner() {
+    let userId = parseInt(localStorage.getItem('id'), 10);
+    return userId === room.current.ownerId;
+  }
 
   async function setRoomData() {
     let response = await apiGet('/room/' + id);
@@ -249,7 +252,11 @@ function RoomMiddleMan() {
         />
       )}
       {roomJoined && (
-        <Room room={room.current} ws={webSocket.current}/>
+        <Room
+          room={room.current}
+          ws={webSocket.current}
+          isRoomOwner={isRoomOwner()}
+        />
       )}
     </>
   );
@@ -273,7 +280,9 @@ function Room(props) {
     <div className="room">
       <h1>{props.room.name}</h1>
       <nav>
-        <button onClick={handleDeleteClick}>Delete room</button>
+        {props.isRoomOwner && (
+          <button onClick={handleDeleteClick}>Delete room</button>
+        )}
       </nav>
       <Error>{error}</Error>
       <Timer ws={props.ws} />
