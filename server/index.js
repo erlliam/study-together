@@ -32,7 +32,7 @@ db.serialize(() => {
   // If the server is just starting up, no users are connected.
   // todo: Find a better way to do this?
   db.run('DROP TABLE IF EXISTS roomUser;');
-  db.run('DROP TABLE IF EXISTS roomTimer;');
+  // db.run('DROP TABLE IF EXISTS roomTimer;');
   // Activate foreign_keys after all data is wiped.
   db.run(`PRAGMA foreign_keys = ON;`);
   db.run(`
@@ -340,6 +340,7 @@ router.post('/room/create', async (req, res, next) => {
       res.sendStatus(401);
     } else if (validRoom(room)) {
       let id = await addRoomToDatabase(user.id, room);
+      await createTimer({id: id});
       res.status(201).send({id: id});
     } else {
       res.sendStatus(400);
@@ -382,6 +383,7 @@ router.delete('/room/:id', async (req, res, next) => {
     } else if (room === undefined){
       res.sendStatus(404);
     } else {
+      await deleteTimer(room);
       await deleteRoom(room);
       res.sendStatus(200);
     }
@@ -405,15 +407,55 @@ function createTimer(room) {
   });
 }
 
+function deleteTimer(room) {
+  return new Promise((resolve, reject) => {
+    db.run('DELETE FROM roomTimer WHERE roomId = ?', room.id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function setTimer(room, state) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      UPDATE roomTimer
+      SET state = ?
+      WHERE roomId = ?;
+    `, state, room.id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+async function startTimer(room) {
+  await setTimer(room, 1);
+  roomMessage(room, JSON.stringify({
+    operation: 'startTimer'
+  }));
+}
+
+async function stopTimer(room) {
+  await setTimer(room, 0);
+  roomMessage(room, JSON.stringify({
+    operation: 'stopTimer'
+  }));
+}
+
 router.get('/timer/:id/start', async (req, res, next) => {
   try {
     let id = req.params.id;
     let room = await getRoom(id);
     let user = await getUserFromToken(req.cookies.token);
     if (room.ownerId === user.id) {
-      roomMessage(room, JSON.stringify({
-        operation: 'startTimer'
-      }));
+      await startTimer(room);
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -429,9 +471,7 @@ router.get('/timer/:id/stop', async (req, res, next) => {
     let room = await getRoom(id);
     let user = await getUserFromToken(req.cookies.token);
     if (room.ownerId === user.id) {
-      roomMessage(room, JSON.stringify({
-        operation: 'stopTimer'
-      }));
+      await stopTimer(room);
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
