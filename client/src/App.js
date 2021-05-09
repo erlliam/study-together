@@ -324,28 +324,17 @@ function Room(props) {
 
 function Timer(props) {
   let [timeElapsed, setTimeElapsed] = useState(0);
-  let intervalId = useRef();
 
   useEffect(() => {
     function handleMessage(event) {
       let json = JSON.parse(event.data);
-      switch (json.operation) {
-        case 'startTimer':
-          intervalId.current = setInterval(() => {
-            setTimeElapsed((currentTimeElapsed) => {
-              return currentTimeElapsed + 1
-            });
-          }, 1000);
-          break;
-        case 'stopTimer':
-          clearInterval(intervalId.current);
-          break;
+      if (json.operation === 'timerUpdate') {
+        setTimeElapsed(json.timeElapsed);
       }
     }
     props.ws.addEventListener('message', handleMessage);
     return (() => {
       props.ws.removeEventListener('message', handleMessage);
-      clearInterval(intervalId.current);
     });
   }, [props.ws]);
 

@@ -71,7 +71,7 @@ db.serialize(() => {
     interval in seconds
     1500seconds = 25minutes
   timeElapsed:
-    time in milliseconds
+    time in seconds
   */
   db.run(`
     CREATE TABLE IF NOT EXISTS roomTimer (
@@ -435,11 +435,55 @@ function setTimer(room, state) {
   });
 }
 
+function incrementTimer(room) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      UPDATE roomTimer
+      SET timeElapsed = timeElapsed + 1
+      WHERE roomId = ?;
+    `, room.id, function(error) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function getTimeElapsed(room) {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT timeElapsed
+      FROM roomTimer
+      WHERE roomId = ?;
+    `, room.id, (error, timeElapsed) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(timeElapsed.timeElapsed);
+      }
+    });
+  });
+}
+
+timerIntervals = {};
+
 async function startTimer(room) {
   await setTimer(room, 1);
   roomMessage(room, JSON.stringify({
     operation: 'startTimer'
   }));
+  // todo: don't allow start timer to run if
+  // the timer is already started
+  let interval = setInterval(async () => {
+    await incrementTimer(room);
+    roomMessage(room, JSON.stringify({
+      operation: 'timerUpdate',
+      timeElapsed: await getTimeElapsed(room)
+    }));
+  }, 1000);
+  timerIntervals[room.id] = interval;
 }
 
 async function stopTimer(room) {
@@ -447,6 +491,9 @@ async function stopTimer(room) {
   roomMessage(room, JSON.stringify({
     operation: 'stopTimer'
   }));
+  // todo: fix memory leak if room is deleted.
+  clearInterval(timerIntervals[room.id]);
+  timerIntervals[room.id] = undefined;
 }
 
 router.get('/timer/:id/start', async (req, res, next) => {
@@ -488,25 +535,12 @@ function storeConnection(room, ws) {
   } else {
     connections[roomId].push(ws);
   }
-  if (intervalIds[roomId] === undefined) {
-    let intervalId = setInterval(() => {
-      roomMessage(room, JSON.stringify({
-        operation: 'timeStamp',
-        timeStamp: new Date().getTime()
-      }));
-    }, 1000);
-    intervalIds[roomId] = intervalId;
-  }
 }
 
 function removeConnection(room, ws) {
   let roomId = room.id;
   let indexOfWs = connections[roomId].indexOf(ws);
   connections[roomId].splice(indexOfWs, 1);
-  if (connections[roomId].length === 0) {
-    clearInterval(intervalIds[roomId]);
-    intervalIds[roomId] = undefined;
-  }
 }
 
 function roomMessage(room, message) {
