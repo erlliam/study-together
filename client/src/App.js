@@ -319,24 +319,35 @@ function Room(props) {
 }
 
 function Timer(props) {
-  let [timeStamp, setTimeStamp] = useState();
+  let [timeElapsed, setTimeElapsed] = useState(0);
+  let intervalId = useRef();
 
   useEffect(() => {
     function handleMessage(event) {
       let json = JSON.parse(event.data);
-      if (json.operation === 'timeStamp') {
-        setTimeStamp(json.timeStamp);
+      switch (json.operation) {
+        case 'startTimer':
+          intervalId.current = setInterval(() => {
+            setTimeElapsed((currentTimeElapsed) => {
+              return currentTimeElapsed + 1
+            });
+          }, 1000);
+          break;
+        case 'stopTimer':
+          clearInterval(intervalId.current);
+          break;
       }
     }
     props.ws.addEventListener('message', handleMessage);
     return (() => {
       props.ws.removeEventListener('message', handleMessage);
+      clearInterval(intervalId.current);
     });
   }, [props.ws]);
 
   return (
     <div>
-      <p>{timeStamp}</p>
+      <p>{timeElapsed}</p>
     </div>
   );
 }
