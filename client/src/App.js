@@ -60,6 +60,11 @@ function App() {
 
   return (
     <Router>
+      <nav className="top-nav">
+        <Link to="/">Home</Link>
+        <Link to="/create-room">Create a room</Link>
+        <Link to="/rooms">Join a room</Link>
+      </nav>
       <Switch>
         <Route exact path="/"><StartingPage /></Route>
         <Route path="/create-room"><CreateRoom /></Route>

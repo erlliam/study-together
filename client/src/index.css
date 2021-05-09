@@ -38,6 +38,11 @@ input {
   margin-bottom: 0.75rem;
 }
 
+.top-nav {
+  display: flex;
+  gap: 1rem;
+}
+
 .error {
   color: red;
 }
