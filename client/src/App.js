@@ -245,30 +245,31 @@ function RoomMiddleMan() {
   }
 
   return (
-    <>
+    <div className="room">
+      <h1>{room.current ? room.current.name : ' '}</h1>
       <Error>{error}</Error>
       {loading && (
         <div>Loading...</div>
       )}
       {passwordRequired && (
         <PasswordPage
-          roomName={room.current.name}
           joinRoom={joinRoom}
         />
       )}
       {roomJoined && (
         <Room
+          setError={setError}
           room={room.current}
           ws={webSocket.current}
           isRoomOwner={isRoomOwner()}
         />
       )}
-    </>
+    </div>
   );
 }
 
 function Room(props) {
-  let [error, setError] = useState('');
+  let setError = props.setError;
   let history = useHistory();
 
   async function handleDeleteClick(event) {
@@ -301,8 +302,7 @@ function Room(props) {
   }
 
   return (
-    <div className="room">
-      <h1>{props.room.name}</h1>
+    <>
       {props.isRoomOwner && (
         <nav>
           <button onClick={handleDeleteClick}>Delete room</button>
@@ -310,11 +310,10 @@ function Room(props) {
           <button onClick={handleStopTimerClick}>Stop timer</button>
         </nav>
       )}
-      <Error>{error}</Error>
       <Timer ws={props.ws} />
       <SendMessage ws={props.ws} />
       <Messages ws={props.ws} />
-    </div>
+    </>
   );
 }
 
@@ -346,9 +345,7 @@ function Timer(props) {
   }, [props.ws]);
 
   return (
-    <div>
-      <p>{timeElapsed}</p>
-    </div>
+    <p>{timeElapsed}</p>
   );
 }
 
@@ -444,7 +441,7 @@ function PasswordPage(props) {
 
   return (
     <div className="password-page">
-      <h1>Password required - {props.roomName}</h1>
+      <h2>Password required</h2>
       <form autoComplete="off" onSubmit={handleSubmit}>
         <label htmlFor="join-room-password">Enter password</label>
         <input
