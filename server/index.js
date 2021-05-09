@@ -32,6 +32,7 @@ db.serialize(() => {
   // If the server is just starting up, no users are connected.
   // todo: Find a better way to do this?
   db.run('DROP TABLE IF EXISTS roomUser;');
+  db.run('DROP TABLE IF EXISTS roomTimer;');
   // Activate foreign_keys after all data is wiped.
   db.run(`PRAGMA foreign_keys = ON;`);
   db.run(`
@@ -56,6 +57,31 @@ db.serialize(() => {
       userId INTEGER NOT NULL,
       roomId INTEGER NOT NULL,
       FOREIGN KEY(userId) REFERENCES user(id),
+      FOREIGN KEY(roomId) REFERENCES room(id)
+    );
+  `);
+  /*
+  state:
+    0 off
+    1 on
+  mode:
+    b for break
+    w for work
+  workLength, breakLength:
+    interval in seconds
+    1500seconds = 25minutes
+  timeElapsed:
+    time in milliseconds
+  */
+  db.run(`
+    CREATE TABLE IF NOT EXISTS roomTimer (
+      id INTEGER PRIMARY KEY,
+      state INTEGER NOT NULL DEFAULT 0,
+      mode TEXT NOT NULL DEFAULT "w",
+      timeElapsed INTEGER NOT NULL DEFAULT 0,
+      workLength INTEGER NOT NULL DEFAULT 1500,
+      breakLength INTEGER NOT NULL DEFAULT 300,
+      roomId INTEGER NOT NULL UNIQUE,
       FOREIGN KEY(roomId) REFERENCES room(id)
     );
   `);
@@ -363,6 +389,21 @@ router.delete('/room/:id', async (req, res, next) => {
     next(error);
   }
 });
+
+function createTimer(room) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      INSERT INTO roomTimer (roomId)
+      VALUES (?);
+    `, room.id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
 
 router.get('/timer/:id/start', async (req, res, next) => {
   try {
