@@ -364,6 +364,42 @@ router.delete('/room/:id', async (req, res, next) => {
   }
 });
 
+router.get('/timer/:id/start', async (req, res, next) => {
+  try {
+    let id = req.params.id;
+    let room = await getRoom(id);
+    let user = await getUserFromToken(req.cookies.token);
+    if (room.ownerId === user.id) {
+      roomMessage(room, JSON.stringify({
+        operation: 'startTimer'
+      }));
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(401);
+    }
+  } catch(error) {
+    next(error);
+  }
+});
+
+router.get('/timer/:id/stop', async (req, res, next) => {
+  try {
+    let id = req.params.id;
+    let room = await getRoom(id);
+    let user = await getUserFromToken(req.cookies.token);
+    if (room.ownerId === user.id) {
+      roomMessage(room, JSON.stringify({
+        operation: 'stopTimer'
+      }));
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(401);
+    }
+  } catch(error) {
+    next(error);
+  }
+});
+
 function storeConnection(room, ws) {
   let roomId = room.id;
   if (connections[roomId] === undefined) {

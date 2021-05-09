@@ -280,14 +280,36 @@ function Room(props) {
     }
   }
 
+  async function handleStartTimerClick(event) {
+    let response = await apiGet(
+      '/timer/' +
+      props.room.id +
+      '/start');
+    if (!response.ok) {
+      setError('failed to start timer');
+    }
+  }
+
+  async function handleStopTimerClick(event) {
+    let response = await apiGet(
+      '/timer/' +
+      props.room.id +
+      '/stop');
+    if (!response.ok) {
+      setError('failed to stop timer');
+    }
+  }
+
   return (
     <div className="room">
       <h1>{props.room.name}</h1>
-      <nav>
-        {props.isRoomOwner && (
+      {props.isRoomOwner && (
+        <nav>
           <button onClick={handleDeleteClick}>Delete room</button>
-        )}
-      </nav>
+          <button onClick={handleStartTimerClick}>Start timer</button>
+          <button onClick={handleStopTimerClick}>Stop timer</button>
+        </nav>
+      )}
       <Error>{error}</Error>
       <Timer ws={props.ws} />
       <SendMessage ws={props.ws} />
@@ -313,7 +335,9 @@ function Timer(props) {
   }, [props.ws]);
 
   return (
-    <p>{timeStamp}</p>
+    <div>
+      <p>{timeStamp}</p>
+    </div>
   );
 }
 
