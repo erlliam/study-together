@@ -368,6 +368,10 @@ function storeConnection(room, ws) {
   let roomId = room.id;
   if (connections[roomId] === undefined) {
     connections[roomId] = [ws];
+  } else {
+    connections[roomId].push(ws);
+  }
+  if (intervalIds[roomId] === undefined) {
     let intervalId = setInterval(() => {
       roomMessage(room, JSON.stringify({
         operation: 'timeStamp',
@@ -375,17 +379,17 @@ function storeConnection(room, ws) {
       }));
     }, 1000);
     intervalIds[roomId] = intervalId;
-  } else {
-    connections[roomId].push(ws);
-    if (connections[roomId].length === 0) {
-      clearInterval(intervalIds[room.id]);
-    }
   }
 }
 
 function removeConnection(room, ws) {
-  let indexOfWs = connections[room.id].indexOf(ws);
-  connections[room.id].splice(indexOfWs, 1);
+  let roomId = room.id;
+  let indexOfWs = connections[roomId].indexOf(ws);
+  connections[roomId].splice(indexOfWs, 1);
+  if (connections[roomId].length === 0) {
+    clearInterval(intervalIds[roomId]);
+    intervalIds[roomId] = undefined;
+  }
 }
 
 function roomMessage(room, message) {
