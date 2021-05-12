@@ -419,7 +419,7 @@ function deleteTimer(room) {
   });
 }
 
-function setTimer(room, state) {
+function setTimerState(room, state) {
   return new Promise((resolve, reject) => {
     db.run(`
       UPDATE roomTimer
@@ -470,7 +470,7 @@ function getTimeElapsed(room) {
 timerIntervals = {};
 
 async function startTimer(room) {
-  await setTimer(room, 1);
+  await setTimerState(room, 1);
   roomMessage(room, JSON.stringify({
     operation: 'startTimer'
   }));
@@ -487,7 +487,7 @@ async function startTimer(room) {
 }
 
 async function stopTimer(room) {
-  await setTimer(room, 0);
+  await setTimerState(room, 0);
   roomMessage(room, JSON.stringify({
     operation: 'stopTimer'
   }));
