@@ -489,7 +489,8 @@ timerIntervals = {};
 async function startTimer(room) {
   await setTimerState(room, 1);
   roomMessage(room, JSON.stringify({
-    operation: 'startTimer'
+    operation: 'stateUpdate',
+    state: 1
   }));
   let interval = setInterval(async () => {
     await incrementTimer(room);
@@ -504,7 +505,8 @@ async function startTimer(room) {
 async function stopTimer(room) {
   await setTimerState(room, 0);
   roomMessage(room, JSON.stringify({
-    operation: 'stopTimer'
+    operation: 'stateUpdate',
+    state: 0
   }));
   if (timerIntervals[room.id] !== undefined) {
     clearInterval(timerIntervals[room.id]);

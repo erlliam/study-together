@@ -323,13 +323,21 @@ function Room(props) {
 }
 
 function Timer(props) {
-  let [timeElapsed, setTimeElapsed] = useState(0);
+  let [timeElapsed, setTimeElapsed] = useState();
+  let [state, setState] = useState();
 
   useEffect(() => {
     function handleMessage(event) {
       let json = JSON.parse(event.data);
-      if (json.operation === 'timerUpdate') {
-        setTimeElapsed(json.timeElapsed);
+      switch (json.operation) {
+        case 'timerUpdate':
+          setTimeElapsed(json.timeElapsed);
+          break;
+        case 'stateUpdate':
+          setState(json.state);
+          break;
+        default:
+          // nothing
       }
     }
     props.ws.addEventListener('message', handleMessage);
@@ -339,7 +347,10 @@ function Timer(props) {
   }, [props.ws]);
 
   return (
-    <p>{timeElapsed}</p>
+    <>
+      <p>{timeElapsed}</p>
+      <p>{state}</p>
+    </>
   );
 }
 
