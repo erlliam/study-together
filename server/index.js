@@ -419,6 +419,22 @@ function deleteTimer(room) {
   });
 }
 
+function getTimerState(room) {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT state
+      FROM roomTimer
+      WHERE roomId = ?;
+    `, room.id, (error, state) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(state?.state);
+      }
+    });
+  });
+}
+
 function setTimerState(room, state) {
   return new Promise((resolve, reject) => {
     db.run(`
@@ -474,8 +490,6 @@ async function startTimer(room) {
   roomMessage(room, JSON.stringify({
     operation: 'startTimer'
   }));
-  // todo: don't allow start timer to run if
-  // the timer is already started
   let interval = setInterval(async () => {
     await incrementTimer(room);
     roomMessage(room, JSON.stringify({
@@ -492,8 +506,10 @@ async function stopTimer(room) {
     operation: 'stopTimer'
   }));
   // todo: fix memory leak if room is deleted.
-  clearInterval(timerIntervals[room.id]);
-  timerIntervals[room.id] = undefined;
+  if (timerIntervals[room.id] !== undefined) {
+    clearInterval(timerIntervals[room.id]);
+    timerIntervals[room.id] = undefined;
+  }
 }
 
 router.get('/timer/:id/start', async (req, res, next) => {
@@ -502,8 +518,13 @@ router.get('/timer/:id/start', async (req, res, next) => {
     let room = await getRoom(id);
     let user = await getUserFromToken(req.cookies.token);
     if (room.ownerId === user.id) {
-      await startTimer(room);
-      res.sendStatus(200);
+      let timerState = await getTimerState(room);
+      if (timerState === 1) {
+        res.sendStatus(400);
+      } else {
+        await startTimer(room);
+        res.sendStatus(200);
+      }
     } else {
       res.sendStatus(401);
     }
@@ -518,8 +539,13 @@ router.get('/timer/:id/stop', async (req, res, next) => {
     let room = await getRoom(id);
     let user = await getUserFromToken(req.cookies.token);
     if (room.ownerId === user.id) {
-      await stopTimer(room);
-      res.sendStatus(200);
+      let timerState = await getTimerState(room);
+      if (timerState === 0) {
+        res.sendStatus(400);
+      } else {
+        await stopTimer(room);
+        res.sendStatus(200);
+      }
     } else {
       res.sendStatus(401);
     }
