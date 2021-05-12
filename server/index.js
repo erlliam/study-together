@@ -409,10 +409,11 @@ function createTimer(room) {
 
 function deleteTimer(room) {
   return new Promise((resolve, reject) => {
-    db.run('DELETE FROM roomTimer WHERE roomId = ?', room.id, (error) => {
+    db.run('DELETE FROM roomTimer WHERE roomId = ?', room.id, async (error) => {
       if (error) {
         reject(error);
       } else {
+        await stopTimer(room);
         resolve();
       }
     });
@@ -505,7 +506,6 @@ async function stopTimer(room) {
   roomMessage(room, JSON.stringify({
     operation: 'stopTimer'
   }));
-  // todo: fix memory leak if room is deleted.
   if (timerIntervals[room.id] !== undefined) {
     clearInterval(timerIntervals[room.id]);
     timerIntervals[room.id] = undefined;
