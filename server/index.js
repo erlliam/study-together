@@ -514,6 +514,29 @@ async function stopTimer(room) {
   }
 }
 
+async function getTimer(id) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM roomTimer WHERE roomId = ?', id, (error, timer) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(timer);
+      }
+    });
+  });
+}
+
+
+router.get('/timer/:id', async (req, res, next) => {
+  try {
+    let id = req.params.id;
+    let timer = await getTimer(id);
+    res.send(timer);
+  } catch(error) {
+    next(error);
+  }
+});
+
 router.get('/timer/:id/start', async (req, res, next) => {
   try {
     let id = req.params.id;

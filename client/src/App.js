@@ -325,6 +325,24 @@ function Room(props) {
 function Timer(props) {
   let [timeElapsed, setTimeElapsed] = useState();
   let [state, setState] = useState();
+  let [mode, setMode] = useState();
+  let [workLength, setWorkLength] = useState();
+  let [breakLength, setBreakLength] = useState();
+  let params = useParams();
+  let id = params.id;
+
+  useEffect(() => {
+    async function init() {
+      let response = await apiGet('/timer/' + id);
+      let json = await response.json();
+      setTimeElapsed(json.timeElapsed);
+      setState(json.state);
+      setMode(json.mode);
+      setBreakLength(json.breakLength);
+      setWorkLength(json.workLength);
+    }
+    init();
+  }, []);
 
   useEffect(() => {
     function handleMessage(event) {
@@ -348,6 +366,9 @@ function Timer(props) {
 
   return (
     <>
+      <p>{mode}</p>
+      <p>{workLength}</p>
+      <p>{breakLength}</p>
       <p>{timeElapsed}</p>
       <p>{state}</p>
     </>
