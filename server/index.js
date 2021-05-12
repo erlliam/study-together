@@ -204,7 +204,7 @@ function getUsersConnected(id) {
       if (error) {
         reject(error);
       } else {
-        resolve(usersConnected.usersConnected);
+        resolve(usersConnected?.usersConnected);
       }
     });
   });
@@ -461,7 +461,7 @@ function getTimeElapsed(room) {
       if (error) {
         reject(error);
       } else {
-        resolve(timeElapsed.timeElapsed);
+        resolve(timeElapsed?.timeElapsed);
       }
     });
   });
