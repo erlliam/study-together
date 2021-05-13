@@ -345,11 +345,11 @@ function Room(props) {
 }
 
 function Timer(props) {
-  let [timeElapsed, setTimeElapsed] = useState();
+  let [timeElapsed, setTimeElapsed] = useState(0);
   let [state, setState] = useState();
   let [mode, setMode] = useState();
-  let [workLength, setWorkLength] = useState();
-  let [breakLength, setBreakLength] = useState();
+  let [workLength, setWorkLength] = useState(0);
+  let [breakLength, setBreakLength] = useState(0);
   let params = useParams();
   let id = params.id;
 
@@ -391,11 +391,19 @@ function Timer(props) {
 
   return (
     <>
-      <p>{mode}</p>
-      <p>{workLength}</p>
-      <p>{breakLength}</p>
-      <p>{timeElapsed}</p>
-      <p>{state}</p>
+      <p>Current mode: {mode === 'w' ? (
+        'Work'
+      ) : (
+        'Break'
+      )}</p>
+      <p>Work length: {workLength / 60} minutes</p>
+      <p>Break length: {breakLength / 60} minutes</p>
+      <p>{mode === 'w' ? (
+        (workLength - timeElapsed)
+      ) : (
+        (breakLength - timeElapsed)
+      )}</p>
+      <p>Timer: {state === 1 ? 'On' : 'Off'}</p>
     </>
   );
 }

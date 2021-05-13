@@ -547,6 +547,9 @@ async function stopTimer(room) {
 }
 
 async function breakMode(room) {
+  // todo:
+  // stop the timer.
+  // restart time elapsed.
   await setTimerMode(room, 'b');
   roomMessage(room, JSON.stringify({
     operation: 'modeUpdate',
@@ -555,6 +558,9 @@ async function breakMode(room) {
 }
 
 async function workMode(room) {
+  // todo:
+  // stop the timer.
+  // restart time elapsed.
   await setTimerMode(room, 'w');
   roomMessage(room, JSON.stringify({
     operation: 'modeUpdate',
