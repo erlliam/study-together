@@ -452,6 +452,38 @@ function setTimerState(room, state) {
   });
 }
 
+function getTimerMode(room) {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT mode
+      FROM roomTimer
+      WHERE roomId = ?;
+    `, room.id, (error, mode) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(mode?.mode);
+      }
+    });
+  });
+}
+
+function setTimerMode(room, mode) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      UPDATE roomTimer
+      SET mode = ?
+      WHERE roomId = ?;
+    `, mode, room.id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 function incrementTimer(room) {
   return new Promise((resolve, reject) => {
     db.run(`
@@ -514,6 +546,22 @@ async function stopTimer(room) {
   }
 }
 
+async function breakMode(room) {
+  await setTimerMode(room, 'b');
+  roomMessage(room, JSON.stringify({
+    operation: 'modeUpdate',
+    mode: 'b'
+  }));
+}
+
+async function workMode(room) {
+  await setTimerMode(room, 'w');
+  roomMessage(room, JSON.stringify({
+    operation: 'modeUpdate',
+    mode: 'w'
+  }));
+}
+
 async function getTimer(id) {
   return new Promise((resolve, reject) => {
     db.get('SELECT * FROM roomTimer WHERE roomId = ?', id, (error, timer) => {
@@ -569,6 +617,49 @@ router.get('/timer/:id/stop', async (req, res, next) => {
         res.sendStatus(400);
       } else {
         await stopTimer(room);
+        res.sendStatus(200);
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  } catch(error) {
+    next(error);
+  }
+});
+
+router.get('/timer/:id/break', async (req, res, next) => {
+  try {
+    let id = req.params.id;
+    let room = await getRoom(id);
+    let user = await getUserFromToken(req.cookies.token);
+    if (room.ownerId === user.id) {
+      let timerMode = await getTimerMode(room);
+      if (timerMode === 'b') {
+        res.sendStatus(400);
+      } else {
+        await breakMode(room);
+        console.log('set to break');
+        res.sendStatus(200);
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  } catch(error) {
+    next(error);
+  }
+});
+
+router.get('/timer/:id/work', async (req, res, next) => {
+  try {
+    let id = req.params.id;
+    let room = await getRoom(id);
+    let user = await getUserFromToken(req.cookies.token);
+    if (room.ownerId === user.id) {
+      let timerMode = await getTimerMode(room);
+      if (timerMode === 'w') {
+        res.sendStatus(400);
+      } else {
+        await workMode(room);
         res.sendStatus(200);
       }
     } else {

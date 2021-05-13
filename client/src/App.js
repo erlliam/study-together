@@ -306,6 +306,26 @@ function Room(props) {
     }
   }
 
+  async function handleBreakModeClick(event) {
+    let response = await apiGet(
+      '/timer/' +
+      props.room.id +
+      '/break');
+    if (!response.ok) {
+      setError('failed to enter break mode');
+    }
+  }
+
+  async function handleWorkModeClick(event) {
+    let response = await apiGet(
+      '/timer/' +
+      props.room.id +
+      '/work');
+    if (!response.ok) {
+      setError('failed to enter work mode');
+    }
+  }
+
   return (
     <>
       {props.isRoomOwner && (
@@ -313,6 +333,8 @@ function Room(props) {
           <button onClick={handleDeleteClick}>Delete room</button>
           <button onClick={handleStartTimerClick}>Start timer</button>
           <button onClick={handleStopTimerClick}>Stop timer</button>
+          <button onClick={handleBreakModeClick}>Break mode</button>
+          <button onClick={handleWorkModeClick}>Work mode</button>
         </nav>
       )}
       <Timer ws={props.ws} />
