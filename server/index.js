@@ -644,7 +644,6 @@ router.get('/timer/:id/break', async (req, res, next) => {
         res.sendStatus(400);
       } else {
         await breakMode(room);
-        console.log('set to break');
         res.sendStatus(200);
       }
     } else {
