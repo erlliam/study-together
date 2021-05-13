@@ -376,6 +376,9 @@ function Timer(props) {
         case 'stateUpdate':
           setState(json.state);
           break;
+        case 'modeUpdate':
+          setMode(json.mode);
+          break;
         default:
           // nothing
       }
