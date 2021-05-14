@@ -500,6 +500,22 @@ function incrementTimer(room) {
   });
 }
 
+function zeroTimeElapsed(room) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      UPDATE roomTimer
+      SET timeElapsed = 0
+      WHERE roomId = ?;
+    `, room.id, function(error) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 function getTimeElapsed(room) {
   return new Promise((resolve, reject) => {
     db.get(`
@@ -546,10 +562,17 @@ async function stopTimer(room) {
   }
 }
 
+async function restartTimer(room) {
+  await stopTimer(room);
+  await zeroTimeElapsed(room);
+  roomMessage(room, JSON.stringify({
+    operation: 'timerUpdate',
+    timeElapsed: 0
+  }));
+}
+
 async function breakMode(room) {
-  // todo:
-  // stop the timer.
-  // restart time elapsed.
+  await restartTimer(room);
   await setTimerMode(room, 'b');
   roomMessage(room, JSON.stringify({
     operation: 'modeUpdate',
@@ -558,9 +581,7 @@ async function breakMode(room) {
 }
 
 async function workMode(room) {
-  // todo:
-  // stop the timer.
-  // restart time elapsed.
+  await restartTimer(room);
   await setTimerMode(room, 'w');
   roomMessage(room, JSON.stringify({
     operation: 'modeUpdate',
