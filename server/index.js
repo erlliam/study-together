@@ -468,20 +468,8 @@ async function setTimerState(room, state) {
   return updateOneColumnFromRoomTimer('state', state, room);
 }
 
-function setTimerMode(room, mode) {
-  return new Promise((resolve, reject) => {
-    db.run(`
-      UPDATE roomTimer
-      SET mode = ?
-      WHERE roomId = ?;
-    `, mode, room.id, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    });
-  });
+async function setTimerMode(room, mode) {
+  return updateOneColumnFromRoomTimer('mode', mode, room);
 }
 
 function incrementTimer(room) {
