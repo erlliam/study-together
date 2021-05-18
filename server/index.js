@@ -472,27 +472,15 @@ async function setTimerMode(room, mode) {
   return updateOneColumnFromRoomTimer('mode', mode, room);
 }
 
+async function zeroTimeElapsed(room) {
+  return updateOneColumnFromRoomTimer('timeElapsed', 0, room);
+}
+
 function incrementTimer(room) {
   return new Promise((resolve, reject) => {
     db.run(`
       UPDATE roomTimer
       SET timeElapsed = timeElapsed + 1
-      WHERE roomId = ?;
-    `, room.id, function(error) {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-
-function zeroTimeElapsed(room) {
-  return new Promise((resolve, reject) => {
-    db.run(`
-      UPDATE roomTimer
-      SET timeElapsed = 0
       WHERE roomId = ?;
     `, room.id, function(error) {
       if (error) {
