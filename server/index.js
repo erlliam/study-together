@@ -433,6 +433,22 @@ function selectColumnFromRoomTimer(column, room) {
   });
 }
 
+function updateOneColumnFromRoomTimer(column, value, room) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      UPDATE roomTimer
+      SET ${column} = ?
+      WHERE roomId = ?;
+    `, value, room.id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 async function getTimerState(room) {
   let state = await selectColumnFromRoomTimer('state', room);
   return state?.state;
@@ -448,20 +464,8 @@ async function getTimeElapsed(room) {
   return timeElapsed?.timeElapsed;
 }
 
-function setTimerState(room, state) {
-  return new Promise((resolve, reject) => {
-    db.run(`
-      UPDATE roomTimer
-      SET state = ?
-      WHERE roomId = ?;
-    `, state, room.id, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    });
-  });
+async function setTimerState(room, state) {
+  return updateOneColumnFromRoomTimer('state', state, room);
 }
 
 function setTimerMode(room, mode) {
