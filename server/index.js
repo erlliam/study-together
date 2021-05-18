@@ -394,10 +394,7 @@ router.delete('/room/:id', async (req, res, next) => {
 
 function createTimer(room) {
   return new Promise((resolve, reject) => {
-    db.run(`
-      INSERT INTO roomTimer (roomId)
-      VALUES (?);
-    `, room.id, (error) => {
+    db.run('INSERT INTO roomTimer (roomId) VALUES (?);', room.id, (error) => {
       if (error) {
         reject(error);
       } else {
@@ -420,20 +417,25 @@ function deleteTimer(room) {
   });
 }
 
-function getTimerState(room) {
+function selectColumnFromRoomTimer(column, room) {
   return new Promise((resolve, reject) => {
     db.get(`
-      SELECT state
+      SELECT ${column}
       FROM roomTimer
       WHERE roomId = ?;
-    `, room.id, (error, state) => {
+    `, room.id, (error, column) => {
       if (error) {
         reject(error);
       } else {
-        resolve(state?.state);
+        resolve(column);
       }
     });
   });
+}
+
+async function getTimerState(room) {
+  let state = await selectColumnFromRoomTimer('state', room);
+  return state?.state;
 }
 
 function setTimerState(room, state) {
