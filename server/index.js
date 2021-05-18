@@ -443,6 +443,11 @@ async function getTimerMode(room) {
   return mode?.mode;
 }
 
+async function getTimeElapsed(room) {
+  let timeElapsed = await selectColumnFromRoomTimer('timeElapsed', room);
+  return timeElapsed?.timeElapsed;
+}
+
 function setTimerState(room, state) {
   return new Promise((resolve, reject) => {
     db.run(`
@@ -502,22 +507,6 @@ function zeroTimeElapsed(room) {
         reject(error);
       } else {
         resolve();
-      }
-    });
-  });
-}
-
-function getTimeElapsed(room) {
-  return new Promise((resolve, reject) => {
-    db.get(`
-      SELECT timeElapsed
-      FROM roomTimer
-      WHERE roomId = ?;
-    `, room.id, (error, timeElapsed) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(timeElapsed?.timeElapsed);
       }
     });
   });
