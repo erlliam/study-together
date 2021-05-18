@@ -696,6 +696,47 @@ router.get('/timer/:id/work', async (req, res, next) => {
   }
 });
 
+function updateTimerInterval(room, interval) {
+  return new Promise(async (resolve, reject) => {
+    let timerMode = await getTimerMode(room);
+    let column = timerMode === 'w' ? 'workLength' : 'breakLength';
+    db.run(`
+      UPDATE roomTimer
+      SET ${column} = ?
+      WHERE roomId = ?;
+    `, interval, room.id, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+router.post('/timer/:id/interval', async (req, res, next) => {
+  try {
+    let id = req.params.id;
+    let room = await getRoom(id);
+    let user = await getUserFromToken(req.cookies.token);
+    if (room.ownerId === user.id) {
+      let interval = req.body?.interval;
+      if (interval) {
+        // todo: Validate the contents of interval
+        // todo: Broadcast active mode's interval has changed!
+        updateTimerInterval(room, interval);
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(400);
+      }
+    } else {
+      res.sendStatus(401);
+    }
+  } catch(error) {
+    next(error);
+  }
+});
+
 function storeConnection(room, ws) {
   let roomId = room.id;
   if (connections[roomId] === undefined) {
