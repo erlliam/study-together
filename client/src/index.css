@@ -76,3 +76,9 @@ input {
   max-width: 15rem;
   overflow-y: auto;
 }
+
+#no-rooms-found {
+  display: initial;
+  margin-bottom: initial;
+  padding: initial;
+}

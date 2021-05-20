@@ -118,11 +118,10 @@ function RoomList() {
   let roomsInnerHtml;
   if (!loading && Array.isArray(rooms)) {
     if (rooms.length === 0) {
-      // todo: Don't use default link styling for this link...
-      // (remove padding and display block)
       roomsInnerHtml = <>
         <p>No rooms found. <Link
-          to='/create-room'
+          id="no-rooms-found"
+          to="/create-room"
         >You should create one.</Link></p>
       </>
     } else {
