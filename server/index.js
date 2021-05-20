@@ -654,7 +654,7 @@ router.post('/timer/:id', async (req, res, next) => {
         if (room.ownerId === user.id) {
           let length = req.body?.length;
           if (validTimerLength(length)) {
-            updateTimerLength(room, length);
+            await updateTimerLength(room, length);
             res.sendStatus(200);
           } else {
             res.sendStatus(400);
