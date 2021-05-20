@@ -288,40 +288,48 @@ function Room(props) {
   }
 
   async function handleStartTimerClick(event) {
-    let response = await apiGet(
-      '/timer/' +
-      props.room.id +
-      '/start');
+    let response = await apiPost(
+      '/timer/' + props.room.id, {
+        body: JSON.stringify({
+          operation: 'start'
+        })
+      });
     if (!response.ok) {
       setError('failed to start timer');
     }
   }
 
   async function handleStopTimerClick(event) {
-    let response = await apiGet(
-      '/timer/' +
-      props.room.id +
-      '/stop');
+    let response = await apiPost(
+      '/timer/' + props.room.id, {
+        body: JSON.stringify({
+          operation: 'stop'
+        })
+      });
     if (!response.ok) {
       setError('failed to stop timer');
     }
   }
 
   async function handleBreakModeClick(event) {
-    let response = await apiGet(
-      '/timer/' +
-      props.room.id +
-      '/break');
+    let response = await apiPost(
+      '/timer/' + props.room.id, {
+        body: JSON.stringify({
+          operation: 'break'
+        })
+      });
     if (!response.ok) {
       setError('failed to enter break mode');
     }
   }
 
   async function handleWorkModeClick(event) {
-    let response = await apiGet(
-      '/timer/' +
-      props.room.id +
-      '/work');
+    let response = await apiPost(
+      '/timer/' + props.room.id, {
+        body: JSON.stringify({
+          operation: 'work'
+        })
+      });
     if (!response.ok) {
       setError('failed to enter work mode');
     }

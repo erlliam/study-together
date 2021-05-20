@@ -561,7 +561,6 @@ async function getTimer(id) {
   });
 }
 
-
 router.get('/timer/:id', async (req, res, next) => {
   try {
     let id = req.params.id;
@@ -572,84 +571,68 @@ router.get('/timer/:id', async (req, res, next) => {
   }
 });
 
-router.get('/timer/:id/start', async (req, res, next) => {
+router.post('/timer/:id', async (req, res, next) => {
   try {
     let id = req.params.id;
     let room = await getRoom(id);
     let user = await getUserFromToken(req.cookies.token);
-    if (room.ownerId === user.id) {
-      let timerState = await getTimerState(room);
-      if (timerState === 1) {
+    let body = req.body;
+    switch (body?.operation) {
+      case 'start':
+        if (room.ownerId === user.id) {
+          let timerState = await getTimerState(room);
+          if (timerState === 1) {
+            res.sendStatus(400);
+          } else {
+            await startTimer(room);
+            res.sendStatus(200);
+          }
+        } else {
+          res.sendStatus(401);
+        }
+        break;
+      case 'stop':
+        if (room.ownerId === user.id) {
+          let timerState = await getTimerState(room);
+          if (timerState === 0) {
+            res.sendStatus(400);
+          } else {
+            await stopTimer(room);
+            res.sendStatus(200);
+          }
+        } else {
+          res.sendStatus(401);
+        }
+        break;
+      case 'break':
+        if (room.ownerId === user.id) {
+          let timerMode = await getTimerMode(room);
+          if (timerMode === 'b') {
+            res.sendStatus(400);
+          } else {
+            await breakMode(room);
+            res.sendStatus(200);
+          }
+        } else {
+          res.sendStatus(401);
+        }
+        break;
+      case 'work':
+        if (room.ownerId === user.id) {
+          let timerMode = await getTimerMode(room);
+          if (timerMode === 'w') {
+            res.sendStatus(400);
+          } else {
+            await workMode(room);
+            res.sendStatus(200);
+          }
+        } else {
+          res.sendStatus(401);
+        }
+        break;
+      default:
+        // respond with 400 or some shit.
         res.sendStatus(400);
-      } else {
-        await startTimer(room);
-        res.sendStatus(200);
-      }
-    } else {
-      res.sendStatus(401);
-    }
-  } catch(error) {
-    next(error);
-  }
-});
-
-router.get('/timer/:id/stop', async (req, res, next) => {
-  try {
-    let id = req.params.id;
-    let room = await getRoom(id);
-    let user = await getUserFromToken(req.cookies.token);
-    if (room.ownerId === user.id) {
-      let timerState = await getTimerState(room);
-      if (timerState === 0) {
-        res.sendStatus(400);
-      } else {
-        await stopTimer(room);
-        res.sendStatus(200);
-      }
-    } else {
-      res.sendStatus(401);
-    }
-  } catch(error) {
-    next(error);
-  }
-});
-
-router.get('/timer/:id/break', async (req, res, next) => {
-  try {
-    let id = req.params.id;
-    let room = await getRoom(id);
-    let user = await getUserFromToken(req.cookies.token);
-    if (room.ownerId === user.id) {
-      let timerMode = await getTimerMode(room);
-      if (timerMode === 'b') {
-        res.sendStatus(400);
-      } else {
-        await breakMode(room);
-        res.sendStatus(200);
-      }
-    } else {
-      res.sendStatus(401);
-    }
-  } catch(error) {
-    next(error);
-  }
-});
-
-router.get('/timer/:id/work', async (req, res, next) => {
-  try {
-    let id = req.params.id;
-    let room = await getRoom(id);
-    let user = await getUserFromToken(req.cookies.token);
-    if (room.ownerId === user.id) {
-      let timerMode = await getTimerMode(room);
-      if (timerMode === 'w') {
-        res.sendStatus(400);
-      } else {
-        await workMode(room);
-        res.sendStatus(200);
-      }
-    } else {
-      res.sendStatus(401);
     }
   } catch(error) {
     next(error);
