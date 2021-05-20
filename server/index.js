@@ -630,6 +630,21 @@ router.post('/timer/:id', async (req, res, next) => {
           res.sendStatus(401);
         }
         break;
+      case 'interval':
+        if (room.ownerId === user.id) {
+          let interval = req.body?.interval;
+          if (interval) {
+            // todo: Validate the contents of interval
+            // todo: Broadcast active mode's interval has changed!
+            updateTimerInterval(room, interval);
+            res.sendStatus(200);
+          } else {
+            res.sendStatus(400);
+          }
+        } else {
+          res.sendStatus(401);
+        }
+        break;
       default:
         // respond with 400 or some shit.
         res.sendStatus(400);
@@ -656,29 +671,6 @@ function updateTimerInterval(room, interval) {
     });
   });
 }
-
-router.post('/timer/:id/interval', async (req, res, next) => {
-  try {
-    let id = req.params.id;
-    let room = await getRoom(id);
-    let user = await getUserFromToken(req.cookies.token);
-    if (room.ownerId === user.id) {
-      let interval = req.body?.interval;
-      if (interval) {
-        // todo: Validate the contents of interval
-        // todo: Broadcast active mode's interval has changed!
-        updateTimerInterval(room, interval);
-        res.sendStatus(200);
-      } else {
-        res.sendStatus(400);
-      }
-    } else {
-      res.sendStatus(401);
-    }
-  } catch(error) {
-    next(error);
-  }
-});
 
 function storeConnection(room, ws) {
   let roomId = room.id;

@@ -338,11 +338,9 @@ function Room(props) {
   async function handleSetTime(event) {
     event.preventDefault();
     let response = await apiPost(
-      '/timer/' +
-      props.room.id +
-      '/interval',
-      {
+      '/timer/' + props.room.id, {
         body: JSON.stringify({
+          operation: 'interval',
           interval: interval
         })
       });
