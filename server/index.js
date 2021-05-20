@@ -506,6 +506,15 @@ function incrementTimer(room) {
 
 timerIntervals = {};
 
+function validTimerLength(length) {
+  let result = parseInt(length, 10);
+  if (!isNaN(result) && result > 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 async function startTimer(room) {
   await setTimerState(room, 1);
   roomMessage(room, JSON.stringify({
@@ -644,8 +653,7 @@ router.post('/timer/:id', async (req, res, next) => {
       case 'length':
         if (room.ownerId === user.id) {
           let length = req.body?.length;
-          if (length) {
-            // todo: Validate the contents of interval
+          if (validTimerLength(length)) {
             updateTimerLength(room, length);
             res.sendStatus(200);
           } else {
