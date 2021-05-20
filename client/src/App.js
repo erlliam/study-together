@@ -410,12 +410,12 @@ function Timer(props) {
         case 'modeUpdate':
           setMode(json.mode);
           break;
-        case 'timerLengthUpdate':
-          if (json.column === 'workLength') {
-            setWorkLength(json.interval);
-          } else {
-            setBreakLength(json.interval);
-          }
+        case 'workLengthUpdate':
+          setWorkLength(json.length);
+          break;
+        case 'breakLengthUpdate':
+          setWorkLength(json.length);
+          break
         default:
           // nothing
       }

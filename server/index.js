@@ -576,9 +576,8 @@ function updateTimerInterval(room, interval) {
       } else {
         // todo: use promises
         roomMessage(room, JSON.stringify({
-          operation: 'timerLengthUpdate',
-          mode: column,
-          interval:  interval
+          operation: column + 'Update',
+          length:  interval
         }));
         resolve();
       }
