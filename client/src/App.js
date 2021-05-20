@@ -276,7 +276,7 @@ function RoomMiddleMan() {
 function Room(props) {
   let setError = props.setError;
   let history = useHistory();
-  let [interval, setInterval] = useState('');
+  let [length, setLength] = useState('');
 
   async function handleDeleteClick(event) {
     let response = await apiDelete('/room/' + props.room.id);
@@ -340,12 +340,12 @@ function Room(props) {
     let response = await apiPost(
       '/timer/' + props.room.id, {
         body: JSON.stringify({
-          operation: 'interval',
-          interval: interval
+          operation: 'length',
+          length: length
         })
       });
     if (!response.ok) {
-      setError('failed to set interval');
+      setError('failed to set length');
     }
   }
 
@@ -361,8 +361,8 @@ function Room(props) {
           <form onSubmit={handleSetTime}>
             <label>Set time</label>
             <input
-              value={interval}
-              onChange={e => setInterval(e.target.value)}
+              value={length}
+              onChange={e => setLength(e.target.value)}
             />
             <button>Set time</button>
           </form>

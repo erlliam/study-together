@@ -561,28 +561,15 @@ async function workMode(room) {
   }));
 }
 
-function updateTimerInterval(room, interval) {
-  return new Promise(async (resolve, reject) => {
-    await restartTimer(room);
-    let timerMode = await getTimerMode(room);
-    let column = timerMode === 'w' ? 'workLength' : 'breakLength';
-    db.run(`
-      UPDATE roomTimer
-      SET ${column} = ?
-      WHERE roomId = ?;
-    `, interval, room.id, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        // todo: use promises
-        roomMessage(room, JSON.stringify({
-          operation: column + 'Update',
-          length:  interval
-        }));
-        resolve();
-      }
-    });
-  });
+async function updateTimerLength(room, length) {
+  await restartTimer(room);
+  let timerMode = await getTimerMode(room);
+  let column = timerMode === 'w' ? 'workLength' : 'breakLength';
+  await updateOneColumnFromRoomTimer(column, length, room);
+  roomMessage(room, JSON.stringify({
+    operation: column + 'Update',
+    length:  length
+  }));
 }
 
 router.get('/timer/:id', async (req, res, next) => {
@@ -654,12 +641,12 @@ router.post('/timer/:id', async (req, res, next) => {
           res.sendStatus(401);
         }
         break;
-      case 'interval':
+      case 'length':
         if (room.ownerId === user.id) {
-          let interval = req.body?.interval;
-          if (interval) {
+          let length = req.body?.length;
+          if (length) {
             // todo: Validate the contents of interval
-            updateTimerInterval(room, interval);
+            updateTimerLength(room, length);
             res.sendStatus(200);
           } else {
             res.sendStatus(400);
