@@ -392,6 +392,18 @@ router.delete('/room/:id', async (req, res, next) => {
   }
 });
 
+async function getTimer(id) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM roomTimer WHERE roomId = ?', id, (error, timer) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(timer);
+      }
+    });
+  });
+}
+
 function createTimer(room) {
   return new Promise((resolve, reject) => {
     db.run('INSERT INTO roomTimer (roomId) VALUES (?);', room.id, (error) => {
@@ -549,13 +561,26 @@ async function workMode(room) {
   }));
 }
 
-async function getTimer(id) {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM roomTimer WHERE roomId = ?', id, (error, timer) => {
+function updateTimerInterval(room, interval) {
+  return new Promise(async (resolve, reject) => {
+    await restartTimer(room);
+    let timerMode = await getTimerMode(room);
+    let column = timerMode === 'w' ? 'workLength' : 'breakLength';
+    db.run(`
+      UPDATE roomTimer
+      SET ${column} = ?
+      WHERE roomId = ?;
+    `, interval, room.id, (error) => {
       if (error) {
         reject(error);
       } else {
-        resolve(timer);
+        // todo: use promises
+        roomMessage(room, JSON.stringify({
+          operation: 'timerLengthUpdate',
+          mode: column,
+          interval:  interval
+        }));
+        resolve();
       }
     });
   });
@@ -635,7 +660,6 @@ router.post('/timer/:id', async (req, res, next) => {
           let interval = req.body?.interval;
           if (interval) {
             // todo: Validate the contents of interval
-            // todo: Broadcast active mode's interval has changed!
             updateTimerInterval(room, interval);
             res.sendStatus(200);
           } else {
@@ -653,24 +677,6 @@ router.post('/timer/:id', async (req, res, next) => {
     next(error);
   }
 });
-
-function updateTimerInterval(room, interval) {
-  return new Promise(async (resolve, reject) => {
-    let timerMode = await getTimerMode(room);
-    let column = timerMode === 'w' ? 'workLength' : 'breakLength';
-    db.run(`
-      UPDATE roomTimer
-      SET ${column} = ?
-      WHERE roomId = ?;
-    `, interval, room.id, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    });
-  });
-}
 
 function storeConnection(room, ws) {
   let roomId = room.id;
