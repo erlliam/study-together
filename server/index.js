@@ -738,20 +738,33 @@ async function joinRoomOperation(ws, json) {
   }
 }
 
+function validUserMessage(message) {
+  if (message === undefined ||
+      message.trim() === '') {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 async function userMessageOperation(ws, json) {
   let room = await getRoom(json.id);
   let user = await getUserFromToken(json.token);
-  if (room !== undefined && user !== undefined) {
+  if (room !== undefined &&
+      user !== undefined &&
+      validUserMessage(json?.message)) {
     if (userInRoom(user, room)) {
       roomMessage(room, JSON.stringify({
         operation: 'message',
         message: user.id + ': ' + json.message
-      }))
+      }));
     }
+  } else {
+    ws.send(JSON.stringify({
+      operation: 'message',
+      message: 'Message not sent'
+    }));
   }
-  // todo: Don't allow empty messages...
-  // todo: Have some basic restrictions on messages?
-  // note: If the user's message doesn't go through, they won't know.
 }
 
 function parseJson(json) {
