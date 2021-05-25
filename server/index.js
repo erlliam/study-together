@@ -314,19 +314,14 @@ async function roomFull(room) {
 router.get('/room/all', async (req, res, next) => {
   try {
     let rooms = await getRooms();
-    // todo: Perhaps use map with an async function
-    // and Promise.all
-    for (let i = 0; i < rooms.length; i++) {
-      let room = rooms[i];
-      // todo: Create a function for room with password as bool
-      // and usersConnected
-      rooms[i] = {
+    let roomsToSend = Promise.all(rooms.map(async (room) => {
+      return {
         ...room,
         password: room.password !== null,
         usersConnected: await getUsersConnected(room.id)
-      }
-    }
-    res.send(rooms);
+      };
+    }));
+    res.send(await roomsToSend);
   } catch(error) {
     next(error);
   }
