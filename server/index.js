@@ -29,11 +29,10 @@ let db = new sqlite3.Database('study-together.db');
 db.serialize(() => {
   // db.run('DROP TABLE IF EXISTS user;');
   // db.run('DROP TABLE IF EXISTS room;');
-  // If the server is just starting up, no users are connected.
-  // todo: Find a better way to do this?
-  db.run('DROP TABLE IF EXISTS roomUser;');
   // db.run('DROP TABLE IF EXISTS roomTimer;');
-  // Activate foreign_keys after all data is wiped.
+
+  db.run('DROP TABLE IF EXISTS roomUser;');
+
   db.run(`PRAGMA foreign_keys = ON;`);
   db.run(`
     CREATE TABLE IF NOT EXISTS user (
@@ -88,7 +87,7 @@ db.serialize(() => {
 });
 
 let connections = {};
-let intervalIds = {};
+let timerIntervals = {};
 
 function generateToken() {
   return new Promise((resolve, reject) => {
@@ -289,9 +288,6 @@ function addUserToRoom(user, room) {
 }
 
 function removeUserFromRoom(user, room) {
-  // note: Should we only delete one entry?
-  // It should be impossible to have more than one roomUser
-  // per room/user pair
   return new Promise((resolve, reject) => {
     db.run(`
       DELETE FROM roomUser
@@ -345,7 +341,7 @@ router.post('/room/create', async (req, res, next) => {
   }
 });
 
-// Update
+// todo: Implement room updating
 router.put('/room/:id', (req, res) => {
 });
 
@@ -355,8 +351,6 @@ router.get('/room/:id', async (req, res, next) => {
     if (room === undefined) {
       res.sendStatus(404);
     } else {
-      // todo: Create a function for room with password as bool
-      // and usersConnected
       res.send({
         ...room,
         password: room.password !== null,
@@ -498,8 +492,6 @@ function incrementTimer(room) {
     });
   });
 }
-
-timerIntervals = {};
 
 function validTimerLength(length) {
   let result = parseInt(length, 10);
@@ -759,14 +751,6 @@ async function userMessageOperation(ws, json) {
       operation: 'message',
       message: 'Message not sent'
     }));
-  }
-}
-
-function parseJson(json) {
-  try {
-    return JSON.parse(json);
-  } catch(error) {
-    return undefined;
   }
 }
 
