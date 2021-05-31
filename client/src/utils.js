@@ -32,14 +32,20 @@ function getToken() {
 }
 
 function Error(props) {
-  let innerHtml;
-  if (props.children === '') {
-    innerHtml = <>&nbsp;</>
-  } else {
-    innerHtml = props.children;
+  function handleCloseClick(event) {
+    props.setError('');
   }
+
   return (
-    <div className="error">{innerHtml}</div>
+    <div className="error">
+      {props.children === '' ?
+        <>&nbsp;</> :
+        <>
+          {props.children}
+          <button onClick={handleCloseClick}>Close</button>
+        </>
+      }
+    </div>
   );
 }
 

@@ -141,7 +141,7 @@ function RoomList() {
     <div className="join-room">
       <h1>Join a Room</h1>
       <nav>
-        <Error>{error}</Error>
+        <Error setError={setError}>{error}</Error>
         {loading && (
           <div>Loading...</div>
         )}
@@ -251,7 +251,7 @@ function RoomMiddleMan() {
   return (
     <div className="room">
       <h1>{room.current ? room.current.name : ' '}</h1>
-      <Error>{error}</Error>
+      <Error setError={setError}>{error}</Error>
       {loading && (
         <div>Loading...</div>
       )}
