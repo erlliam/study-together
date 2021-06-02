@@ -75,7 +75,7 @@ function CreateRoom() {
           required
         />
 
-        <label htmlFor="create-room-password">Password (optional)</label>
+        <label htmlFor="create-room-password">Password <span className="lighter-text">(optional)</span></label>
         <input
           id="create-room-password"
           type="password"
@@ -83,7 +83,7 @@ function CreateRoom() {
           onChange={e => setPassword(e.target.value)}
         />
 
-        <label htmlFor="create-room-capacity">Room capacity (16 max)</label>
+        <label htmlFor="create-room-capacity">Room capacity <span className="lighter-text">(capacity is 16)</span></label>
         <input
           id="create-room-capacity"
           type="number"

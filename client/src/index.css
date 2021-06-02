@@ -87,3 +87,7 @@ input {
   margin-bottom: initial;
   padding: initial;
 }
+
+.lighter-text {
+  opacity: 0.2;
+}
