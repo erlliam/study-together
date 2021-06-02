@@ -168,6 +168,7 @@ function RoomMiddleMan() {
   let room = useRef();
   let webSocket = useRef();
   let params = useParams();
+  let history = useHistory();
   let id = params.id;
   let [error, setError] = useState('');
   let [loading, setLoading] = useState(true);
@@ -260,9 +261,21 @@ function RoomMiddleMan() {
     setError('');
   }
 
+  async function handleDeleteClick(event) {
+    let response = await apiDelete('/room/' + room.current.id);
+    if (response.ok) {
+      history.replace('/rooms');
+    } else {
+      setError('failed to delete room');
+    }
+  }
+
   return (
     <div className="room">
-      <h1>{room.current ? room.current.name : ' '}</h1>
+      <h1>
+        {room.current ? room.current.name : ' '}
+        <button onClick={handleDeleteClick}>X</button>
+      </h1>
       <Error setError={setError}>{error}</Error>
       {loading && (
         <div>Loading...</div>
@@ -288,15 +301,6 @@ function Room(props) {
   let setError = props.setError;
   let history = useHistory();
   let [length, setLength] = useState('');
-
-  async function handleDeleteClick(event) {
-    let response = await apiDelete('/room/' + props.room.id);
-    if (response.ok) {
-      history.replace('/rooms');
-    } else {
-      setError('failed to delete room');
-    }
-  }
 
   async function handleStartTimerClick(event) {
     let response = await apiPost(
@@ -364,7 +368,6 @@ function Room(props) {
     <>
       {props.isRoomOwner && (
         <nav>
-          <button onClick={handleDeleteClick}>Delete room</button>
           <button onClick={handleStartTimerClick}>Start timer</button>
           <button onClick={handleStopTimerClick}>Stop timer</button>
           <button onClick={handleBreakModeClick}>Break mode</button>
