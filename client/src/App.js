@@ -270,11 +270,21 @@ function RoomMiddleMan() {
     }
   }
 
+  async function handleEditClick(event) {
+    // todo:
+    alert('Implement me');
+  }
+
   return (
     <div className="room">
       <h1>
         {room.current ? room.current.name : ' '}
-        <button onClick={handleDeleteClick}>X</button>
+        {roomJoined && (
+          <>
+            <button onClick={handleEditClick}>Edit</button>
+            <button onClick={handleDeleteClick}>Delete</button>
+          </>
+        )}
       </h1>
       <Error setError={setError}>{error}</Error>
       {loading && (
