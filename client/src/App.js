@@ -10,7 +10,8 @@ import {
   Route,
   Link,
   useParams,
-  useHistory
+  useHistory,
+  useLocation
 } from 'react-router-dom';
 
 import {
@@ -60,11 +61,7 @@ function App() {
 
   return (
     <Router>
-      <nav className="top-nav">
-        <Link to="/">Home</Link>
-        <Link to="/create-room">Create a room</Link>
-        <Link to="/rooms">Join a room</Link>
-      </nav>
+      <TopNav />
       <Switch>
         <Route exact path="/"><StartingPage /></Route>
         <Route path="/create-room"><CreateRoom /></Route>
@@ -74,6 +71,21 @@ function App() {
       </Switch>
     </Router>
   );
+}
+
+function TopNav() {
+  let location = useLocation();
+  if (location.pathname === '/') {
+    return null;
+  } else {
+    return (
+      <nav className="top-nav">
+        <Link to="/">Home</Link>
+        <Link to="/create-room">Create a room</Link>
+        <Link to="/rooms">Join a room</Link>
+      </nav>
+    );
+  }
 }
 
 function StartingPage() {
