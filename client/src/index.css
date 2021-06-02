@@ -40,7 +40,12 @@ input {
 
 .top-nav {
   display: flex;
-  gap: 1rem;
+  justify-content: center;
+
+}
+
+.top-nav > a {
+  padding: .5rem .5rem;
 }
 
 .error {
