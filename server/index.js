@@ -215,6 +215,13 @@ function deleteRoom(room) {
       connection.close(1000, 'Room has been deleted');
     }
     db.serialize(() => {
+      db.run('DELETE FROM roomTimer WHERE roomId = ?', room.id, async (error) => {
+        if (error) {
+          reject(error);
+        } else {
+          await stopTimer(room);
+        }
+      });
       db.run('DELETE FROM roomUser WHERE roomId = ?', room.id, (error) => {
         if (error) {
           reject(error);
@@ -372,7 +379,6 @@ router.delete('/room/:id', async (req, res, next) => {
     } else if (room === undefined){
       res.sendStatus(404);
     } else {
-      await deleteTimer(room);
       await deleteRoom(room);
       res.sendStatus(200);
     }
@@ -399,19 +405,6 @@ function createTimer(room) {
       if (error) {
         reject(error);
       } else {
-        resolve();
-      }
-    });
-  });
-}
-
-function deleteTimer(room) {
-  return new Promise((resolve, reject) => {
-    db.run('DELETE FROM roomTimer WHERE roomId = ?', room.id, async (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        await stopTimer(room);
         resolve();
       }
     });
@@ -691,6 +684,9 @@ async function connectUser(ws, user, room) {
       operation: 'message',
       message: user.id + ' left.'
     }))
+    if (connections[room.id].length === 0) {
+      deleteRoom(room);
+    }
   });
   roomMessage(room, JSON.stringify({
     operation: 'message',
