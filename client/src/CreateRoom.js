@@ -65,36 +65,38 @@ function CreateRoom() {
     <div className="create-room">
       <h1>Create a Room</h1>
       <Error>{error}</Error>
-      <form autoComplete="off" onSubmit={handleSubmit}>
-        <label htmlFor="create-room-name">Room name</label>
-        <input
-          id="create-room-name"
-          value={name}
-          onChange={handleNameChange}
-          autoFocus
-          required
-        />
+      <div className="create-room-form-wrapper">
+        <form autoComplete="off" onSubmit={handleSubmit}>
+          <label htmlFor="create-room-name">Room name</label>
+          <input
+            id="create-room-name"
+            value={name}
+            onChange={handleNameChange}
+            autoFocus
+            required
+          />
 
-        <label htmlFor="create-room-password">Password <span className="lighter-text">(optional)</span></label>
-        <input
-          id="create-room-password"
-          type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
+          <label htmlFor="create-room-password">Password <span className="lighter-text">(optional)</span></label>
+          <input
+            id="create-room-password"
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
 
-        <label htmlFor="create-room-capacity">Room capacity <span className="lighter-text">(capacity is 16)</span></label>
-        <input
-          id="create-room-capacity"
-          type="number"
-          min="1" max="16"
-          value={capacity}
-          onChange={e => setCapacity(e.target.value)}
-          required
-        />
+          <label htmlFor="create-room-capacity">Room capacity <span className="lighter-text">(capacity is 16)</span></label>
+          <input
+            id="create-room-capacity"
+            type="number"
+            min="1" max="16"
+            value={capacity}
+            onChange={e => setCapacity(e.target.value)}
+            required
+          />
 
-        <button>Create room</button>
-      </form>
+          <button>Create room</button>
+        </form>
+      </div>
     </div>
   );
 }
