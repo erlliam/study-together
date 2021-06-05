@@ -130,34 +130,55 @@ function RoomList() {
   let roomsInnerHtml;
   if (!loading && Array.isArray(rooms)) {
     if (rooms.length === 0) {
-      roomsInnerHtml = <>
-        <p>There are no rooms. <Link
-          id="no-rooms-found"
-          to="/create-room"
-        >Create room.</Link></p>
-      </>
+      roomsInnerHtml = (
+        <tr>
+          <td id="no-rooms-found" colspan="4">
+            There are no rooms. <
+              Link to="/create-room"
+            >Create a room.</Link>
+          </td>
+        </tr>
+      );
     } else {
-      roomsInnerHtml = rooms.map(({id, password, name, usersConnected, userCapacity}) => (
-        <Link to={'/room/' + id} key={id}>
-          <span>{password ? 'private' : 'public'}</span>
-          {' '}
-          <span>{name}</span>
-          {' '}
-          <span>{usersConnected}/{userCapacity}</span>
-        </Link>
-      ))
+      roomsInnerHtml = rooms.map(({id, password, name, usersConnected, userCapacity}) => {
+        function TdLink(props) {
+          return (
+            <td><Link to={'/room/' + id}>{props.children}</Link></td>
+          );
+        }
+        return (
+          <tr key={id}>
+            <TdLink>{password ? 'Private' : 'Public'}</TdLink>
+            <TdLink>{name}</TdLink>
+            <TdLink>{usersConnected}</TdLink>
+            <TdLink>{userCapacity}</TdLink>
+          </tr>
+        );
+      });
     }
   }
 
   return (
     <div className="join-room">
       <h1>Join a Room</h1>
+      <Error setError={setError}>{error}</Error>
       <nav>
-        <Error setError={setError}>{error}</Error>
         {loading && (
           <div>Loading...</div>
         )}
-        {roomsInnerHtml}
+        <table>
+          <thead>
+            <tr>
+              <th>Public/Private</th>
+              <th>Room name</th>
+              <th>Users connected</th>
+              <th>User capacity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {roomsInnerHtml}
+          </tbody>
+        </table>
       </nav>
     </div>
   );
