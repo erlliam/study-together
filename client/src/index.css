@@ -93,8 +93,35 @@ nav > a {
   padding: 0;
 }
 
-.join-room table td a {
+.join-room table th {
+  border: 1px solid;
   padding: .5rem 0;
+  background-color: salmon;
+}
+
+.join-room table td a {
+  padding: .3rem 0;
+}
+
+.join-room table tbody tr {
+  border: 1px solid;
+  text-align: center;
+}
+
+.join-room table tbody tr:nth-child(2n) {
+  background-color: rgba(0, 0, 0, .075);
+}
+
+.join-room table tbody td:nth-child(3) {
+  text-align: right;
+}
+
+.join-room table tbody td:nth-child(3) a:after {
+  content: '/';
+}
+
+.join-room table tbody td:nth-child(4) {
+  text-align: left;
 }
 
 .lighter-text {
