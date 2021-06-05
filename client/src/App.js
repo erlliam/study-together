@@ -300,7 +300,7 @@ function RoomMiddleMan() {
     <div className="room">
       <h1>
         {room.current ? room.current.name : ' '}
-        {roomJoined && (
+        {(roomJoined && isRoomOwner()) && (
           <>
             <button onClick={handleEditClick}>Edit</button>
             <button onClick={handleDeleteClick}>Delete</button>
