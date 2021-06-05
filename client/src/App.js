@@ -103,7 +103,6 @@ function StartingPage() {
 function RoomList() {
   let isMounted = useRef(true);
   let [error, setError] = useState('');
-  let [loading, setLoading] = useState(true);
   let [rooms, setRooms] = useState();
 
   useEffect(() => {
@@ -121,14 +120,13 @@ function RoomList() {
         } else {
           setError(await response.text());
         }
-        setLoading(false);
       }
     }
     init();
   }, []);
 
   let roomsInnerHtml;
-  if (!loading && Array.isArray(rooms)) {
+  if (Array.isArray(rooms)) {
     if (rooms.length === 0) {
       roomsInnerHtml = (
         <tr>
@@ -163,9 +161,6 @@ function RoomList() {
       <h1>Join a Room</h1>
       <Error setError={setError}>{error}</Error>
       <nav>
-        {loading && (
-          <div>Loading...</div>
-        )}
         <table>
           <thead>
             <tr>
@@ -192,7 +187,6 @@ function RoomMiddleMan() {
   let history = useHistory();
   let id = params.id;
   let [error, setError] = useState('');
-  let [loading, setLoading] = useState(true);
   let [roomJoined, setRoomJoined] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
 
@@ -209,7 +203,6 @@ function RoomMiddleMan() {
           joinRoom();
         } else {
           setPasswordRequired(true);
-          setLoading(false);
         }
       }
     }
@@ -234,11 +227,9 @@ function RoomMiddleMan() {
           break;
         case 404:
           setError('The room does not exist.');
-          setLoading(false);
           break;
         default:
           setError('Something went wrong.');
-          setLoading(false);
       }
     }
   }
@@ -265,7 +256,6 @@ function RoomMiddleMan() {
           default:
             setError('Something went wrong.');
         }
-        setLoading(false);
       }
     }, {once: true});
     webSocket.current.send(JSON.stringify({
@@ -310,9 +300,6 @@ function RoomMiddleMan() {
         )}
       </header>
       <Error setError={setError}>{error}</Error>
-      {loading && (
-        <div>Loading...</div>
-      )}
       {passwordRequired && (
         <PasswordPage
           joinRoom={joinRoom}
