@@ -86,6 +86,15 @@ nav > a {
 
 .join-room table {
   width: 100%;
+  border-collapse: collapse;
+}
+
+.join-room table td {
+  padding: 0;
+}
+
+.join-room table td a {
+  padding: .5rem 0;
 }
 
 .lighter-text {
