@@ -132,7 +132,7 @@ function RoomList() {
     if (rooms.length === 0) {
       roomsInnerHtml = (
         <tr>
-          <td id="no-rooms-found" colspan="4">
+          <td id="no-rooms-found" colSpan="4">
             There are no rooms. <
               Link to="/create-room"
             >Create a room.</Link>
