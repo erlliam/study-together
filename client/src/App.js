@@ -298,15 +298,17 @@ function RoomMiddleMan() {
 
   return (
     <div className="room">
-      <h1>
-        {room.current ? room.current.name : ' '}
+      <header>
+        <h1>
+          {room.current ? room.current.name : <>&nbsp;</>}
+        </h1>
         {(roomJoined && isRoomOwner()) && (
           <>
             <button onClick={handleEditClick}>Edit</button>
             <button onClick={handleDeleteClick}>Delete</button>
           </>
         )}
-      </h1>
+      </header>
       <Error setError={setError}>{error}</Error>
       {loading && (
         <div>Loading...</div>
