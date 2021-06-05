@@ -314,6 +314,8 @@ function RoomMiddleMan() {
       {passwordRequired && (
         <PasswordPage
           joinRoom={joinRoom}
+          setError={setError}
+          error={error}
         />
       )}
       {roomJoined && (
@@ -580,16 +582,22 @@ function PasswordPage(props) {
     props.joinRoom(password);
   }
 
+  function handleChange(event) {
+    setPassword(event.target.value);
+    if (props.error === 'Wrong password.') {
+      props.setError('');
+    }
+  }
+
   return (
     <div className="password-page">
-      <h2>Password required</h2>
       <form autoComplete="off" onSubmit={handleSubmit}>
         <label htmlFor="join-room-password">Enter password</label>
         <input
           id="join-room-password"
           type="password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={handleChange}
           autoFocus
           required
         />
