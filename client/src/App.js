@@ -131,10 +131,10 @@ function RoomList() {
   if (!loading && Array.isArray(rooms)) {
     if (rooms.length === 0) {
       roomsInnerHtml = <>
-        <p>No rooms found. <Link
+        <p>There are no rooms. <Link
           id="no-rooms-found"
           to="/create-room"
-        >You should create one.</Link></p>
+        >Create room.</Link></p>
       </>
     } else {
       roomsInnerHtml = rooms.map(({id, password, name, usersConnected, userCapacity}) => (
