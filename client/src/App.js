@@ -254,7 +254,7 @@ function RoomMiddleMan() {
             setError('The room is full.');
             break;
           case 401:
-            setError('Wrong credentials');
+            setError('Wrong password.');
             break;
           case 404:
             setError('The room does not exist.');
