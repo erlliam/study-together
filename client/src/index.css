@@ -68,6 +68,11 @@ nav > a {
   margin: 1rem 0;
 }
 
+.password-page {
+  display: flex;
+  justify-content: center;
+}
+
 .messages {
   max-height: 20rem;
   max-width: 15rem;
@@ -76,6 +81,7 @@ nav > a {
 
 #no-rooms-found {
   text-align: center;
+  padding: 0.3rem 0;
 }
 
 #no-rooms-found > a {
