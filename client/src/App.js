@@ -289,6 +289,7 @@ function Room() {
       {roomJoined && (
         <>
           <RoomControls
+            room={room.current}
             setError={setError}
             isRoomOwner={isRoomOwner()}
           />
@@ -305,10 +306,11 @@ function RoomControls(props) {
   let setError = props.setError;
   let history = useHistory();
   let [length, setLength] = useState('');
+  let roomId = props.room.id;
 
   async function handleStartTimerClick(event) {
     let response = await apiPost(
-      '/timer/' + props.room.id, {
+      '/timer/' + roomId, {
         body: JSON.stringify({
           operation: 'start'
         })
@@ -320,7 +322,7 @@ function RoomControls(props) {
 
   async function handleStopTimerClick(event) {
     let response = await apiPost(
-      '/timer/' + props.room.id, {
+      '/timer/' + roomId, {
         body: JSON.stringify({
           operation: 'stop'
         })
@@ -332,7 +334,7 @@ function RoomControls(props) {
 
   async function handleBreakModeClick(event) {
     let response = await apiPost(
-      '/timer/' + props.room.id, {
+      '/timer/' + roomId, {
         body: JSON.stringify({
           operation: 'break'
         })
@@ -344,7 +346,7 @@ function RoomControls(props) {
 
   async function handleWorkModeClick(event) {
     let response = await apiPost(
-      '/timer/' + props.room.id, {
+      '/timer/' + roomId, {
         body: JSON.stringify({
           operation: 'work'
         })
@@ -357,7 +359,7 @@ function RoomControls(props) {
   async function handleSetTime(event) {
     event.preventDefault();
     let response = await apiPost(
-      '/timer/' + props.room.id, {
+      '/timer/' + roomId, {
         body: JSON.stringify({
           operation: 'length',
           length: length
@@ -369,7 +371,7 @@ function RoomControls(props) {
   }
 
   async function handleDeleteClick(event) {
-    let response = await apiDelete('/room/' + props.room.current.id);
+    let response = await apiDelete('/room/' + roomId);
     if (response.ok) {
       history.replace('/rooms');
     } else {
