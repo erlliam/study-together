@@ -212,7 +212,7 @@ function getUsersConnected(id) {
 function deleteRoom(room) {
   return new Promise((resolve, reject) => {
     for (connection of connections[room.id]) {
-      connection.close(1000, 'Room has been deleted');
+      connection.close(1000, 'The room has been deleted.');
     }
     db.serialize(() => {
       db.run('DELETE FROM roomTimer WHERE roomId = ?', room.id, async (error) => {
