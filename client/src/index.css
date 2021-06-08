@@ -42,6 +42,18 @@ input {
 .top-nav {
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.starting-page > nav a,
+.top-nav a {
+  text-decoration: none;
+  color: black;
+  font-size: 1.1rem
+}
+
+.top-nav {
+  height: 40px;
 }
 
 nav > a {
