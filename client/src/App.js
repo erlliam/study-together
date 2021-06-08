@@ -464,13 +464,14 @@ function Timer(props) {
   let lengthToUse = (mode ==='w' ? workLength : breakLength)
   let minutesRemaining = Math.floor((lengthToUse - timeElapsed) / 60);
   let secondsRemaining = (lengthToUse - timeElapsed) % 60;
+  minutesRemaining = minutesRemaining.toString().padStart(2, '0');
+  secondsRemaining = secondsRemaining.toString().padStart(2, '0');
 
   return (
     <>
       <p>Currently: {mode === 'w' ? 'Working' : 'Relaxing'}</p>
       <p>Timer: {state === 1 ? 'Running' : 'Paused'}</p>
-      <p>Minutes remaining: {minutesRemaining}</p>
-      <p>Seconds remaining: {secondsRemaining}</p>
+      <p>{minutesRemaining}:{secondsRemaining}</p>
     </>
   );
 }
