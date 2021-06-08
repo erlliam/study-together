@@ -288,12 +288,12 @@ function Room() {
       )}
       {roomJoined && (
         <>
-          <RoomControls
+          <Timer
+            ws={webSocket.current}
             room={room.current}
             setError={setError}
             isRoomOwner={isRoomOwner()}
           />
-          <Timer ws={webSocket.current} />
           <SendMessage ws={webSocket.current} />
           <Messages ws={webSocket.current} />
         </>
@@ -384,6 +384,18 @@ function RoomControls(props) {
     alert('Implement me');
   }
 
+  let startStopButton = (props.timerStates.state === 1 ? (
+    <button onClick={handleStopTimerClick}>Stop timer</button>
+  ) : (
+    <button onClick={handleStartTimerClick}>Start timer</button>
+  ));
+
+  let workBreakButton = (props.timerStates.mode === 'w' ? (
+    <button onClick={handleBreakModeClick}>Break mode</button>
+  ) : (
+    <button onClick={handleWorkModeClick}>Work mode</button>
+  ));
+
   return (
     <>
       {props.isRoomOwner && (
@@ -391,10 +403,8 @@ function RoomControls(props) {
           <button onClick={handleEditClick}>Edit</button>
           <button onClick={handleDeleteClick}>Delete</button>
           <nav>
-            <button onClick={handleStartTimerClick}>Start timer</button>
-            <button onClick={handleStopTimerClick}>Stop timer</button>
-            <button onClick={handleBreakModeClick}>Break mode</button>
-            <button onClick={handleWorkModeClick}>Work mode</button>
+            {startStopButton}
+            {workBreakButton}
             <form onSubmit={handleSetTime}>
               <label>Set time</label>
               <input
@@ -467,8 +477,16 @@ function Timer(props) {
   minutesRemaining = minutesRemaining.toString().padStart(2, '0');
   secondsRemaining = secondsRemaining.toString().padStart(2, '0');
 
+  let timerStates = {state, mode};
+
   return (
     <>
+      <RoomControls
+        timerStates={timerStates}
+        room={props.room}
+        setError={props.setError}
+        isRoomOwner={props.isRoomOwner}
+      />
       <p>Currently: {mode === 'w' ? 'Working' : 'Relaxing'}</p>
       <p>Timer: {state === 1 ? 'Running' : 'Paused'}</p>
       <p>{minutesRemaining}:{secondsRemaining}</p>
