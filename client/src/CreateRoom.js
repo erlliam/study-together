@@ -94,7 +94,7 @@ function CreateRoom() {
             required
           />
 
-          <button>Create room</button>
+          <button id="create-room-button">Create room</button>
         </form>
       </div>
     </div>

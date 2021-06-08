@@ -145,3 +145,14 @@ nav > a {
   align-items: center;
   gap: 1rem;
 }
+
+#create-room-name,
+#create-room-password,
+#create-room-capacity {
+  width: 30ch;
+}
+
+#create-room-button {
+  display: block;
+  margin: auto;
+}
