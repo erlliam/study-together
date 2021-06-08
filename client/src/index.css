@@ -78,6 +78,15 @@ nav > a {
   margin-top: 25vh;
 }
 
+.starting-page nav a {
+  border: 1px solid;
+  border-radius: 4px;
+}
+
+.starting-page nav a + a {
+  margin-left: 1rem;
+}
+
 .about {
   text-align: center;
 }
