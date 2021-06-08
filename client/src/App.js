@@ -66,7 +66,7 @@ function App() {
         <Route exact path="/"><StartingPage /></Route>
         <Route path="/create-room"><CreateRoom /></Route>
         <Route path="/rooms"><RoomList /></Route>
-        <Route path="/room/:id"><RoomMiddleMan /></Route>
+        <Route path="/room/:id"><Room /></Route>
         <Route path="*"><h1>404</h1></Route>
       </Switch>
     </Router>
@@ -180,7 +180,7 @@ function RoomList() {
   );
 }
 
-function RoomMiddleMan() {
+function Room() {
   let isMounted = useRef(true);
   let room = useRef();
   let webSocket = useRef();
@@ -287,18 +287,21 @@ function RoomMiddleMan() {
         />
       )}
       {roomJoined && (
-        <Room
-          setError={setError}
-          room={room.current}
-          ws={webSocket.current}
-          isRoomOwner={isRoomOwner()}
-        />
+        <>
+          <RoomControls
+            setError={setError}
+            isRoomOwner={isRoomOwner()}
+          />
+          <Timer ws={webSocket.current} />
+          <SendMessage ws={webSocket.current} />
+          <Messages ws={webSocket.current} />
+        </>
       )}
     </div>
   );
 }
 
-function Room(props) {
+function RoomControls(props) {
   let setError = props.setError;
   let history = useHistory();
   let [length, setLength] = useState('');
@@ -401,9 +404,6 @@ function Room(props) {
           </nav>
         </>
       )}
-      <Timer ws={props.ws} />
-      <SendMessage ws={props.ws} />
-      <Messages ws={props.ws} />
     </>
   );
 }
