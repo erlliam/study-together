@@ -292,6 +292,7 @@ function Room() {
             ws={webSocket.current}
             room={room.current}
             setError={setError}
+            error={error}
             isRoomOwner={isRoomOwner()}
           />
           <SendMessage ws={webSocket.current} />
@@ -356,8 +357,22 @@ function RoomControls(props) {
     }
   }
 
+  async function handleLengthChanged(event) {
+    setLength(event.target.value);
+    if (props.error === 'Invalid length.') {
+      setError('');
+    }
+  }
+
   async function handleSetTime(event) {
     event.preventDefault();
+
+    if (length === '' ||
+        isNaN(parseInt(length, 10))) {
+      setError('Invalid length.');
+      return;
+    }
+
     let response = await apiPost(
       '/timer/' + roomId, {
         body: JSON.stringify({
@@ -409,7 +424,7 @@ function RoomControls(props) {
               <label>Set time</label>
               <input
                 value={length}
-                onChange={e => setLength(e.target.value)}
+                onChange={handleLengthChanged}
               />
               <button>Set time</button>
             </form>
@@ -485,6 +500,7 @@ function Timer(props) {
         timerStates={timerStates}
         room={props.room}
         setError={props.setError}
+        error={props.error}
         isRoomOwner={props.isRoomOwner}
       />
       <p>Currently: {mode === 'w' ? 'Working' : 'Relaxing'}</p>
