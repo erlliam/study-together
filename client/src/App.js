@@ -273,33 +273,11 @@ function RoomMiddleMan() {
     setError('');
   }
 
-  async function handleDeleteClick(event) {
-    let response = await apiDelete('/room/' + room.current.id);
-    if (response.ok) {
-      history.replace('/rooms');
-    } else {
-      setError('failed to delete room');
-    }
-  }
-
-  async function handleEditClick(event) {
-    // todo:
-    alert('Implement me');
-  }
-
   return (
     <div className="room">
-      <header>
-        <h1>
-          {room.current ? room.current.name : <>&nbsp;</>}
-        </h1>
-        {(roomJoined && isRoomOwner()) && (
-          <>
-            <button onClick={handleEditClick}>Edit</button>
-            <button onClick={handleDeleteClick}>Delete</button>
-          </>
-        )}
-      </header>
+      <h1>
+        {room.current ? room.current.name : <>&nbsp;</>}
+      </h1>
       <Error setError={setError}>{error}</Error>
       {passwordRequired && (
         <PasswordPage
@@ -387,23 +365,41 @@ function Room(props) {
     }
   }
 
+  async function handleDeleteClick(event) {
+    let response = await apiDelete('/room/' + props.room.current.id);
+    if (response.ok) {
+      history.replace('/rooms');
+    } else {
+      setError('failed to delete room');
+    }
+  }
+
+  async function handleEditClick(event) {
+    // todo:
+    alert('Implement me');
+  }
+
   return (
     <>
       {props.isRoomOwner && (
-        <nav>
-          <button onClick={handleStartTimerClick}>Start timer</button>
-          <button onClick={handleStopTimerClick}>Stop timer</button>
-          <button onClick={handleBreakModeClick}>Break mode</button>
-          <button onClick={handleWorkModeClick}>Work mode</button>
-          <form onSubmit={handleSetTime}>
-            <label>Set time</label>
-            <input
-              value={length}
-              onChange={e => setLength(e.target.value)}
-            />
-            <button>Set time</button>
-          </form>
-        </nav>
+        <>
+          <button onClick={handleEditClick}>Edit</button>
+          <button onClick={handleDeleteClick}>Delete</button>
+          <nav>
+            <button onClick={handleStartTimerClick}>Start timer</button>
+            <button onClick={handleStopTimerClick}>Stop timer</button>
+            <button onClick={handleBreakModeClick}>Break mode</button>
+            <button onClick={handleWorkModeClick}>Work mode</button>
+            <form onSubmit={handleSetTime}>
+              <label>Set time</label>
+              <input
+                value={length}
+                onChange={e => setLength(e.target.value)}
+              />
+              <button>Set time</button>
+            </form>
+          </nav>
+        </>
       )}
       <Timer ws={props.ws} />
       <SendMessage ws={props.ws} />
