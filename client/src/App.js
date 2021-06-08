@@ -92,6 +92,7 @@ function StartingPage() {
   return (
     <div className="starting-page">
       <h1>study-together</h1>
+      <p className="about">A tool where you can study with others.</p>
       <nav>
         <Link to="/create-room">Create a room</Link>
         <Link to="/rooms">Join a room</Link>

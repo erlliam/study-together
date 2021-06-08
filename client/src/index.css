@@ -67,7 +67,7 @@ input {
 }
 
 nav > a {
-  padding: 0.5rem;
+  padding: 1rem;
 }
 
 .error {
@@ -76,6 +76,10 @@ nav > a {
 
 .starting-page {
   margin-top: 25vh;
+}
+
+.about {
+  text-align: center;
 }
 
 .join-room nav a {
