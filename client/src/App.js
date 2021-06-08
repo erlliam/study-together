@@ -461,21 +461,16 @@ function Timer(props) {
     });
   }, [props.ws]);
 
+  let lengthToUse = (mode ==='w' ? workLength : breakLength)
+  let minutesRemaining = Math.floor((lengthToUse - timeElapsed) / 60);
+  let secondsRemaining = (lengthToUse - timeElapsed) % 60;
+
   return (
     <>
-      <p>Current mode: {mode === 'w' ? (
-        'Work'
-      ) : (
-        'Break'
-      )}</p>
-      <p>Work length: {workLength / 60} minutes</p>
-      <p>Break length: {breakLength / 60} minutes</p>
-      <p>{mode === 'w' ? (
-        (workLength - timeElapsed)
-      ) : (
-        (breakLength - timeElapsed)
-      )}</p>
-      <p>Timer: {state === 1 ? 'On' : 'Off'}</p>
+      <p>Currently: {mode === 'w' ? 'Working' : 'Relaxing'}</p>
+      <p>Timer: {state === 1 ? 'Running' : 'Paused'}</p>
+      <p>Minutes remaining: {minutesRemaining}</p>
+      <p>Seconds remaining: {secondsRemaining}</p>
     </>
   );
 }
