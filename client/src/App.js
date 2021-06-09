@@ -464,7 +464,10 @@ function Timer(props) {
       let json = JSON.parse(event.data);
       switch (json.operation) {
         case 'timerFinished':
-          alert('TIMER FINISHED!!!!');
+          // todo: LICENSE AND ATTRIBUTION stuff
+          // https://onlineclock.net/sounds/?sound=Default
+          let audio = new Audio('https://onlineclock.net/audio/options/default.mp3');
+          audio.play();
           break;
         case 'timerUpdate':
           setTimeElapsed(json.timeElapsed);
