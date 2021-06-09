@@ -506,18 +506,25 @@ function validTimerLength(length) {
 }
 
 async function startTimer(room) {
-  await setTimerState(room, 1);
-  roomMessage(room, JSON.stringify({
-    operation: 'stateUpdate',
-    state: 1
-  }));
-
   let mode = await getTimerMode(room);
   let modeTimeInterval = (
     mode === 'w'
     ? await getWorkTimeInterval(room)
     : await getBreakTimeInterval(room)
   );
+  let timeElapsed = await getTimeElapsed(room);
+  if (timeElapsed >= modeTimeInterval) {
+    // todo:
+    // this check shouldn't even exist.
+    // when we stop the timer, set the timer to break mode.
+    return;
+  }
+
+  await setTimerState(room, 1);
+  roomMessage(room, JSON.stringify({
+    operation: 'stateUpdate',
+    state: 1
+  }));
 
   let interval = setInterval(async () => {
     await incrementTimer(room);
