@@ -108,9 +108,23 @@ nav > a {
 }
 
 .messages {
-  max-height: 20rem;
+  height: 20rem;
   max-width: 15rem;
   overflow-y: auto;
+  border: 1px solid;
+  padding: 1rem;
+}
+
+.messages p:first-child {
+  margin-top: 0;
+}
+
+.messages p:last-child {
+  margin-bottom: 0;
+}
+
+.messages p {
+  margin: .5rem 0;
 }
 
 #no-rooms-found {

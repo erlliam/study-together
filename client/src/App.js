@@ -295,7 +295,6 @@ function Room() {
             error={error}
             isRoomOwner={isRoomOwner()}
           />
-          <SendMessage ws={webSocket.current} />
           <Messages ws={webSocket.current} />
         </>
       )}
@@ -526,37 +525,12 @@ function Timer(props) {
   );
 }
 
-function SendMessage(props) {
-  let params = useParams();
-  let id = params.id;
-  let [message, setMessage] = useState('');
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    props.ws.send(JSON.stringify({
-      operation: 'userMessage',
-      id: id,
-      token: getToken(),
-      message: message
-    }));
-    setMessage('');
-  }
-
-  return (
-    <form autoComplete="off" onSubmit={handleSubmit}>
-      <label htmlFor="chat-message">Send a message</label>
-      <input
-        id="chat-message"
-        value={message}
-        onChange={e => setMessage(e.target.value)}
-      />
-    </form>
-  );
-}
-
 function Messages(props) {
   let [messages, setMessages] = useState([]);
+  let [message, setMessage] = useState('');
   let divElement = useRef();
+  let params = useParams();
+  let id = params.id;
 
   useEffect(() => {
     function handleMessage(event) {
@@ -599,12 +573,33 @@ function Messages(props) {
     d.scrollTop = d.scrollHeight - d.clientHeight;
   }, [messages]);
 
+  function handleSubmitMessage(event) {
+    event.preventDefault();
+    props.ws.send(JSON.stringify({
+      operation: 'userMessage',
+      id: id,
+      token: getToken(),
+      message: message
+    }));
+    setMessage('');
+  }
+
   return (
-    <div ref={divElement} className="messages">
-      {messages.map((message) => (
-        <p key={message.key}>{message.data}</p>
-      ))}
-    </div>
+    <>
+      <div ref={divElement} className="messages">
+        {messages.map((message) => (
+          <p key={message.key}>{message.data}</p>
+        ))}
+      </div>
+      <form autoComplete="off" onSubmit={handleSubmitMessage}>
+        <label htmlFor="chat-message">Send a message</label>
+        <input
+          id="chat-message"
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+        />
+      </form>
+    </>
   );
 }
 
