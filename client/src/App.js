@@ -423,7 +423,6 @@ function RoomControls(props) {
               className="form-set-time"
               onSubmit={handleSetTime}
             >
-              <label>Set time <span className="lighter-text">(in seconds)</span></label>
               <input
                 value={length}
                 onChange={handleLengthChanged}
@@ -597,12 +596,11 @@ function Messages(props) {
         onSubmit={handleSubmitMessage}
       >
         <input
-          placeHolder="Send a message"
           id="chat-message"
           value={message}
           onChange={e => setMessage(e.target.value)}
         />
-        <button>Send</button>
+        <button>Send message</button>
       </form>
     </>
   );
