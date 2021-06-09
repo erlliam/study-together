@@ -512,13 +512,6 @@ async function startTimer(room) {
     ? await getWorkTimeInterval(room)
     : await getBreakTimeInterval(room)
   );
-  let timeElapsed = await getTimeElapsed(room);
-  if (timeElapsed >= modeTimeInterval) {
-    // todo:
-    // this check shouldn't even exist.
-    // when we stop the timer, set the timer to break mode.
-    return;
-  }
 
   await setTimerState(room, 1);
   roomMessage(room, JSON.stringify({
@@ -535,10 +528,14 @@ async function startTimer(room) {
 
     let timeElapsed = await getTimeElapsed(room);
     if (timeElapsed >= modeTimeInterval) {
-      await stopTimer(room);
       roomMessage(room, JSON.stringify({
         operation: 'timerFinished'
       }));
+      if (mode === 'w') {
+        await breakMode(room);
+      } else {
+        await workMode(room);
+      }
     }
   }, 1000);
   timerIntervals[room.id] = interval;
