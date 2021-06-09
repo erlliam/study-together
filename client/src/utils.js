@@ -37,15 +37,12 @@ function Error(props) {
   }
 
   return (
-    <div className="error">
-      {props.children === '' ?
-        <>&nbsp;</> :
-        <>
-          {props.children}
-          <button onClick={handleCloseClick}>Close</button>
-        </>
-      }
-    </div>
+    (props.children) === '' ?
+      <div className="error-empty">&nbsp;</div> :
+      <div className="error">
+        {props.children}
+        <button onClick={handleCloseClick}>Close</button>
+      </div>
   );
 }
 
