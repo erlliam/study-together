@@ -480,7 +480,7 @@ function Timer(props) {
           setWorkLength(json.length);
           break;
         case 'breakLengthUpdate':
-          setWorkLength(json.length);
+          setBreakLength(json.length);
           break
         default:
           // nothing
