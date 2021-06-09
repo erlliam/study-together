@@ -591,13 +591,18 @@ function Messages(props) {
           <p key={message.key}>{message.data}</p>
         ))}
       </div>
-      <form autoComplete="off" onSubmit={handleSubmitMessage}>
-        <label htmlFor="chat-message">Send a message</label>
+      <form
+        className="form-send-message"
+        autoComplete="off"
+        onSubmit={handleSubmitMessage}
+      >
         <input
+          placeHolder="Send a message"
           id="chat-message"
           value={message}
           onChange={e => setMessage(e.target.value)}
         />
+        <button>Send</button>
       </form>
     </>
   );

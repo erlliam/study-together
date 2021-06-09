@@ -207,18 +207,23 @@ nav > a {
   gap: 1rem;
 }
 
-.form-set-time {
+.form-send-message {
+  margin: 1rem;
+}
+
+.form-set-time, .form-send-message {
   display: inline-block;
   border: 1px solid;
   border-radius: 4px;
   padding: 1rem;
 }
 
-.form-set-time input {
+.form-set-time input, .form-send-message input {
   display: inline;
+  margin-bottom: 0;
 }
 
-.form-set-time button {
+.form-set-time button, .form-send-message button {
   border-left: 0;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
