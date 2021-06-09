@@ -61,11 +61,22 @@ input {
   height: 40px;
 }
 
+.starting-page nav a,
 button {
   padding: .5rem 1rem;
   border: 1px solid;
   border-radius: 4px;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.starting-page nav a:hover,
+button:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.starting-page nav a:active,
+button:active {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 nav > a {
@@ -92,11 +103,6 @@ nav > a {
 
 .starting-page {
   margin-top: 25vh;
-}
-
-.starting-page nav a {
-  border: 1px solid;
-  border-radius: 4px;
 }
 
 .starting-page nav a + a {
