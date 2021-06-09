@@ -684,9 +684,10 @@ async function connectUser(ws, user, room) {
       operation: 'message',
       message: user.id + ' left.'
     }))
-    if (connections[room.id].length === 0) {
-      deleteRoom(room);
-    }
+    // todo: Uncomment code when in production
+    // if (connections[room.id].length === 0) {
+    //   deleteRoom(room);
+    // }
   });
   roomMessage(room, JSON.stringify({
     operation: 'message',
