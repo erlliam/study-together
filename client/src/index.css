@@ -37,6 +37,7 @@ input {
   display: block;
   margin-bottom: 0.75rem;
   padding: .5rem;
+  border: 1px solid;
 }
 
 .starting-page > nav,
@@ -183,6 +184,30 @@ nav > a {
   border-radius: 16px;
   font-family: mono;
   padding: 1rem;
+}
+
+.nav-room-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.form-set-time {
+  display: inline-block;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.form-set-time input {
+  display: inline;
+}
+
+.form-set-time button {
+  border-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .create-room-form-wrapper {

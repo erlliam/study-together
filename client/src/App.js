@@ -416,12 +416,15 @@ function RoomControls(props) {
     <>
       {props.isRoomOwner && (
         <>
-          <button onClick={handleDeleteClick}>Delete room</button>
-          <nav>
+          <nav className="nav-room-controls">
             {startStopButton}
             {workBreakButton}
-            <form onSubmit={handleSetTime}>
-              <label>Set time</label>
+            <button onClick={handleDeleteClick}>Delete room</button>
+            <form
+              className="form-set-time"
+              onSubmit={handleSetTime}
+            >
+              <label>Set time <span className="lighter-text">(in seconds)</span></label>
               <input
                 value={length}
                 onChange={handleLengthChanged}
