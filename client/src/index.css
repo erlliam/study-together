@@ -16,6 +16,7 @@ body {
   font-family: var(--font-sans-serif);
   background-color: #ffffff;
   color: #000000;
+  transition: background-color 500ms linear;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -39,6 +40,7 @@ input {
   padding: .5rem .75rem;
   border: 1px solid;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .starting-page > nav,

@@ -494,6 +494,25 @@ function Timer(props) {
     });
   }, [props.ws]);
 
+  useEffect(() => {
+    if (mode === 'w') {
+      if (state === 0) {
+        document.body.style.backgroundColor = 'rgb(255, 169, 169)';
+      } else {
+        document.body.style.backgroundColor = 'rgb(255, 100, 100)';
+      }
+    } else {
+      if (state === 0) {
+        document.body.style.backgroundColor = 'rgb(169, 169, 255)';
+      } else {
+        document.body.style.backgroundColor = 'rgb(100, 100, 255)';
+      }
+    }
+    return (() => {
+      document.body.style.backgroundColor = '#ffffff';
+    });
+  }, [mode, state])
+
   let lengthToUse = (mode ==='w' ? workLength : breakLength)
   let minutesRemaining = Math.floor((lengthToUse - timeElapsed) / 60);
   let secondsRemaining = (lengthToUse - timeElapsed) % 60;
