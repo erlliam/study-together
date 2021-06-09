@@ -92,7 +92,7 @@ function StartingPage() {
   return (
     <div className="starting-page">
       <h1>study-together</h1>
-      <p className="about">A tool where you can study with others.</p>
+      <p className="about">Study/cowork with others and chat!</p>
       <nav>
         <Link to="/create-room">Create a room</Link>
         <Link to="/rooms">Join a room</Link>
@@ -424,6 +424,7 @@ function RoomControls(props) {
               onSubmit={handleSetTime}
             >
               <input
+                placeholder="Time"
                 value={length}
                 onChange={handleLengthChanged}
               />
@@ -462,6 +463,9 @@ function Timer(props) {
     function handleMessage(event) {
       let json = JSON.parse(event.data);
       switch (json.operation) {
+        case 'timerFinished':
+          alert('TIMER FINISHED!!!!');
+          break;
         case 'timerUpdate':
           setTimeElapsed(json.timeElapsed);
           break;
@@ -596,6 +600,7 @@ function Messages(props) {
         onSubmit={handleSubmitMessage}
       >
         <input
+          placeholder="Message"
           id="chat-message"
           value={message}
           onChange={e => setMessage(e.target.value)}
