@@ -197,6 +197,11 @@ function Room() {
       webSocket.current = ws;
       init();
     });
+    ws.addEventListener('close', (event) => {
+      // todo: Figure out when to display such an error.
+      setError('Connection lost. Please refresh the page.');
+    });
+
     async function init() {
       await setRoomData();
       if (isMounted.current && room.current !== undefined) {
