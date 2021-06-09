@@ -701,6 +701,9 @@ function removeConnection(room, ws) {
 }
 
 function roomMessage(room, message) {
+  // todo: fix bug that occurs when server restarts
+  // and user tries to start/stop the timer
+  // TypeError: connections[room.id] is not iterable
   for (let connection of connections[room.id]) {
     connection.send(message);
   }
