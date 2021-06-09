@@ -36,6 +36,7 @@ label {
 input {
   display: block;
   margin-bottom: 0.75rem;
+  padding: .5rem;
 }
 
 .starting-page > nav,
@@ -57,8 +58,15 @@ input {
   height: 40px;
 }
 
+button {
+  padding: .5rem 1rem;
+  border: 1px solid;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
 nav > a {
-  padding: .5rem 2rem;
+  padding: .5rem 1rem;
 }
 
 .error {
