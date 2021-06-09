@@ -170,10 +170,15 @@ nav > a {
 }
 
 .timer-time {
-  margin-top: 0;
-  margin-bottom: 0;
-  font-size: 6rem;
   text-align: center;
+}
+
+.timer-time-text {
+  font-size: 6rem;
+  border: 3px solid;
+  border-radius: 16px;
+  font-family: mono;
+  padding: 1rem;
 }
 
 .create-room-form-wrapper {

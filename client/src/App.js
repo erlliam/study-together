@@ -514,7 +514,9 @@ function Timer(props) {
 
   return (
     <>
-      <p className="timer-time">{minutesRemaining}:{secondsRemaining}</p>
+      <p className="timer-time">
+        <span className="timer-time-text">{minutesRemaining}:{secondsRemaining}</span>
+      </p>
       <RoomControls
         timerStates={timerStates}
         room={props.room}
