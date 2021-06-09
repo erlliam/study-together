@@ -444,18 +444,28 @@ function updateOneColumnFromRoomTimer(column, value, room) {
 }
 
 async function getTimerState(room) {
-  let state = await selectColumnFromRoomTimer('state', room);
-  return state?.state;
+  let column = await selectColumnFromRoomTimer('state', room);
+  return column?.state;
 }
 
 async function getTimerMode(room) {
-  let mode = await selectColumnFromRoomTimer('mode', room);
-  return mode?.mode;
+  let column = await selectColumnFromRoomTimer('mode', room);
+  return column?.mode;
 }
 
 async function getTimeElapsed(room) {
-  let timeElapsed = await selectColumnFromRoomTimer('timeElapsed', room);
-  return timeElapsed?.timeElapsed;
+  let column = await selectColumnFromRoomTimer('timeElapsed', room);
+  return column?.timeElapsed;
+}
+
+async function getWorkTimeInterval(room) {
+  let column = await selectColumnFromRoomTimer('workLength', room);
+  return column?.workLength;
+}
+
+async function getBreakTimeInterval(room) {
+  let column = await selectColumnFromRoomTimer('breakLength', room);
+  return column?.breakLength;
 }
 
 async function setTimerState(room, state) {
@@ -501,12 +511,28 @@ async function startTimer(room) {
     operation: 'stateUpdate',
     state: 1
   }));
+
+  let mode = await getTimerMode(room);
+  let modeTimeInterval = (
+    mode === 'w'
+    ? await getWorkTimeInterval(room)
+    : await getBreakTimeInterval(room)
+  );
+
   let interval = setInterval(async () => {
     await incrementTimer(room);
     roomMessage(room, JSON.stringify({
       operation: 'timerUpdate',
       timeElapsed: await getTimeElapsed(room)
     }));
+
+    let timeElapsed = await getTimeElapsed(room);
+    if (timeElapsed >= modeTimeInterval) {
+      await stopTimer(room);
+      roomMessage(room, JSON.stringify({
+        operation: 'timerFinished'
+      }));
+    }
   }, 1000);
   timerIntervals[room.id] = interval;
 }
