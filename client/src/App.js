@@ -394,11 +394,6 @@ function RoomControls(props) {
     }
   }
 
-  async function handleEditClick(event) {
-    // todo:
-    alert('Implement me');
-  }
-
   let startStopButton = (props.timerStates.state === 1 ? (
     <button
       className="startStopButton"
@@ -421,8 +416,7 @@ function RoomControls(props) {
     <>
       {props.isRoomOwner && (
         <>
-          <button onClick={handleEditClick}>Edit</button>
-          <button onClick={handleDeleteClick}>Delete</button>
+          <button onClick={handleDeleteClick}>Delete room</button>
           <nav>
             {startStopButton}
             {workBreakButton}
@@ -498,22 +492,23 @@ function Timer(props) {
   minutesRemaining = minutesRemaining.toString().padStart(2, '0');
   secondsRemaining = secondsRemaining.toString().padStart(2, '0');
 
-  let currently = '';
+  let status = '';
   if (mode === 'w') {
-    currently += 'Working';
+    status += 'Working';
   } else {
-    currently += 'Relaxing';
+    status += 'Relaxing';
   }
   if (state === 1) {
-    currently += ' - Running';
+    status += ' - Running';
   } else {
-    currently += ' - Paused';
+    status += ' - Paused';
   }
 
   let timerStates = {state, mode};
 
   return (
     <>
+      <p className="timer-status">{status}</p>
       <p className="timer-time">
         <span className="timer-time-text">{minutesRemaining}:{secondsRemaining}</span>
       </p>
@@ -524,7 +519,6 @@ function Timer(props) {
         error={props.error}
         isRoomOwner={props.isRoomOwner}
       />
-      <p>Currently: {currently}</p>
     </>
   );
 }
