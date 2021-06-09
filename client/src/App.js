@@ -400,9 +400,15 @@ function RoomControls(props) {
   }
 
   let startStopButton = (props.timerStates.state === 1 ? (
-    <button onClick={handleStopTimerClick}>Stop timer</button>
+    <button
+      className="startStopButton"
+      onClick={handleStopTimerClick}
+    >STOP</button>
   ) : (
-    <button onClick={handleStartTimerClick}>Start timer</button>
+    <button
+      className="startStopButton"
+      onClick={handleStartTimerClick}
+    >START</button>
   ));
 
   let workBreakButton = (props.timerStates.mode === 'w' ? (
@@ -492,10 +498,23 @@ function Timer(props) {
   minutesRemaining = minutesRemaining.toString().padStart(2, '0');
   secondsRemaining = secondsRemaining.toString().padStart(2, '0');
 
+  let currently = '';
+  if (mode === 'w') {
+    currently += 'Working';
+  } else {
+    currently += 'Relaxing';
+  }
+  if (state === 1) {
+    currently += ' - Running';
+  } else {
+    currently += ' - Paused';
+  }
+
   let timerStates = {state, mode};
 
   return (
     <>
+      <p className="timer-time">{minutesRemaining}:{secondsRemaining}</p>
       <RoomControls
         timerStates={timerStates}
         room={props.room}
@@ -503,9 +522,7 @@ function Timer(props) {
         error={props.error}
         isRoomOwner={props.isRoomOwner}
       />
-      <p>Currently: {mode === 'w' ? 'Working' : 'Relaxing'}</p>
-      <p>Timer: {state === 1 ? 'Running' : 'Paused'}</p>
-      <p>{minutesRemaining}:{secondsRemaining}</p>
+      <p>Currently: {currently}</p>
     </>
   );
 }
