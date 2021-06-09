@@ -64,7 +64,7 @@ function CreateRoom() {
   return (
     <div className="create-room">
       <h1>Create a Room</h1>
-      <Error>{error}</Error>
+      <Error setError={setError}>{error}</Error>
       <div className="create-room-form-wrapper">
         <form autoComplete="off" onSubmit={handleSubmit}>
           <label htmlFor="create-room-name">Room name</label>
