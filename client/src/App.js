@@ -17,8 +17,8 @@ import {
   Error
 } from './utils';
 
-import Room from './Room';
-import CreateRoom from './CreateRoom';
+import {Room} from './Room';
+import {CreateRoom} from './CreateRoom';
 
 function App() {
   useEffect(() => {
@@ -193,7 +193,6 @@ function PasswordPage(props) {
 }
 
 export {
-  PasswordPage
+  App,
+  PasswordPage,
 }
-
-export default App;

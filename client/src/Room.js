@@ -18,8 +18,8 @@ import {
   PasswordPage,
 } from './App';
 
-import Messages from './Messages';
-import Timer from './Timer';
+import {Messages} from './Messages';
+import {Timer} from './Timer';
 
 function Room() {
   let [error, setError] = useState('');
@@ -148,4 +148,4 @@ function Room() {
   );
 }
 
-export default Room;
+export {Room};

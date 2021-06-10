@@ -259,4 +259,4 @@ function TimerControls(props) {
   );
 }
 
-export default Timer;
+export {Timer};
