@@ -124,7 +124,7 @@ function Room() {
       <h1>
         {room.current ? room.current.name : <>&nbsp;</>}
       </h1>
-      <Error setError={setError}>{error}</Error>
+      <Error error={error} setError={setError} />
       {passwordRequired && (
         <PasswordPage
           joinRoom={joinRoom}

@@ -156,7 +156,7 @@ function RoomList() {
   return (
     <div className="join-room">
       <h1>Join a Room</h1>
-      <Error setError={setError}>{error}</Error>
+      <Error error={error} setError={setError} />
       <nav>
         <table>
           <thead>

@@ -36,14 +36,16 @@ function Error(props) {
     props.setError('');
   }
 
-  return (
-    (props.children) === '' ?
-      null :
+  if (props.error) {
+    return (
       <div className="error">
-        {props.children}
+        {props.error}
         <button onClick={handleCloseClick}>Close</button>
       </div>
-  );
+    );
+  } else {
+    return null;
+  }
 }
 
 export {
