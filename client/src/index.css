@@ -236,10 +236,17 @@ nav > a {
 }
 
 .form-set-time, .form-send-message {
-  border: 1px solid;
-  border-radius: 4px;
-  padding: 1rem;
   white-space: nowrap;
+}
+
+.form-send-message input {
+  border-top-left-radius: 0;
+  border-top: 0;
+}
+
+.form-send-message button {
+  border-top-right-radius: 0;
+  border-top: 0;
 }
 
 .form-set-time input, .form-send-message input {
