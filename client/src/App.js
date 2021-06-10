@@ -168,7 +168,7 @@ function Room() {
   let [roomJoined, setRoomJoined] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
   let params = useParams();
-  let id = params.id;
+  let roomId = params.id;
   let room = useRef();
   let webSocket = useRef();
 
@@ -193,6 +193,8 @@ function Room() {
         } else {
           setPasswordRequired(true);
         }
+      } else {
+        ws.close();
       }
     }
 
@@ -202,7 +204,7 @@ function Room() {
   }, []);
 
   async function setRoomData() {
-    let response = await apiGet('/room/' + id);
+    let response = await apiGet('/room/' + roomId);
     switch (response.status) {
       case 200:
         room.current = await response.json();
@@ -223,13 +225,13 @@ function Room() {
           handleRoomJoined();
           break;
         case 400:
-          setError('The room is full.');
+          setError('Room full. Try again later.');
           break;
         case 401:
-          setError('Wrong password.');
+          setError('Incorrect password. Try again.');
           break;
         case 404:
-          setError('The room does not exist.');
+          setError('Room no longer exists.');
           break;
         case 405:
           setError('You are already in this room.');
@@ -241,7 +243,7 @@ function Room() {
     webSocket.current.send(JSON.stringify({
       operation: 'joinRoom',
       token: getToken(),
-      id: id,
+      id: roomId,
       password: password,
     }));
   }
