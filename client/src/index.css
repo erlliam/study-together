@@ -1,6 +1,6 @@
 :root {
   --font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --border: 1px solid;
+  --border: 1px solid rgba(0, 0, 0, .2);
   --border-radius: 4px;
 }
 
