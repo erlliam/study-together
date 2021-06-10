@@ -27,22 +27,12 @@ import CreateRoom from './CreateRoom';
 function App() {
   useEffect(() => {
     async function init() {
-      if (!(await userExists())) {
-        createUser();
-      }
-    }
-
-    async function userExists() {
       let response = await apiGet('/user');
-      switch (response.status) {
-        case 200:
-          let json = await response.json();
-          localStorage.setItem('id', json.id);
-          return true;
-        case 401:
-          return false;
-        default:
-          throw Error('Unknown status code.');
+      if (response.status === 200) {
+        let json = await response.json();
+        localStorage.setItem('id', json.id);
+      } else {
+        createUser();
       }
     }
 
