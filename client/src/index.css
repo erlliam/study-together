@@ -1,5 +1,7 @@
 :root {
   --font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --border: 1px solid;
+  --border-radius: 4px;
 }
 
 *,
@@ -38,13 +40,36 @@ input {
   display: block;
   margin-bottom: 0.75rem;
   padding: .5rem .75rem;
-  border: 1px solid;
-  border-radius: 4px;
+  border: var(--border);
+  border-radius: var(--border-radius);
   background-color: transparent;
 }
 
 input:focus {
   outline: none;
+}
+
+nav > a {
+  padding: .5rem 1rem;
+}
+
+button,
+.starting-page nav a {
+  padding: .5rem 1rem;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+button:hover,
+.starting-page nav a:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+button:active,
+.starting-page nav a:active {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .starting-page > nav,
@@ -66,29 +91,6 @@ input:focus {
   border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 
-.starting-page nav a,
-button {
-  padding: .5rem 1rem;
-  border: 1px solid;
-  border-radius: 4px;
-  background-color: transparent;
-  cursor: pointer;
-}
-
-.starting-page nav a:hover,
-button:hover {
-  background-color: rgba(0, 0, 0, 0.15);
-}
-
-.starting-page nav a:active,
-button:active {
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-nav > a {
-  padding: .5rem 1rem;
-}
-
 .error {
   position: fixed;
   left: 50%;
@@ -98,8 +100,8 @@ nav > a {
   text-align: center;
   padding: .5rem 1rem;
   margin: .5rem 0;
-  border: 1px solid black;
-  border-radius: 4px;
+  border: var(--border);
+  border-radius: var(--border-radius);
 }
 
 .error button {
@@ -138,10 +140,10 @@ nav > a {
 .messages {
   height: 20rem;
   overflow-y: auto;
-  border: 1px solid;
+  border: var(--border);
   padding: 1rem;
   margin: 1rem;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 
 .messages p:first-child {
@@ -177,7 +179,7 @@ nav > a {
 }
 
 .join-room table th {
-  border: 1px solid;
+  border: var(--border);
   padding: .5rem 0;
 }
 
@@ -186,7 +188,7 @@ nav > a {
 }
 
 .join-room table tbody tr {
-  border: 1px solid;
+  border: var(--border);
   text-align: center;
 }
 
@@ -223,7 +225,7 @@ nav > a {
 .timer-time-text {
   display: block;
   font-size: 6rem;
-  border: 1px solid;
+  border: var(--border);
   border-radius: 16px;
   font-family: mono;
   padding: 1rem;
