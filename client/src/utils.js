@@ -1,4 +1,4 @@
-let apiUrl = 'http://localhost:5000/api'
+let apiUrl = 'http://192.168.1.163:5000/api'
 
 function apiGet(url, options) {
   return fetch(apiUrl + url, {

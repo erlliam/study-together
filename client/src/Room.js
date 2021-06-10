@@ -31,7 +31,7 @@ function Room() {
   let webSocket = useRef();
 
   useEffect(() => {
-    let ws = new WebSocket('ws://localhost:5000');
+    let ws = new WebSocket('ws://192.168.1.163:5000');
     ws.addEventListener('open', (event) => {
       webSocket.current = ws;
       init();
