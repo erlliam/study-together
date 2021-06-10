@@ -301,6 +301,7 @@ function Timer(props) {
     async function init() {
       let response = await apiGet('/timer/' + id);
       let json = await response.json();
+      // todo: Figure out how to batch these state updates...
       setTimeElapsed(json.timeElapsed);
       setState(json.state);
       setMode(json.mode);
@@ -409,7 +410,7 @@ function TimerControls(props) {
         })
       });
     if (!response.ok) {
-      setError('failed to start timer');
+      setError('Failed to start the timer.');
     }
   }
 
@@ -421,7 +422,7 @@ function TimerControls(props) {
         })
       });
     if (!response.ok) {
-      setError('failed to stop timer');
+      setError('Failed to stop the timer.');
     }
   }
 
@@ -433,7 +434,7 @@ function TimerControls(props) {
         })
       });
     if (!response.ok) {
-      setError('failed to enter break mode');
+      setError('Failed to enter break mode.');
     }
   }
 
@@ -445,13 +446,22 @@ function TimerControls(props) {
         })
       });
     if (!response.ok) {
-      setError('failed to enter work mode');
+      setError('Failed to enter work mode.');
+    }
+  }
+
+  async function handleDeleteClick(event) {
+    let response = await apiDelete('/room/' + roomId);
+    if (response.ok) {
+      history.replace('/rooms');
+    } else {
+      setError('Failed to delete the room.');
     }
   }
 
   async function handleLengthChanged(event) {
     setLength(event.target.value);
-    if (props.error === 'Invalid length.') {
+    if (props.error === 'Invalid time length. Only numbers are accepted.') {
       setError('');
     }
   }
@@ -461,7 +471,7 @@ function TimerControls(props) {
 
     if (length === '' ||
         isNaN(parseInt(length, 10))) {
-      setError('Invalid length.');
+      setError('Invalid time length. Only numbers are accepted.');
       return;
     }
 
@@ -473,36 +483,33 @@ function TimerControls(props) {
         })
       });
     if (!response.ok) {
-      setError('failed to set length');
-    }
-  }
-
-  async function handleDeleteClick(event) {
-    let response = await apiDelete('/room/' + roomId);
-    if (response.ok) {
-      history.replace('/rooms');
-    } else {
-      setError('failed to delete room');
+      setError('Failed to set timer length.');
     }
   }
 
   let startStopButton = (props.timerStates.state === 1 ? (
-    <button
-      className="startStopButton"
-      onClick={handleStopTimerClick}
-    >STOP</button>
-  ) : (
-    <button
-      className="startStopButton"
-      onClick={handleStartTimerClick}
-    >START</button>
-  ));
+      <button
+        className="startStopButton"
+        onClick={handleStopTimerClick}
+      >
+        STOP
+      </button>
+    ) : (
+      <button
+        className="startStopButton"
+        onClick={handleStartTimerClick}
+      >
+        START
+      </button>
+    )
+  );
 
   let workBreakButton = (props.timerStates.mode === 'w' ? (
-    <button onClick={handleBreakModeClick}>Break mode</button>
-  ) : (
-    <button onClick={handleWorkModeClick}>Work mode</button>
-  ));
+      <button onClick={handleBreakModeClick}>Break mode</button>
+    ) : (
+      <button onClick={handleWorkModeClick}>Work mode</button>
+    )
+  );
 
   return (
     <nav className="nav-room-controls">
@@ -559,6 +566,7 @@ function Messages(props) {
         ]
       });
     }
+
     props.ws.addEventListener('message', handleMessage);
     props.ws.addEventListener('close', handleClose);
     return (() => {
@@ -568,6 +576,7 @@ function Messages(props) {
   }, [props.ws]);
 
   useEffect(() => {
+    // todo: Let users override auto scrolling.
     let d = divElement.current;
     d.scrollTop = d.scrollHeight - d.clientHeight;
   }, [messages]);
