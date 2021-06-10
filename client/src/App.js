@@ -375,6 +375,7 @@ function Timer(props) {
   minutesRemaining = minutesRemaining.toString().padStart(2, '0');
   secondsRemaining = secondsRemaining.toString().padStart(2, '0');
 
+  // todo: Make this feature OPT IN
   let status = '';
   status += (mode === 'w' ? 'Working' : 'Relaxing');
   status += ' - ';
@@ -382,7 +383,6 @@ function Timer(props) {
 
   return (
     <>
-      <p className="timer-status">{status}</p>
       <p className="timer-time">
         <span className="timer-time-text">{minutesRemaining}:{secondsRemaining}</span>
       </p>

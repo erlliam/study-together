@@ -63,6 +63,7 @@ input:focus {
 
 .top-nav {
   height: 40px;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 
 .starting-page nav a,
