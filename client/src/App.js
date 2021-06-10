@@ -56,8 +56,8 @@ function App() {
         <TopNav />
         <Switch>
           <Route exact path="/"><StartingPage /></Route>
-          <Route path="/create-room"><CreateRoom /></Route>
-          <Route path="/rooms"><RoomList /></Route>
+          <Route path="/create"><CreateRoom /></Route>
+          <Route path="/join"><RoomList /></Route>
           <Route path="/room/:id"><Room /></Route>
           <Route path="*"><h1>404</h1></Route>
         </Switch>
@@ -83,8 +83,8 @@ function TopNav() {
     return (
       <nav className="top-nav">
         <Link to="/">Home</Link>
-        <Link to="/create-room">Create a room</Link>
-        <Link to="/rooms">Join a room</Link>
+        <Link to="/create">Create a room</Link>
+        <Link to="/join">Join a room</Link>
       </nav>
     );
   }
@@ -96,8 +96,8 @@ function StartingPage() {
       <h1>study-together</h1>
       <p className="about">Study/cowork with others and chat!</p>
       <nav>
-        <Link to="/create-room">Create a room</Link>
-        <Link to="/rooms">Join a room</Link>
+        <Link to="/create">Create a room</Link>
+        <Link to="/join">Join a room</Link>
       </nav>
     </div>
   );
@@ -127,7 +127,7 @@ function RoomList() {
         <tr>
           <td id="no-rooms-found" colSpan="4">
             There are no rooms. <
-              Link to="/create-room"
+              Link to="/create"
             >Create a room.</Link>
           </td>
         </tr>

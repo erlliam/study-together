@@ -179,7 +179,7 @@ function TimerControls(props) {
   async function handleDeleteClick(event) {
     let response = await apiDelete('/room/' + roomId);
     if (response.ok) {
-      history.replace('/rooms');
+      history.replace('/join');
     } else {
       setError('Failed to delete the room.');
     }

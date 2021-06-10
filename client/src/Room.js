@@ -70,7 +70,7 @@ function Room() {
         room.current = await response.json();
         break;
       case 404:
-        // todo: Suggest users to visit /rooms
+        // todo: Suggest users to visit /join
         setError('Room not found.');
         break;
       default:
