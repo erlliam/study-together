@@ -288,7 +288,114 @@ function Room() {
   );
 }
 
-function RoomControls(props) {
+function Timer(props) {
+  let [timeElapsed, setTimeElapsed] = useState(0);
+  let [state, setState] = useState();
+  let [mode, setMode] = useState();
+  let [workLength, setWorkLength] = useState(0);
+  let [breakLength, setBreakLength] = useState(0);
+  let params = useParams();
+  let id = params.id;
+
+  useEffect(() => {
+    async function init() {
+      let response = await apiGet('/timer/' + id);
+      let json = await response.json();
+      setTimeElapsed(json.timeElapsed);
+      setState(json.state);
+      setMode(json.mode);
+      setBreakLength(json.breakLength);
+      setWorkLength(json.workLength);
+    }
+
+    init();
+  }, []);
+
+  useEffect(() => {
+    function handleMessage(event) {
+      let json = JSON.parse(event.data);
+      switch (json.operation) {
+        case 'timerFinished':
+          // todo: LICENSE AND ATTRIBUTION stuff
+          // https://onlineclock.net/sounds/?sound=Default
+          let audio = new Audio('https://onlineclock.net/audio/options/default.mp3');
+          audio.play();
+          break;
+        case 'timerUpdate':
+          setTimeElapsed(json.timeElapsed);
+          break;
+        case 'stateUpdate':
+          setState(json.state);
+          break;
+        case 'modeUpdate':
+          setMode(json.mode);
+          break;
+        case 'workLengthUpdate':
+          setWorkLength(json.length);
+          break;
+        case 'breakLengthUpdate':
+          setBreakLength(json.length);
+          break
+        default:
+          // nothing
+      }
+    }
+
+    props.ws.addEventListener('message', handleMessage);
+    return (() => {
+      props.ws.removeEventListener('message', handleMessage);
+    });
+  }, [props.ws]);
+
+  useEffect(() => {
+    if (mode === 'w') {
+      if (state === 0) {
+        document.body.style.backgroundColor = 'rgb(255, 169, 169)';
+      } else {
+        document.body.style.backgroundColor = 'rgb(255, 100, 100)';
+      }
+    } else {
+      if (state === 0) {
+        document.body.style.backgroundColor = 'rgb(169, 169, 255)';
+      } else {
+        document.body.style.backgroundColor = 'rgb(100, 100, 255)';
+      }
+    }
+    return (() => {
+      document.body.style.backgroundColor = '#ffffff';
+    });
+  }, [mode, state])
+
+  let lengthToUse = (mode ==='w' ? workLength : breakLength)
+  let minutesRemaining = Math.floor((lengthToUse - timeElapsed) / 60);
+  let secondsRemaining = (lengthToUse - timeElapsed) % 60;
+  minutesRemaining = minutesRemaining.toString().padStart(2, '0');
+  secondsRemaining = secondsRemaining.toString().padStart(2, '0');
+
+  let status = '';
+  status += (mode === 'w' ? 'Working' : 'Relaxing');
+  status += ' - ';
+  status += (state === 1 ? 'Running' : 'Paused');
+
+  return (
+    <>
+      <p className="timer-status">{status}</p>
+      <p className="timer-time">
+        <span className="timer-time-text">{minutesRemaining}:{secondsRemaining}</span>
+      </p>
+      {(props.isRoomOwner) && (
+        <TimerControls
+          timerStates={{state, mode}}
+          room={props.room}
+          setError={props.setError}
+          error={props.error}
+        />
+      )}
+    </>
+  );
+}
+
+function TimerControls(props) {
   let setError = props.setError;
   let history = useHistory();
   let [length, setLength] = useState('');
@@ -398,141 +505,22 @@ function RoomControls(props) {
   ));
 
   return (
-    <>
-      {props.isRoomOwner && (
-        <>
-          <nav className="nav-room-controls">
-            {startStopButton}
-            {workBreakButton}
-            <button onClick={handleDeleteClick}>Delete room</button>
-            <form
-              className="form-set-time"
-              onSubmit={handleSetTime}
-            >
-              <input
-                placeholder="Time"
-                value={length}
-                onChange={handleLengthChanged}
-              />
-              <button>Set time</button>
-            </form>
-          </nav>
-        </>
-      )}
-    </>
-  );
-}
-
-function Timer(props) {
-  let [timeElapsed, setTimeElapsed] = useState(0);
-  let [state, setState] = useState();
-  let [mode, setMode] = useState();
-  let [workLength, setWorkLength] = useState(0);
-  let [breakLength, setBreakLength] = useState(0);
-  let params = useParams();
-  let id = params.id;
-
-  useEffect(() => {
-    async function init() {
-      let response = await apiGet('/timer/' + id);
-      let json = await response.json();
-      setTimeElapsed(json.timeElapsed);
-      setState(json.state);
-      setMode(json.mode);
-      setBreakLength(json.breakLength);
-      setWorkLength(json.workLength);
-    }
-    init();
-  }, []);
-
-  useEffect(() => {
-    function handleMessage(event) {
-      let json = JSON.parse(event.data);
-      switch (json.operation) {
-        case 'timerFinished':
-          // todo: LICENSE AND ATTRIBUTION stuff
-          // https://onlineclock.net/sounds/?sound=Default
-          let audio = new Audio('https://onlineclock.net/audio/options/default.mp3');
-          audio.play();
-          break;
-        case 'timerUpdate':
-          setTimeElapsed(json.timeElapsed);
-          break;
-        case 'stateUpdate':
-          setState(json.state);
-          break;
-        case 'modeUpdate':
-          setMode(json.mode);
-          break;
-        case 'workLengthUpdate':
-          setWorkLength(json.length);
-          break;
-        case 'breakLengthUpdate':
-          setBreakLength(json.length);
-          break
-        default:
-          // nothing
-      }
-    }
-    props.ws.addEventListener('message', handleMessage);
-    return (() => {
-      props.ws.removeEventListener('message', handleMessage);
-    });
-  }, [props.ws]);
-
-  useEffect(() => {
-    if (mode === 'w') {
-      if (state === 0) {
-        document.body.style.backgroundColor = 'rgb(255, 169, 169)';
-      } else {
-        document.body.style.backgroundColor = 'rgb(255, 100, 100)';
-      }
-    } else {
-      if (state === 0) {
-        document.body.style.backgroundColor = 'rgb(169, 169, 255)';
-      } else {
-        document.body.style.backgroundColor = 'rgb(100, 100, 255)';
-      }
-    }
-    return (() => {
-      document.body.style.backgroundColor = '#ffffff';
-    });
-  }, [mode, state])
-
-  let lengthToUse = (mode ==='w' ? workLength : breakLength)
-  let minutesRemaining = Math.floor((lengthToUse - timeElapsed) / 60);
-  let secondsRemaining = (lengthToUse - timeElapsed) % 60;
-  minutesRemaining = minutesRemaining.toString().padStart(2, '0');
-  secondsRemaining = secondsRemaining.toString().padStart(2, '0');
-
-  let status = '';
-  if (mode === 'w') {
-    status += 'Working';
-  } else {
-    status += 'Relaxing';
-  }
-  if (state === 1) {
-    status += ' - Running';
-  } else {
-    status += ' - Paused';
-  }
-
-  let timerStates = {state, mode};
-
-  return (
-    <>
-      <p className="timer-status">{status}</p>
-      <p className="timer-time">
-        <span className="timer-time-text">{minutesRemaining}:{secondsRemaining}</span>
-      </p>
-      <RoomControls
-        timerStates={timerStates}
-        room={props.room}
-        setError={props.setError}
-        error={props.error}
-        isRoomOwner={props.isRoomOwner}
-      />
-    </>
+    <nav className="nav-room-controls">
+      {startStopButton}
+      {workBreakButton}
+      <button onClick={handleDeleteClick}>Delete room</button>
+      <form
+        className="form-set-time"
+        onSubmit={handleSetTime}
+      >
+        <input
+          placeholder="Time"
+          value={length}
+          onChange={handleLengthChanged}
+        />
+        <button>Set time</button>
+      </form>
+    </nav>
   );
 }
 
