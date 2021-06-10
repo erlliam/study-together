@@ -201,6 +201,8 @@ function Room() {
     return (() => {
       ws.close();
     });
+    // https://stackoverflow.com/a/55854902
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function setRoomData() {
@@ -295,11 +297,11 @@ function Timer(props) {
   let [workLength, setWorkLength] = useState(0);
   let [breakLength, setBreakLength] = useState(0);
   let params = useParams();
-  let id = params.id;
+  let roomId = params.id;
 
   useEffect(() => {
     async function init() {
-      let response = await apiGet('/timer/' + id);
+      let response = await apiGet('/timer/' + roomId);
       let json = await response.json();
       // todo: Figure out how to batch these state updates...
       setTimeElapsed(json.timeElapsed);
@@ -310,7 +312,7 @@ function Timer(props) {
     }
 
     init();
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     function handleMessage(event) {
