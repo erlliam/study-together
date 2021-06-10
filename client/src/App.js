@@ -164,14 +164,13 @@ function RoomList() {
 }
 
 function Room() {
-  let room = useRef();
-  let webSocket = useRef();
-  let params = useParams();
-  let history = useHistory();
-  let id = params.id;
   let [error, setError] = useState('');
   let [roomJoined, setRoomJoined] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
+  let params = useParams();
+  let id = params.id;
+  let room = useRef();
+  let webSocket = useRef();
 
   useEffect(() => {
     let ws = new WebSocket('ws://localhost:5000');
@@ -181,7 +180,9 @@ function Room() {
     });
     ws.addEventListener('close', (event) => {
       // todo: Figure out when to display such an error.
-      setError('Connection lost. Please refresh the page.');
+      // So far 1005 seems like we should ignore it.
+      setError('The web socket has been closed.');
+      console.log(event);
     });
 
     async function init() {
@@ -200,11 +201,6 @@ function Room() {
     });
   }, []);
 
-  function isRoomOwner() {
-    let userId = parseInt(localStorage.getItem('id'), 10);
-    return userId === room.current.ownerId;
-  }
-
   async function setRoomData() {
     let response = await apiGet('/room/' + id);
     switch (response.status) {
@@ -212,7 +208,8 @@ function Room() {
         room.current = await response.json();
         break;
       case 404:
-        setError('The room does not exist.');
+        // todo: Suggest users to visit /rooms
+        setError('Room not found.');
         break;
       default:
         setError('Something went wrong.');
@@ -247,6 +244,11 @@ function Room() {
       id: id,
       password: password,
     }));
+  }
+
+  function isRoomOwner() {
+    let userId = parseInt(localStorage.getItem('id'), 10);
+    return userId === room.current.ownerId;
   }
 
   function handleRoomJoined() {
@@ -625,7 +627,7 @@ function PasswordPage(props) {
 
   function handleChange(event) {
     setPassword(event.target.value);
-    if (props.error === 'Wrong password.') {
+    if (props.error === 'Incorrect password. Try again.') {
       props.setError('');
     }
   }
