@@ -20,29 +20,25 @@ import {
 import {Room} from './Room';
 import {CreateRoom} from './CreateRoom';
 
+async function initializeLocalStorage() {
+  let userResponse = await apiGet('/user');
+  if (userResponse.status === 200) {
+    let json = await userResponse.json();
+    localStorage.setItem('id', json.id);
+  } else {
+    let userCreateReponse = await apiPost('/user/create');
+    if (userCreateReponse.status === 201) {
+      let json = await userCreateReponse.json();
+      localStorage.setItem('id', json.id);
+    } else {
+      throw Error('Failed to initialize local storage.');
+    }
+  }
+}
+
 function App() {
   useEffect(() => {
-    async function init() {
-      let response = await apiGet('/user');
-      if (response.status === 200) {
-        let json = await response.json();
-        localStorage.setItem('id', json.id);
-      } else {
-        createUser();
-      }
-    }
-
-    async function createUser() {
-      let response = await apiPost('/user/create');
-      if (response.status === 201) {
-        let json = await response.json();
-        localStorage.setItem('id', json.id);
-      } else {
-        throw Error('Failed to create user.');
-      }
-    }
-
-    init();
+    initializeLocalStorage();
   }, []);
 
   return (
