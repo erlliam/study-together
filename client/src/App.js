@@ -20,39 +20,58 @@ import {
 import {Room} from './Room';
 import {CreateRoom} from './CreateRoom';
 
-async function initializeLocalStorage() {
-  let userResponse = await apiGet('/user');
-  if (userResponse.status === 200) {
-    let json = await userResponse.json();
-    localStorage.setItem('id', json.id);
-  } else {
-    let userCreateReponse = await apiPost('/user/create');
-    if (userCreateReponse.status === 201) {
-      let json = await userCreateReponse.json();
+async function initializeApp(setValidUser) {
+  // If the server is down, fetch throws an error...
+  try {
+    let userResponse = await apiGet('/user');
+    if (userResponse.status === 200) {
+      let json = await userResponse.json();
       localStorage.setItem('id', json.id);
+      setValidUser(true);
     } else {
-      throw Error('Failed to initialize local storage.');
+      let userCreateReponse = await apiPost('/user/create');
+      if (userCreateReponse.status === 201) {
+        let json = await userCreateReponse.json();
+        localStorage.setItem('id', json.id);
+        setValidUser(true);
+      } else {
+        setValidUser(false);
+      }
     }
+  } catch(error) {
+    setValidUser(false);
   }
 }
 
 function App() {
+  let [validUser, setValidUser] = useState(null);
+
   useEffect(() => {
-    initializeLocalStorage();
+    initializeApp(setValidUser);
   }, []);
 
-  return (
-    <Router>
-      <TopNav />
-      <Switch>
-        <Route exact path="/"><StartingPage /></Route>
-        <Route path="/create-room"><CreateRoom /></Route>
-        <Route path="/rooms"><RoomList /></Route>
-        <Route path="/room/:id"><Room /></Route>
-        <Route path="*"><h1>404</h1></Route>
-      </Switch>
-    </Router>
-  );
+  if (validUser === true) {
+    return (
+      <Router>
+        <TopNav />
+        <Switch>
+          <Route exact path="/"><StartingPage /></Route>
+          <Route path="/create-room"><CreateRoom /></Route>
+          <Route path="/rooms"><RoomList /></Route>
+          <Route path="/room/:id"><Room /></Route>
+          <Route path="*"><h1>404</h1></Route>
+        </Switch>
+      </Router>
+    );
+  } else if (validUser === false) {
+    return (
+      <h1>Something went wrong...</h1>
+    );
+  } else if (validUser === null) {
+    return (
+      <h1>Initializing...</h1>
+    );
+  }
 }
 
 function TopNav() {
