@@ -65,6 +65,7 @@ function App() {
 
 function TopNav() {
   let location = useLocation();
+
   if (location.pathname === '/') {
     return null;
   } else {
@@ -92,27 +93,19 @@ function StartingPage() {
 }
 
 function RoomList() {
-  let isMounted = useRef(true);
   let [error, setError] = useState('');
   let [rooms, setRooms] = useState();
 
   useEffect(() => {
-    return (() => {
-      isMounted.current = false;
-    });
-  }, []);
-
-  useEffect(() => {
     async function init() {
       let response = await apiGet('/room/all');
-      if (isMounted.current) {
-        if (response.ok) {
-          setRooms(await response.json());
-        } else {
-          setError(await response.text());
-        }
+      if (response.ok) {
+        setRooms(await response.json());
+      } else {
+        setError(await response.text());
       }
     }
+
     init();
   }, []);
 
@@ -171,7 +164,6 @@ function RoomList() {
 }
 
 function Room() {
-  let isMounted = useRef(true);
   let room = useRef();
   let webSocket = useRef();
   let params = useParams();
@@ -194,7 +186,7 @@ function Room() {
 
     async function init() {
       await setRoomData();
-      if (isMounted.current && room.current !== undefined) {
+      if (room.current !== undefined) {
         if (isRoomOwner() || !room.current.password) {
           joinRoom();
         } else {
@@ -204,7 +196,6 @@ function Room() {
     }
 
     return (() => {
-      isMounted.current = false;
       ws.close();
     });
   }, []);
@@ -216,42 +207,38 @@ function Room() {
 
   async function setRoomData() {
     let response = await apiGet('/room/' + id);
-    if (isMounted.current) {
-      switch (response.status) {
-        case 200:
-          room.current = await response.json();
-          break;
-        case 404:
-          setError('The room does not exist.');
-          break;
-        default:
-          setError('Something went wrong.');
-      }
+    switch (response.status) {
+      case 200:
+        room.current = await response.json();
+        break;
+      case 404:
+        setError('The room does not exist.');
+        break;
+      default:
+        setError('Something went wrong.');
     }
   }
 
   async function joinRoom(password) {
     webSocket.current.addEventListener('message', (event) => {
-      if (isMounted.current) {
-        switch (parseInt(event.data, 10)) {
-          case 200:
-            handleRoomJoined();
-            break;
-          case 400:
-            setError('The room is full.');
-            break;
-          case 401:
-            setError('Wrong password.');
-            break;
-          case 404:
-            setError('The room does not exist.');
-            break;
-          case 405:
-            setError('You are already in this room.');
-            break;
-          default:
-            setError('Something went wrong.');
-        }
+      switch (parseInt(event.data, 10)) {
+        case 200:
+          handleRoomJoined();
+          break;
+        case 400:
+          setError('The room is full.');
+          break;
+        case 401:
+          setError('Wrong password.');
+          break;
+        case 404:
+          setError('The room does not exist.');
+          break;
+        case 405:
+          setError('You are already in this room.');
+          break;
+        default:
+          setError('Something went wrong.');
       }
     }, {once: true});
     webSocket.current.send(JSON.stringify({
