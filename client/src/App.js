@@ -105,35 +105,37 @@ function StartingPage() {
 
 function RoomList() {
   let [error, setError] = useState('');
-  let [rooms, setRooms] = useState();
+  let [rooms, setRooms] = useState(null);
 
   useEffect(() => {
-    async function init() {
+    (async () => {
       let response = await apiGet('/room/all');
       if (response.ok) {
         setRooms(await response.json());
       } else {
-        setError(await response.text());
+        setError('Failed to fetch rooms.');
       }
-    }
-
-    init();
+    })();
   }, []);
 
-  let roomsInnerHtml;
-  if (Array.isArray(rooms)) {
+  let tbodyChildren;
+  if (rooms === null) {
+    tbodyChildren = (
+      <tr>
+        <td id="rooms-loading" colSpan="4">Loading...</td>
+      </tr>
+    );
+  } else if (Array.isArray(rooms)) {
     if (rooms.length === 0) {
-      roomsInnerHtml = (
+      tbodyChildren = (
         <tr>
           <td id="no-rooms-found" colSpan="4">
-            There are no rooms. <
-              Link to="/create"
-            >Create a room.</Link>
+            There are no rooms. <Link to="/create">Create a room.</Link>
           </td>
         </tr>
       );
     } else {
-      roomsInnerHtml = rooms.map(({id, password, name, usersConnected, userCapacity}) => {
+      tbodyChildren = rooms.map(({id, password, name, usersConnected, userCapacity}) => {
         function TdLink(props) {
           return (
             <td><Link to={'/room/' + id}>{props.children}</Link></td>
@@ -166,7 +168,7 @@ function RoomList() {
             </tr>
           </thead>
           <tbody>
-            {roomsInnerHtml}
+            {tbodyChildren}
           </tbody>
         </table>
       </nav>

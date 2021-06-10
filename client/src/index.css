@@ -158,6 +158,7 @@ button:active,
   margin: .5rem 0;
 }
 
+#rooms-loading,
 #no-rooms-found {
   text-align: center;
   padding: 0.3rem 0;
