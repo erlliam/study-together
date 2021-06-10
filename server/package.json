@@ -13,6 +13,6 @@
     "ws": "^7.4.4"
   },
   "scripts": {
-    "start": "npx nodemon index.js"
+    "start": "npx nodemon src/index.js"
   }
 }
