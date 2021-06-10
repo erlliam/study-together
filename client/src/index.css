@@ -83,12 +83,11 @@ nav > a {
   padding: .5rem 1rem;
 }
 
-.error-empty {
-  position: absolute;
-}
-
 .error {
-  position: absolute;
+  position: fixed;
+  left: 50%;
+  top: 4rem;
+  transform: translateX(-50%);
   background-color: wheat;
   text-align: center;
   color: red;

@@ -38,7 +38,7 @@ function Error(props) {
 
   return (
     (props.children) === '' ?
-      <div className="error-empty">&nbsp;</div> :
+      null :
       <div className="error">
         {props.children}
         <button onClick={handleCloseClick}>Close</button>
