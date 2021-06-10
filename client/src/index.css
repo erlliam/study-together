@@ -43,6 +43,10 @@ input {
   background-color: transparent;
 }
 
+input:focus {
+  outline: none;
+}
+
 .starting-page > nav,
 .top-nav {
   display: flex;
@@ -67,6 +71,7 @@ button {
   border: 1px solid;
   border-radius: 4px;
   background-color: transparent;
+  cursor: pointer;
 }
 
 .starting-page nav a:hover,
@@ -88,12 +93,12 @@ nav > a {
   left: 50%;
   top: 4rem;
   transform: translateX(-50%);
-  background-color: wheat;
+  background-color: red;
   text-align: center;
-  color: red;
   padding: .5rem 1rem;
   margin: .5rem 0;
   border: 1px solid black;
+  border-radius: 4px;
 }
 
 .error button {

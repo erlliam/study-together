@@ -521,7 +521,9 @@ function TimerControls(props) {
         onSubmit={handleSetTime}
       >
         <input
-          placeholder="Time"
+          placeholder="Seconds"
+          type="number"
+          min="1"
           value={length}
           onChange={handleLengthChanged}
         />
