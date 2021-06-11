@@ -15,10 +15,6 @@ import {
   Error
 } from './utils';
 
-import {
-  PasswordPage,
-} from './App';
-
 import {Messages} from './Messages';
 import {Timer} from './Timer';
 
@@ -144,6 +140,39 @@ function Room() {
           <Messages ws={webSocket.current} />
         </>
       )}
+    </div>
+  );
+}
+
+function PasswordPage(props) {
+  let [password, setPassword] = useState('');
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    props.joinRoom(password);
+  }
+
+  function handleChange(event) {
+    setPassword(event.target.value);
+    if (props.error === 'Incorrect password. Try again.') {
+      props.setError('');
+    }
+  }
+
+  return (
+    <div className="password-page">
+      <form autoComplete="off" onSubmit={handleSubmit}>
+        <label htmlFor="join-room-password">Enter password</label>
+        <input
+          id="join-room-password"
+          type="password"
+          value={password}
+          onChange={handleChange}
+          autoFocus
+          required
+        />
+        <button>Join room</button>
+      </form>
     </div>
   );
 }
