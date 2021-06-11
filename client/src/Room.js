@@ -6,6 +6,7 @@ import {
 
 import {
   useParams,
+  Link
 } from 'react-router-dom';
 
 import {
@@ -39,7 +40,7 @@ function Room() {
     ws.addEventListener('close', (event) => {
       // todo: Figure out when to display such an error.
       // So far 1005 seems like we should ignore it.
-      setError('The web socket has been closed.');
+      // setError('The web socket has been closed.');
       console.log(event);
     });
 
@@ -70,8 +71,7 @@ function Room() {
         room.current = await response.json();
         break;
       case 404:
-        // todo: Suggest users to visit /join
-        setError('Room not found.');
+        setError(<span>Room not found. <Link to="/join">Find a room to join.</Link></span>);
         break;
       default:
         setError('Something went wrong.');
