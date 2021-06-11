@@ -5,8 +5,11 @@ let bcrypt = require('bcrypt');
 let ws = require('ws');
 
 let {db} = require('./database');
-let {generateToken} = require('./utils');
-let {getUserFromToken} = require('./user');
+let {
+  getUserFromToken,
+  userInRoom,
+  addUserToDatabase
+} = require('./user');
 
 let saltRounds = 12;
 let port = 5000;
@@ -26,46 +29,12 @@ if (process.env.NODE_ENV !== 'production') {
 let app = express();
 app.use(cookieParser());
 app.use('/api', router);
-
 let server = app.listen(port);
 
 let webSocket = new ws.Server({server: server});
 
 let connections = {};
 let timerIntervals = {};
-
-function userInRoom(user, room) {
-  return new Promise((resolve, reject) => {
-    db.get(`
-      SELECT
-        *
-      FROM roomUser
-      WHERE userId = ? AND roomId = ?
-      `, user.id, room.id, (error, roomUser) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(roomUser !== undefined);
-      }
-    });
-  });
-}
-
-function addUserToDatabase() {
-  return new Promise(async (resolve, reject) => {
-    let token = await generateToken();
-    db.run(`
-      INSERT INTO user (token)
-      VALUES (?);
-    `, token, function(error) {
-      if (error) {
-        reject(error);
-      } else {
-        resolve({id: this.lastID, token: token});
-      }
-    });
-  });
-}
 
 router.get('/user', async (req, res, next) => {
   try {
