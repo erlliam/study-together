@@ -8,12 +8,7 @@ let ws = require('ws');
 let saltRounds = 12;
 let port = 5000;
 
-let app = express();
 let router = express.Router();
-let server = app.listen(port);
-let webSocket = new ws.Server({server: server});
-app.use(cookieParser());
-app.use('/api', router);
 router.use(express.json());
 if (process.env.NODE_ENV !== 'production') {
   router.use((req, res, next) => {
@@ -24,6 +19,14 @@ if (process.env.NODE_ENV !== 'production') {
     next();
   });
 }
+
+let app = express();
+app.use(cookieParser());
+app.use('/api', router);
+
+let server = app.listen(port);
+
+let webSocket = new ws.Server({server: server});
 
 let db = new sqlite3.Database('study-together.db');
 db.serialize(() => {
