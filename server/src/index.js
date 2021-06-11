@@ -6,6 +6,7 @@ let ws = require('ws');
 
 let {db} = require('./database');
 let {generateToken} = require('./utils');
+let {getUserFromToken} = require('./user');
 
 let saltRounds = 12;
 let port = 5000;
@@ -32,17 +33,6 @@ let webSocket = new ws.Server({server: server});
 
 let connections = {};
 let timerIntervals = {};
-
-function getUserFromToken(token) {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM user WHERE token = ?', token, (error, user) => {
-      if (error) {
-        reject(error);
-      }
-      resolve(user);
-    });
-  });
-}
 
 function userInRoom(user, room) {
   return new Promise((resolve, reject) => {
