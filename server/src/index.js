@@ -8,8 +8,12 @@ let {db} = require('./database');
 let {
   getUserFromToken,
   userInRoom,
-  addUserToDatabase
+  addUserToDatabase,
 } = require('./user');
+let {
+  getRoom,
+  getRooms,
+} = require('./room');
 
 let saltRounds = 12;
 let port = 5000;
@@ -58,30 +62,6 @@ router.post('/user/create', async (req, res, next) => {
     next(error);
   }
 });
-
-function getRoom(id) {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM room WHERE id = ?', id, (error, room) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(room);
-      }
-    });
-  });
-}
-
-function getRooms() {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM room;', (error, rooms) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(rooms);
-      }
-    });
-  });
-}
 
 function getUsersConnected(id) {
   return new Promise((resolve, reject) => {
