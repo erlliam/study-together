@@ -24,8 +24,9 @@ function Timer(props) {
   let roomId = params.id;
 
   useEffect(() => {
-    async function init() {
+    (async () => {
       let response = await apiGet('/timer/' + roomId);
+      // todo: Make sure the response is valid
       let json = await response.json();
       // todo: Figure out how to batch these state updates...
       setTimeElapsed(json.timeElapsed);
@@ -33,9 +34,7 @@ function Timer(props) {
       setMode(json.mode);
       setBreakLength(json.breakLength);
       setWorkLength(json.workLength);
-    }
-
-    init();
+    })();
   }, [roomId]);
 
   useEffect(() => {
