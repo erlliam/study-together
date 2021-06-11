@@ -13,6 +13,9 @@ let {
 let {
   getRoom,
   getRooms,
+  getUsersConnected,
+  validRoom,
+  roomFull,
 } = require('./room');
 
 let saltRounds = 12;
@@ -63,23 +66,6 @@ router.post('/user/create', async (req, res, next) => {
   }
 });
 
-function getUsersConnected(id) {
-  return new Promise((resolve, reject) => {
-    db.get(`
-      SELECT
-        COUNT() AS usersConnected
-      FROM roomUser
-      WHERE roomId = ?;
-    `, id, (error, usersConnected) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(usersConnected?.usersConnected);
-      }
-    });
-  });
-}
-
 function deleteRoom(room) {
   return new Promise((resolve, reject) => {
     for (connection of connections[room.id]) {
@@ -107,26 +93,6 @@ function deleteRoom(room) {
       });
     });
   });
-}
-
-function validRoom(room) {
-  // todo: Throw exceptions, pass it to client (so they know which field is wrong)
-  // todo: Deal with bcrypt's upper character limit "72", probably restrict passwords?
-  let {name, password, capacity} = room;
-  if (typeof name !== 'string' ||
-      typeof password !== 'string' ||
-      typeof capacity !== 'string') {
-    return false;
-  }
-  if (name.trim().length === 0) {
-    return false;
-  }
-  let capacityAsInt = parseInt(capacity, 10);
-  if (isNaN(capacityAsInt) ||
-      1 > capacityAsInt || capacityAsInt > 16) {
-    return false;
-  }
-  return true;
 }
 
 function addRoomToDatabase(ownerId, room) {
@@ -178,11 +144,6 @@ function removeUserFromRoom(user, room) {
       }
     });
   });
-}
-
-async function roomFull(room) {
-  let usersConnected = await getUsersConnected(room.id);
-  return usersConnected === room.userCapacity;
 }
 
 router.get('/room/all', async (req, res, next) => {
