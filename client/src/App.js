@@ -21,6 +21,7 @@ import {Room} from './Room';
 import {CreateRoom} from './CreateRoom';
 
 async function initializeApp(setValidUser) {
+  // todo: Figure out something better
   // If the server is down, fetch throws an error...
   try {
     let userResponse = await apiGet('/user');
@@ -109,11 +110,17 @@ function RoomList() {
 
   useEffect(() => {
     (async () => {
-      let response = await apiGet('/room/all');
-      if (response.ok) {
-        setRooms(await response.json());
-      } else {
-        setError('Failed to fetch rooms.');
+      // todo: Figure out something better
+      // If the server is down, fetch throws an error...
+      try {
+        let response = await apiGet('/room/all');
+        if (response.ok) {
+          setRooms(await response.json());
+        } else {
+          setError('Failed to fetch rooms.');
+        }
+      } catch(error) {
+        setError(String(error));
       }
     })();
   }, []);
