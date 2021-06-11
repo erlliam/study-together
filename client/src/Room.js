@@ -61,16 +61,22 @@ function Room() {
   }, []);
 
   async function setRoomData() {
-    let response = await apiGet('/room/' + roomId);
-    switch (response.status) {
-      case 200:
-        room.current = await response.json();
-        break;
-      case 404:
-        setError(<span>Room not found. <Link to="/join">Find a room to join.</Link></span>);
-        break;
-      default:
-        setError('Something went wrong.');
+    try {
+      // todo: Figure out something better
+      // If the server is down, fetch throws an error...
+      let response = await apiGet('/room/' + roomId);
+      switch (response.status) {
+        case 200:
+          room.current = await response.json();
+          break;
+        case 404:
+          setError(<span>Room not found. <Link to="/join">Find a room to join.</Link></span>);
+          break;
+        default:
+          setError('Something went wrong.');
+      }
+    } catch(error) {
+      setError(String(error));
     }
   }
 
