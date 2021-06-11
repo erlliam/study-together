@@ -21,18 +21,11 @@ import {
 */
 
 function CreateRoom() {
-  let isMounted = useRef(true);
   let history = useHistory();
   let [name, setName] = useState('');
   let [password, setPassword] = useState('');
   let [capacity, setCapacity] = useState('4');
   let [error, setError] = useState('');
-
-  useEffect(() => {
-    return (() => {
-      isMounted.current = false;
-    });
-  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -44,15 +37,12 @@ function CreateRoom() {
         capacity: capacity
       })
     });
-
-    if (isMounted.current) {
-      if (response.ok) {
-        let json = await response.json();
-        history.replace('/room/' + json.id);
-      } else {
-        // todo: Don't just assume the name is invalid.
-        setError('Invalid name');
-      }
+    if (response.ok) {
+      let json = await response.json();
+      history.replace('/room/' + json.id);
+    } else {
+      // todo: Don't just assume the name is invalid.
+      setError('Invalid name');
     }
   }
 
