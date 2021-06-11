@@ -2,9 +2,10 @@ let express = require('express');
 let cookieParser = require('cookie-parser');
 let sqlite3 = require('sqlite3').verbose();
 let bcrypt = require('bcrypt');
-let crypto = require('crypto');
 let ws = require('ws');
-let database = require('./database');
+
+let {db} = require('./database');
+let {generateToken} = require('./utils');
 
 let saltRounds = 12;
 let port = 5000;
@@ -29,22 +30,8 @@ let server = app.listen(port);
 
 let webSocket = new ws.Server({server: server});
 
-let db = database.db;
-
 let connections = {};
 let timerIntervals = {};
-
-function generateToken() {
-  return new Promise((resolve, reject) => {
-    crypto.randomBytes(16, (error, bytes) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(bytes.toString('hex'));
-      }
-    });
-  });
-}
 
 function getUserFromToken(token) {
   return new Promise((resolve, reject) => {
