@@ -318,6 +318,17 @@ button:active,
   flex-grow: 100;
 }
 
+.timer-volume {
+  position: absolute;
+  z-index: 1;
+}
+
+.div-user-list {
+  position: absolute;
+  z-index: 1;
+  background-color: white;
+}
+
 .div-user-list {
   height: 20rem;
   width: 15rem;

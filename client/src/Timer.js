@@ -163,6 +163,7 @@ function TimerVolume(props) {
       </button>
       {opened && (
         <input
+          className="timer-volume"
           type="range"
           value={volume}
           min="0"
