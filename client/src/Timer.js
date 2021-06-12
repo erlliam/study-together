@@ -155,7 +155,7 @@ function TimerVolume(props) {
   }
 
   return (
-    <>
+    <div className="timer-volume">
       <button
         onClick={handleVolumeButtonClick}
       >
@@ -163,7 +163,6 @@ function TimerVolume(props) {
       </button>
       {opened && (
         <input
-          className="timer-volume"
           type="range"
           value={volume}
           min="0"
@@ -171,7 +170,7 @@ function TimerVolume(props) {
           onChange={handleVolumeSliderChange}
         />
       )}
-    </>
+    </div>
   );
 }
 

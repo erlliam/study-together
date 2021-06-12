@@ -125,10 +125,9 @@ function UserList() {
   }
 
   return (
-    <>
+    <div className="user-list">
       <button
         onClick={handleUserListClick}
-        className="button-user-list"
       >
         User list
       </button>
@@ -139,7 +138,7 @@ function UserList() {
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }
 

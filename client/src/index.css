@@ -319,17 +319,25 @@ button:active,
 }
 
 .timer-volume {
+  margin: 1rem;
+}
+
+.timer-volume input {
   position: absolute;
   z-index: 1;
 }
 
-.div-user-list {
+.user-list {
+  margin: 1rem;
+}
+
+.user-list div {
   position: absolute;
   z-index: 1;
   background-color: white;
 }
 
-.div-user-list {
+.user-list div {
   height: 20rem;
   width: 15rem;
   overflow-y: auto;
@@ -338,14 +346,14 @@ button:active,
   border-radius: var(--border-radius);
 }
 
-.div-user-list p:first-child {
+.user-list div p:first-child {
   margin-top: 0;
 }
 
-.div-user-list p:last-child {
+.user-list div p:last-child {
   margin-bottom: 0;
 }
 
-.div-user-list p {
+.user-list div p {
   margin: .5rem 0;
 }
