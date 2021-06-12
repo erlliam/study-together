@@ -109,7 +109,15 @@ function UserList() {
     // todo: Add an error
     let response = await apiGet('/room/' + roomId + '/users');
     if (response.ok) {
-      userList.current = await response.json();
+      let json = await response.json();
+      json = json.map(({userId, name}) => {
+        if (name !== null) {
+          return name;
+        } else {
+          return userId;
+        }
+      });
+      userList.current = json;
       setOpened(opened => !opened);
     } else {
       throw Error('die');
@@ -126,8 +134,8 @@ function UserList() {
       </button>
       {opened && (
         <div className="div-user-list">
-          {userList.current.map(({userId}) => (
-            <p key={userId}>{userId}</p>
+          {userList.current.map((name) => (
+            <p key={name}>{name}</p>
           ))}
         </div>
       )}

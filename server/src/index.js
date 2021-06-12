@@ -315,8 +315,10 @@ function getUsersInRoom(room) {
   return new Promise((resolve, reject) => {
     db.all(`
       SELECT
-        userId
+        roomUser.userId, username.name
       FROM roomUser
+      LEFT JOIN username
+        ON roomUser.userId = username.userId
       WHERE roomId = ?
     `, room.id, (error, users) => {
       if (error) {
