@@ -1,14 +1,22 @@
 let apiUrl = 'http://192.168.1.163:5000/api'
 
+async function wrappedFetch(url, stuff) {
+  try {
+    return await fetch(url, stuff);
+  } catch(error) {
+    return new Response(null, {status: 420});
+  }
+}
+
 function apiGet(url, options) {
-  return fetch(apiUrl + url, {
+  return wrappedFetch(apiUrl + url, {
     credentials: 'include',
     ...options
   });
 }
 
 function apiDelete(url, options) {
-  return fetch(apiUrl + url, {
+  return wrappedFetch(apiUrl + url, {
     method: 'DELETE',
     credentials: 'include',
     ...options
@@ -16,7 +24,7 @@ function apiDelete(url, options) {
 }
 
 function apiPost(url, options) {
-  return fetch(apiUrl + url, {
+  return wrappedFetch(apiUrl + url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

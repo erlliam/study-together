@@ -341,7 +341,7 @@ router.get('/room/:id/users', async (req, res, next) => {
       let users = await getUsersInRoom(room);
       res.send(users);
     } else {
-      res.send(401);
+      res.sendStatus(401);
     }
   } catch (error) {
     next(error);

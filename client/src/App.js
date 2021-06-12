@@ -21,26 +21,20 @@ import {Room} from './Room';
 import {CreateRoom} from './CreateRoom';
 
 async function initializeApp(setValidUser) {
-  // todo: Figure out something better
-  // If the server is down, fetch throws an error...
-  try {
-    let userResponse = await apiGet('/user');
-    if (userResponse.status === 200) {
-      let json = await userResponse.json();
+  let userResponse = await apiGet('/user');
+  if (userResponse.status === 200) {
+    let json = await userResponse.json();
+    localStorage.setItem('id', json.id);
+    setValidUser(true);
+  } else {
+    let userCreateReponse = await apiPost('/user/create');
+    if (userCreateReponse.status === 201) {
+      let json = await userCreateReponse.json();
       localStorage.setItem('id', json.id);
       setValidUser(true);
     } else {
-      let userCreateReponse = await apiPost('/user/create');
-      if (userCreateReponse.status === 201) {
-        let json = await userCreateReponse.json();
-        localStorage.setItem('id', json.id);
-        setValidUser(true);
-      } else {
-        setValidUser(false);
-      }
+      setValidUser(false);
     }
-  } catch(error) {
-    setValidUser(false);
   }
 }
 
@@ -155,17 +149,11 @@ function RoomList() {
 
   useEffect(() => {
     (async () => {
-      // todo: Figure out something better
-      // If the server is down, fetch throws an error...
-      try {
-        let response = await apiGet('/room/all');
-        if (response.ok) {
-          setRooms(await response.json());
-        } else {
-          setError('Failed to fetch rooms.');
-        }
-      } catch(error) {
-        setError(String(error));
+      let response = await apiGet('/room/all');
+      if (response.ok) {
+        setRooms(await response.json());
+      } else {
+        setError('Failed to fetch rooms.');
       }
     })();
   }, []);
