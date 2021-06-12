@@ -219,6 +219,41 @@ router.delete('/room/:id', async (req, res, next) => {
   }
 });
 
+function getUsersInRoom(room) {
+  return new Promise((resolve, reject) => {
+    db.all(`
+      SELECT
+        userId
+      FROM roomUser
+      WHERE roomId = ?
+    `, room.id, (error, users) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(users);
+      }
+    });
+  });
+}
+
+router.get('/room/:id/users', async (req, res, next) => {
+  try {
+    let id = req.params.id;
+    let user = await getUserFromToken(req.cookies.token);
+    let room = await getRoom(id);
+    if (room === undefined) {
+      res.sendStatus(404);
+    } else if (await userInRoom(user, room)) {
+      let users = await getUsersInRoom(room);
+      res.send(users);
+    } else {
+      res.send(401);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 async function getTimer(id) {
   return new Promise((resolve, reject) => {
     db.get('SELECT * FROM roomTimer WHERE roomId = ?', id, (error, timer) => {

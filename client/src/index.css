@@ -316,3 +316,24 @@ button:active,
 #chat-message {
   flex-grow: 100;
 }
+
+.div-user-list {
+  height: 20rem;
+  width: 15rem;
+  overflow-y: auto;
+  padding: 1rem;
+  border: var(--border);
+  border-radius: var(--border-radius);
+}
+
+.div-user-list p:first-child {
+  margin-top: 0;
+}
+
+.div-user-list p:last-child {
+  margin-bottom: 0;
+}
+
+.div-user-list p {
+  margin: .5rem 0;
+}

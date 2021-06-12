@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 
 import {
+  apiGet,
   getToken,
 } from './utils';
 
@@ -75,6 +76,7 @@ function Messages(props) {
 
   return (
     <>
+      <UserList />
       <div ref={divElement} className="messages">
         {messages.map((message) => (
           <p key={message.key}>{message.data}</p>
@@ -93,6 +95,42 @@ function Messages(props) {
         />
         <button>Send message</button>
       </form>
+    </>
+  );
+}
+
+function UserList() {
+  let [opened, setOpened] = useState(false);
+  let userList = useRef();
+  let params = useParams();
+  let roomId = params.id;
+
+  async function handleUserListClick(event) {
+    // todo: Add an error
+    let response = await apiGet('/room/' + roomId + '/users');
+    if (response.ok) {
+      userList.current = await response.json();
+      setOpened(opened => !opened);
+    } else {
+      throw Error('die');
+    }
+  }
+
+  return (
+    <>
+      <button
+        onClick={handleUserListClick}
+        className="button-user-list"
+      >
+        User list
+      </button>
+      {opened && (
+        <div className="div-user-list">
+          {userList.current.map(({userId}) => (
+            <p key={userId}>{userId}</p>
+          ))}
+        </div>
+      )}
     </>
   );
 }
