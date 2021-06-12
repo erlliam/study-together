@@ -1,5 +1,6 @@
 import {
   useState,
+  useRef,
   useEffect,
 } from 'react';
 
@@ -20,8 +21,21 @@ function Timer(props) {
   let [mode, setMode] = useState();
   let [workLength, setWorkLength] = useState(0);
   let [breakLength, setBreakLength] = useState(0);
+  let [volume, setVolume] = useState(100);
   let params = useParams();
   let roomId = params.id;
+  let audioElement = useRef();
+
+  useEffect(() => {
+    // todo: LICENSE AND ATTRIBUTION stuff
+    // https://onlineclock.net/sounds/?sound=Default
+    let audio = new Audio('https://onlineclock.net/audio/options/default.mp3');
+    audio.volume = volume / 100;
+    audioElement.current = audio;
+    return (() => {
+      audio.remove();
+    });
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -42,10 +56,7 @@ function Timer(props) {
       let json = JSON.parse(event.data);
       switch (json.operation) {
         case 'timerFinished':
-          // todo: LICENSE AND ATTRIBUTION stuff
-          // https://onlineclock.net/sounds/?sound=Default
-          let audio = new Audio('https://onlineclock.net/audio/options/default.mp3');
-          audio.play();
+          audioElement.current.play();
           break;
         case 'timerUpdate':
           setTimeElapsed(json.timeElapsed);
@@ -92,6 +103,10 @@ function Timer(props) {
     });
   }, [mode, state])
 
+  useEffect(() => {
+    audioElement.current.volume = volume / 100;
+  }, [volume]);
+
   let lengthToUse = (mode ==='w' ? workLength : breakLength)
   let minutesRemaining = Math.floor((lengthToUse - timeElapsed) / 60);
   let secondsRemaining = (lengthToUse - timeElapsed) % 60;
@@ -106,6 +121,10 @@ function Timer(props) {
 
   return (
     <>
+      <TimerVolume
+        volume={volume}
+        setVolume={setVolume}
+      />
       <p className="timer-time">
         <span className="timer-time-text">{minutesRemaining}:{secondsRemaining}</span>
       </p>
@@ -115,6 +134,39 @@ function Timer(props) {
           room={props.room}
           setError={props.setError}
           error={props.error}
+        />
+      )}
+    </>
+  );
+}
+
+function TimerVolume(props) {
+  let [opened, setOpened] = useState(false);
+  let volume = props.volume;
+  let setVolume = props.setVolume;
+
+  function handleVolumeButtonClick(event) {
+    setOpened(setOpened => !setOpened);
+  }
+
+  function handleVolumeSliderChange(event) {
+    setVolume(event.target.value);
+  }
+
+  return (
+    <>
+      <button
+        onClick={handleVolumeButtonClick}
+      >
+        Volume
+      </button>
+      {opened && (
+        <input
+          type="range"
+          value={volume}
+          min="0"
+          max="100"
+          onChange={handleVolumeSliderChange}
         />
       )}
     </>
