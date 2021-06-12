@@ -71,4 +71,13 @@ function createTables() {
       FOREIGN KEY(roomId) REFERENCES room(id)
     );
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS username (
+      id INTEGER PRIMARY KEY,
+      userId INTEGER NOT NULL,
+      name TEXT NOT NULL UNIQUE,
+      FOREIGN KEY(userId) REFERENCES user(id)
+    );
+  `);
 }

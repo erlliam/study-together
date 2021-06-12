@@ -57,8 +57,9 @@ function App() {
         <TopNav />
         <Switch>
           <Route exact path="/"><StartingPage /></Route>
-          <Route path="/create"><CreateRoom /></Route>
-          <Route path="/join"><RoomList /></Route>
+          <Route exact path="/settings"><SettingsPage /></Route>
+          <Route exact path="/create"><CreateRoom /></Route>
+          <Route exact path="/join"><RoomList /></Route>
           <Route path="/room/:id"><Room /></Route>
           <Route path="*"><h1>404</h1></Route>
         </Switch>
@@ -86,6 +87,7 @@ function TopNav() {
         <Link to="/">Home</Link>
         <Link to="/create">Create a room</Link>
         <Link to="/join">Join a room</Link>
+        <Link to="/settings">Settings</Link>
       </nav>
     );
   }
@@ -99,7 +101,49 @@ function StartingPage() {
       <nav>
         <Link to="/create">Create a room</Link>
         <Link to="/join">Join a room</Link>
+        <Link to="/settings">Settings</Link>
       </nav>
+    </div>
+  );
+}
+
+function SettingsPage() {
+  let [name, setName] = useState('');
+
+  function handleNameChange(event) {
+    setName(event.target.value);
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    let response = await apiPost('/user/name', {
+      body: JSON.stringify({name: name})
+    });
+    if (response.ok) {
+      alert('Username set.');
+    } else {
+      alert('Failed to set username.');
+    }
+  }
+
+  return (
+    <div className="settings-page">
+      <h1>Settings</h1>
+      <form
+        autoComplete="off"
+        onSubmit={handleSubmit}
+      >
+        <label htmlFor="settings-name">Username</label>
+        <input
+          id="settings-name"
+          value={name}
+          onChange={handleNameChange}
+          maxLength="15"
+          required
+        />
+        <button>Set name</button>
+      </form>
     </div>
   );
 }

@@ -66,6 +66,40 @@ router.post('/user/create', async (req, res, next) => {
   }
 });
 
+function setUsername(user, name) {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      INSERT INTO username (userId, name)
+      VALUES (?, ?);
+    `, user.id, name, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+router.post('/user/name', async (req, res, next) => {
+  try {
+    let name = req.body?.name;
+    let user = await getUserFromToken(req.cookies.token);
+    if (user === undefined) {
+      res.sendStatus(401);
+    } else if (name === undefined) {
+      res.sendStatus(400);
+    } else {
+      await setUsername(user, name);
+      res.sendStatus(200);
+    }
+  } catch(error) {
+    // todo: Send response for username in use, etc
+    next(error);
+  }
+});
+
+
 function deleteRoom(room) {
   return new Promise((resolve, reject) => {
     for (connection of connections[room.id]) {

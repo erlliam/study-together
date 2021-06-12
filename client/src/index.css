@@ -127,7 +127,8 @@ button:active,
 .create-room,
 .join-room,
 .room,
-.password-page
+.password-page,
+.settings-page
 {
   margin: 1rem 0;
 }
