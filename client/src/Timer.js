@@ -35,6 +35,7 @@ function Timer(props) {
     return (() => {
       audio.remove();
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
