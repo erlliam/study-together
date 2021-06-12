@@ -123,7 +123,8 @@ function SettingsPage() {
     if (response.ok) {
       alert('Username set.');
     } else {
-      alert('Failed to set username.');
+      let json = await response.json();
+      alert(json?.error);
     }
   }
 

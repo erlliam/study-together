@@ -75,7 +75,7 @@ function createTables() {
   db.run(`
     CREATE TABLE IF NOT EXISTS username (
       id INTEGER PRIMARY KEY,
-      userId INTEGER NOT NULL,
+      userId INTEGER NOT NULL UNIQUE,
       name TEXT NOT NULL UNIQUE,
       FOREIGN KEY(userId) REFERENCES user(id)
     );

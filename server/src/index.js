@@ -69,7 +69,7 @@ router.post('/user/create', async (req, res, next) => {
 function setUsername(user, name) {
   return new Promise((resolve, reject) => {
     db.run(`
-      INSERT INTO username (userId, name)
+      REPLACE INTO username (userId, name)
       VALUES (?, ?);
     `, user.id, name, (error) => {
       if (error) {
@@ -81,14 +81,72 @@ function setUsername(user, name) {
   });
 }
 
+function validUsername(name) {
+  if (typeof name !== 'string') {
+    return false;
+  }
+  if (name.length < 1 || name.length > 15) {
+    return false;
+  }
+  if (name.trimStart() !== name) {
+    return false;
+  }
+  if (name.trim() === '') {
+    return false;
+  }
+  // https://stackoverflow.com/a/1779019
+  let isNum = /^\d+$/.test(name);
+  if (isNum) {
+    return false;
+  }
+
+  return true;
+}
+
+function getUsername(user) {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT name
+      FROM username
+      WHERE userId = ?
+    `, user.id, (error, name) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(name?.name);
+      }
+    });
+  });
+}
+
+function usernameExists(name) {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT name
+      FROM username
+      WHERE name = ?
+    `, name, (error, name) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(name !== undefined);
+      }
+    });
+  });
+}
+
 router.post('/user/name', async (req, res, next) => {
   try {
     let name = req.body?.name;
     let user = await getUserFromToken(req.cookies.token);
     if (user === undefined) {
-      res.sendStatus(401);
-    } else if (name === undefined) {
-      res.sendStatus(400);
+      res.status(401).send({error: 'Invalid user.'});
+    } else if (name === undefined || !validUsername(name)) {
+      res.status(400).send({error: 'Invalid name.'});
+    } else if (name === await getUsername(user)) {
+      res.status(400).send({error: 'That is already your username.'});
+    } else if (await usernameExists(name)) {
+      res.status(400).send({error: 'Username taken.'});
     } else {
       await setUsername(user, name);
       res.sendStatus(200);
