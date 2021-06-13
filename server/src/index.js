@@ -113,7 +113,11 @@ function getUsername(user) {
       if (error) {
         reject(error);
       } else {
-        resolve(name?.name);
+        if (name === undefined) {
+          resolve(user.id);
+        } else {
+          resolve(name?.name);
+        }
       }
     });
   });
@@ -676,7 +680,7 @@ async function connectUser(ws, user, room) {
     removeConnection(room, ws);
     roomMessage(room, JSON.stringify({
       operation: 'message',
-      message: user.id + ' left.'
+      message: await getUsername(user) + ' left.'
     }))
     // todo: Uncomment code when in production
     // if (connections[room.id].length === 0) {
@@ -685,7 +689,7 @@ async function connectUser(ws, user, room) {
   });
   roomMessage(room, JSON.stringify({
     operation: 'message',
-    message: user.id + ' joined.'
+    message: await getUsername(user) + ' joined.'
   }))
 }
 
@@ -734,7 +738,7 @@ async function userMessageOperation(ws, json) {
     if (userInRoom(user, room)) {
       roomMessage(room, JSON.stringify({
         operation: 'message',
-        message: user.id + ': ' + json.message
+        message: await getUsername(user) + ': ' + json.message
       }));
     }
   } else {
