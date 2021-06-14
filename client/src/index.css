@@ -335,6 +335,7 @@ button:active,
   position: absolute;
   z-index: 1;
   background-color: white;
+  transform: translate(0.5rem, 0.5rem);
 }
 
 .user-list div {
