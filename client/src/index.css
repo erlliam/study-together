@@ -277,7 +277,7 @@ button:active,
   justify-content: center;
 }
 
-.room header {
+.room > header {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -346,8 +346,14 @@ button:active,
   border-radius: var(--border-radius);
 }
 
-.user-list div p:first-child {
-  margin-top: 0;
+.user-list div header {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.user-list div header h2 {
+  margin-bottom: 0;
 }
 
 .user-list div p:last-child {

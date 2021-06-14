@@ -124,15 +124,21 @@ function UserList() {
     }
   }
 
+  function handleCloseClick(event) {
+    setOpened(false);
+  }
+
   return (
     <div className="user-list">
-      <button
-        onClick={handleUserListClick}
-      >
+      <button onClick={handleUserListClick}>
         User list
       </button>
       {opened && (
-        <div className="div-user-list">
+        <div>
+          <header>
+            <h2>User list</h2>
+            <button onClick={handleCloseClick}>Close</button>
+          </header>
           {userList.current.map((name) => (
             <p key={name}>{name}</p>
           ))}
