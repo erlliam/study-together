@@ -318,15 +318,6 @@ button:active,
   flex-grow: 100;
 }
 
-.timer-volume {
-  margin: 1rem;
-}
-
-.timer-volume input {
-  position: absolute;
-  z-index: 1;
-}
-
 .user-list {
   margin: 1rem;
 }
@@ -363,4 +354,24 @@ button:active,
 
 .user-list div p {
   margin: .5rem 0;
+}
+
+.timer-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.timer-volume input {
+  position: absolute;
+  z-index: 1;
+}
+
+.timer-sound form {
+  background-color: white;
+  padding: 1rem;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  position: absolute;
+  transform: translate(0.5rem, 0.5rem);
+  z-index: 1;
 }

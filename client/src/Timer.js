@@ -122,10 +122,13 @@ function Timer(props) {
 
   return (
     <>
-      <TimerVolume
-        volume={volume}
-        setVolume={setVolume}
-      />
+      <nav className="timer-options">
+        <TimerVolume
+          volume={volume}
+          setVolume={setVolume}
+        />
+        <TimerSound />
+      </nav>
       <p className="timer-time">
         <span className="timer-time-text">{minutesRemaining}:{secondsRemaining}</span>
       </p>
@@ -146,7 +149,7 @@ function TimerVolume(props) {
   let volume = props.volume;
   let setVolume = props.setVolume;
 
-  function handleVolumeButtonClick(event) {
+  function handleOpenClick(event) {
     setOpened(setOpened => !setOpened);
   }
 
@@ -157,7 +160,7 @@ function TimerVolume(props) {
   return (
     <div className="timer-volume">
       <button
-        onClick={handleVolumeButtonClick}
+        onClick={handleOpenClick}
       >
         Volume
       </button>
@@ -169,6 +172,35 @@ function TimerVolume(props) {
           max="100"
           onChange={handleVolumeSliderChange}
         />
+      )}
+    </div>
+  );
+}
+
+function TimerSound() {
+  let [opened, setOpened] = useState(false);
+
+  function handleOpenClick(event) {
+    setOpened(setOpened => !setOpened);
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    
+    alert('Implement me');
+  }
+
+  return (
+    <div className="timer-sound">
+      <button onClick={handleOpenClick}>
+        Sound
+      </button>
+      {opened && (
+        <form onSubmit={handleSubmit}>
+          <label>Sound URL</label>
+          <input />
+          <button>Set sound</button>
+        </form>
       )}
     </div>
   );
