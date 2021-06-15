@@ -154,6 +154,7 @@ function SettingsPage() {
         <label htmlFor="settings-name">Username</label>
         <input
           id="settings-name"
+          placeHolder="Username"
           value={name}
           onChange={handleNameChange}
           maxLength="15"
