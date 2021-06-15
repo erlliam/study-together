@@ -133,6 +133,7 @@ function SettingsPage() {
     });
     if (response.ok) {
       getUsername();
+      setName('');
     } else {
       // todo: Set up an error!
       let json = await response.json();

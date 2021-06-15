@@ -312,7 +312,9 @@ function TimerControls(props) {
           length: length
         })
       });
-    if (!response.ok) {
+    if (response.ok) {
+      setLength('');
+    } else {
       setError('Failed to set timer length.');
     }
   }
