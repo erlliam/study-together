@@ -120,10 +120,10 @@ function Timer(props) {
   secondsRemaining = secondsRemaining.toString().padStart(2, '0');
 
   // todo: Make this feature OPT IN
-  let status = '';
-  status += (mode === 'w' ? 'Working' : 'Relaxing');
-  status += ' - ';
-  status += (state === 1 ? 'Running' : 'Paused');
+  // let status = '';
+  // status += (mode === 'w' ? 'Working' : 'Relaxing');
+  // status += ' - ';
+  // status += (state === 1 ? 'Running' : 'Paused');
 
   return (
     <>
