@@ -139,6 +139,20 @@ function usernameExists(name) {
   });
 }
 
+router.get('/user/name', async (req, res, next) => {
+  try {
+    let user = await getUserFromToken(req.cookies.token);
+    if (user === undefined) {
+      res.status(401).send({error: 'Invalid user.'});
+    } else {
+      let username = await getUsername(user);
+      res.send({username: username});
+    }
+  } catch(error) {
+    next(error);
+  }
+});
+
 router.post('/user/name', async (req, res, next) => {
   try {
     let name = req.body?.name;
@@ -156,7 +170,6 @@ router.post('/user/name', async (req, res, next) => {
       res.sendStatus(200);
     }
   } catch(error) {
-    // todo: Send response for username in use, etc
     next(error);
   }
 });

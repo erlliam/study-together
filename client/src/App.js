@@ -103,6 +103,23 @@ function StartingPage() {
 
 function SettingsPage() {
   let [name, setName] = useState('');
+  let [username, setUsername] = useState('Loading...');
+
+  useEffect(() => {
+    getUsername();
+  }, []);
+
+  async function getUsername() {
+    let response = await apiGet('/user/name');
+    console.log(response);
+    console.log(response.ok);
+    if (response.ok) {
+      let json = await response.json();
+      setUsername(json.username);
+    } else {
+      setUsername('Failed to fetch username.');
+    }
+  }
 
   function handleNameChange(event) {
     setName(event.target.value);
@@ -115,8 +132,9 @@ function SettingsPage() {
       body: JSON.stringify({name: name})
     });
     if (response.ok) {
-      alert('Username set.');
+      getUsername();
     } else {
+      // todo: Set up an error!
       let json = await response.json();
       alert(json?.error);
     }
@@ -125,6 +143,9 @@ function SettingsPage() {
   return (
     <div className="settings-page">
       <h1>Settings</h1>
+      <h2>Current username</h2>
+      <p>{username}</p>
+      <h2>Set username</h2>
       <form
         autoComplete="off"
         onSubmit={handleSubmit}
