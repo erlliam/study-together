@@ -361,11 +361,7 @@ button:active,
   gap: 1rem;
 }
 
-.timer-volume input {
-  position: absolute;
-  z-index: 1;
-}
-
+.timer-volume div,
 .timer-sound form {
   background-color: white;
   padding: 1rem;

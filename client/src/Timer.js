@@ -165,13 +165,16 @@ function TimerVolume(props) {
         Volume
       </button>
       {opened && (
-        <input
-          type="range"
-          value={volume}
-          min="0"
-          max="100"
-          onChange={handleVolumeSliderChange}
-        />
+        <div>
+          <h2>Set volume</h2>
+          <input
+            type="range"
+            value={volume}
+            min="0"
+            max="100"
+            onChange={handleVolumeSliderChange}
+          />
+        </div>
       )}
     </div>
   );
