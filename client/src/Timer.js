@@ -22,14 +22,15 @@ function Timer(props) {
   let [workLength, setWorkLength] = useState(0);
   let [breakLength, setBreakLength] = useState(0);
   let [volume, setVolume] = useState(100);
+  // todo: LICENSE AND ATTRIBUTION stuff
+  // https://onlineclock.net/sounds/?sound=Default
+  let [sound, setSound] = useState('https://onlineclock.net/audio/options/default.mp3');
   let params = useParams();
   let roomId = params.id;
   let audioElement = useRef();
 
   useEffect(() => {
-    // todo: LICENSE AND ATTRIBUTION stuff
-    // https://onlineclock.net/sounds/?sound=Default
-    let audio = new Audio('https://onlineclock.net/audio/options/default.mp3');
+    let audio = new Audio(sound);
     audio.volume = volume / 100;
     audioElement.current = audio;
     return (() => {
@@ -108,6 +109,10 @@ function Timer(props) {
     audioElement.current.volume = volume / 100;
   }, [volume]);
 
+  useEffect(() => {
+    audioElement.current.src = sound;
+  }, [sound]);
+
   let lengthToUse = (mode ==='w' ? workLength : breakLength)
   let minutesRemaining = Math.floor((lengthToUse - timeElapsed) / 60);
   let secondsRemaining = (lengthToUse - timeElapsed) % 60;
@@ -127,7 +132,9 @@ function Timer(props) {
           volume={volume}
           setVolume={setVolume}
         />
-        <TimerSound />
+        <TimerSound
+          setSound={setSound}
+        />
       </nav>
       <p className="timer-time">
         <span className="timer-time-text">{minutesRemaining}:{secondsRemaining}</span>
@@ -180,17 +187,23 @@ function TimerVolume(props) {
   );
 }
 
-function TimerSound() {
+function TimerSound(props) {
+  let [sound, setSound] = useState('https://onlineclock.net/audio/options/falling-bomb.mp3');
   let [opened, setOpened] = useState(false);
+  let setTimerSound = props.setSound;
 
   function handleOpenClick(event) {
     setOpened(setOpened => !setOpened);
   }
 
+  function handleSoundChange(event) {
+    setSound(event.target.value);
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
-    
-    alert('Implement me');
+
+    setTimerSound(sound);
   }
 
   return (
@@ -201,7 +214,11 @@ function TimerSound() {
       {opened && (
         <form onSubmit={handleSubmit}>
           <label>Sound URL</label>
-          <input />
+          <input
+            type="url"
+            value={sound}
+            onChange={handleSoundChange}
+          />
           <button>Set sound</button>
         </form>
       )}
