@@ -13,6 +13,8 @@ import {
   getToken,
 } from './utils';
 
+import './Messages.css';
+
 function Messages(props) {
   let [messages, setMessages] = useState([]);
   let [message, setMessage] = useState('');
