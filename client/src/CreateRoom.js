@@ -18,7 +18,7 @@ import {
     display something in the case of a server error
 */
 
-function CreateRoom() {
+function CreateRoomPage() {
   let history = useHistory();
   let [name, setName] = useState('');
   let [password, setPassword] = useState('');
@@ -89,4 +89,4 @@ function CreateRoom() {
   );
 }
 
-export {CreateRoom};
+export {CreateRoomPage};

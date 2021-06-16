@@ -18,7 +18,7 @@ import {
 import {Messages} from './Messages';
 import {Timer} from './Timer';
 
-function Room() {
+function RoomPage() {
   let [error, setError] = useState('');
   let [roomJoined, setRoomJoined] = useState();
   let [passwordRequired, setPasswordRequired] = useState();
@@ -177,4 +177,4 @@ function PasswordPage(props) {
   );
 }
 
-export {Room};
+export {RoomPage};

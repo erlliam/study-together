@@ -17,8 +17,8 @@ import {
   Error
 } from './utils';
 
-import {Room} from './Room';
-import {CreateRoom} from './CreateRoom';
+import {RoomPage} from './Room';
+import {CreateRoomPage} from './CreateRoom';
 
 async function initializeApp(setValidUser) {
   let userResponse = await apiGet('/user');
@@ -52,9 +52,9 @@ function App() {
         <Switch>
           <Route exact path="/"><StartingPage /></Route>
           <Route exact path="/settings"><SettingsPage /></Route>
-          <Route exact path="/create"><CreateRoom /></Route>
-          <Route exact path="/join"><RoomList /></Route>
-          <Route path="/room/:id"><Room /></Route>
+          <Route exact path="/create"><CreateRoomPage /></Route>
+          <Route exact path="/join"><JoinRoomPage /></Route>
+          <Route path="/room/:id"><RoomPage /></Route>
           <Route path="*"><h1>404</h1></Route>
         </Switch>
       </Router>
@@ -166,7 +166,7 @@ function SettingsPage() {
   );
 }
 
-function RoomList() {
+function JoinRoomPage() {
   let [error, setError] = useState('');
   let [rooms, setRooms] = useState(null);
 
