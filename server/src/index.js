@@ -9,6 +9,9 @@ let {
   getUserFromToken,
   userInRoom,
   addUserToDatabase,
+  setUsername,
+  getUsername,
+  usernameExists,
 } = require('./user');
 let {
   getRoom,
@@ -66,21 +69,6 @@ router.post('/user/create', async (req, res, next) => {
   }
 });
 
-function setUsername(user, name) {
-  return new Promise((resolve, reject) => {
-    db.run(`
-      REPLACE INTO username (userId, name)
-      VALUES (?, ?);
-    `, user.id, name, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-
 function validUsername(name) {
   if (typeof name !== 'string') {
     return false;
@@ -101,42 +89,6 @@ function validUsername(name) {
   }
 
   return true;
-}
-
-function getUsername(user) {
-  return new Promise((resolve, reject) => {
-    db.get(`
-      SELECT name
-      FROM username
-      WHERE userId = ?
-    `, user.id, (error, name) => {
-      if (error) {
-        reject(error);
-      } else {
-        if (name === undefined) {
-          resolve(user.id);
-        } else {
-          resolve(name?.name);
-        }
-      }
-    });
-  });
-}
-
-function usernameExists(name) {
-  return new Promise((resolve, reject) => {
-    db.get(`
-      SELECT name
-      FROM username
-      WHERE name = ?
-    `, name, (error, name) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(name !== undefined);
-      }
-    });
-  });
 }
 
 router.get('/user/name', async (req, res, next) => {

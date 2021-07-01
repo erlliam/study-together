@@ -44,3 +44,54 @@ exports.addUserToDatabase = () => {
     });
   });
 }
+
+exports.setUsername = (user, name) => {
+  return new Promise((resolve, reject) => {
+    db.run(`
+      REPLACE INTO username (userId, name)
+      VALUES (?, ?);
+    `, user.id, name, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+exports.getUsername = (user) => {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT name
+      FROM username
+      WHERE userId = ?
+    `, user.id, (error, name) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (name === undefined) {
+          resolve(user.id);
+        } else {
+          resolve(name?.name);
+        }
+      }
+    });
+  });
+}
+
+exports.usernameExists = (name) => {
+  return new Promise((resolve, reject) => {
+    db.get(`
+      SELECT name
+      FROM username
+      WHERE name = ?
+    `, name, (error, name) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(name !== undefined);
+      }
+    });
+  });
+}
